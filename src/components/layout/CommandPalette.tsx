@@ -21,14 +21,14 @@ import {
 
 const ITEMS = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/notes", label: "Knowledge", icon: BookOpen },
-  { to: "/habits", label: "Habits", icon: Repeat },
-  { to: "/tasks", label: "Tasks", icon: CheckSquare },
-  { to: "/goals", label: "Goals", icon: Target },
-  { to: "/finance", label: "Finance", icon: Wallet },
-  { to: "/journal", label: "Journal", icon: NotebookPen },
-  { to: "/stats", label: "Stats", icon: BarChart3 },
-  { to: "/settings", label: "Settings", icon: Settings },
+  { to: "/notes", label: "Conhecimento", icon: BookOpen },
+  { to: "/habits", label: "Hábitos", icon: Repeat },
+  { to: "/tasks", label: "Tarefas", icon: CheckSquare },
+  { to: "/goals", label: "Metas", icon: Target },
+  { to: "/finance", label: "Finanças", icon: Wallet },
+  { to: "/journal", label: "Diário", icon: NotebookPen },
+  { to: "/stats", label: "Estatísticas", icon: BarChart3 },
+  { to: "/settings", label: "Configurações", icon: Settings },
 ] as const;
 
 export function CommandPalette({
