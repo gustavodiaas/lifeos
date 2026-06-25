@@ -1,29 +1,41 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { AppShell } from "@/components/layout/AppShell";
+import { PageBody, PageHeader } from "@/components/layout/PageHeader";
+import { Dashboard } from "@/modules/dashboard/Dashboard";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Your App" },
-      { name: "description", content: "Replace this with a one-sentence description of your app." },
-      { property: "og:title", content: "Your App" },
-      { property: "og:description", content: "Replace this with a one-sentence description of your app." },
+      { title: "LifeOS — Dashboard" },
+      { name: "description", content: "Overview of your habits, tasks, goals and finances." },
     ],
   }),
-  component: Index,
+  component: IndexPage,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
-function Index() {
+function IndexPage() {
+  const now = new Date();
+  const greeting =
+    now.getHours() < 5
+      ? "Late night"
+      : now.getHours() < 12
+        ? "Good morning"
+        : now.getHours() < 18
+          ? "Good afternoon"
+          : "Good evening";
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
+    <AppShell>
+      <PageHeader
+        title={`${greeting}.`}
+        description={now.toLocaleDateString(undefined, {
+          weekday: "long",
+          day: "numeric",
+          month: "long",
+        })}
       />
-    </div>
+      <PageBody>
+        <Dashboard />
+      </PageBody>
+    </AppShell>
   );
 }
