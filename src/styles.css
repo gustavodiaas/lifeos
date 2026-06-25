@@ -57,7 +57,7 @@
   --secondary: #2C2C2C;
   --secondary-foreground: #E8E8E8;
   --muted: #2C2C2C;
-  --muted-foreground: #CFAE70;
+  --muted-foreground: #A89968;
   --accent: #CFAE70;
   --accent-foreground: #0D0D0D;
   --destructive: #E63946;
@@ -92,7 +92,7 @@
   --secondary: #2C2C2C;
   --secondary-foreground: #E8E8E8;
   --muted: #E8E8E8;
-  --muted-foreground: #2C2C2C;
+  --muted-foreground: #5A5A5A;
   --accent: #CFAE70;
   --accent-foreground: #0D0D0D;
   --border: #D0D0D0;
@@ -147,28 +147,20 @@
     @apply hover:text-accent hover:border-accent transition-colors;
   }
 
-  /* Destacar links e elementos interativos */
-  a:not(.no-accent) {
-    @apply text-accent hover:underline transition-colors;
-  }
+  /* Links mantêm cor padrão, sem ouro global */
 
   /* Botões com destaque em ouro */
   .btn-accent {
     @apply bg-accent text-accent-foreground hover:bg-accent/90 shadow-md transition-all;
   }
 
-  /* Badges e tags em ouro */
+  /* Badges e tags em ouro - uso opcional */
   .badge-accent {
-    @apply inline-flex items-center rounded-full bg-accent/20 px-3 py-1 text-sm font-medium text-accent border border-accent/30;
+    @apply inline-flex items-center rounded-full bg-accent/10 px-3 py-1 text-sm font-medium text-accent;
   }
 
-  /* Destaques de texto */
+  /* Destaques de texto - uso opcional */
   .highlight-accent {
-    @apply bg-accent/10 px-1 py-0.5 rounded;
-  }
-
-  /* Linhas divisórias em ouro */
-  .divider-accent {
-    @apply border-t border-accent;
+    @apply text-accent font-medium;
   }
 }
