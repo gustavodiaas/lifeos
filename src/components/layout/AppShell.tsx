@@ -16,14 +16,14 @@ import { CommandPalette } from "./CommandPalette";
 import { cn } from "@/lib/utils";
 
 const NAV = [
-  { to: "/", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/notes", label: "Knowledge", icon: BookOpen },
-  { to: "/habits", label: "Habits", icon: Repeat },
-  { to: "/tasks", label: "Tasks", icon: CheckSquare },
-  { to: "/goals", label: "Goals", icon: Target },
-  { to: "/finance", label: "Finance", icon: Wallet },
-  { to: "/journal", label: "Journal", icon: NotebookPen },
-  { to: "/stats", label: "Stats", icon: BarChart3 },
+  { to: "/", label: "Painel", icon: LayoutDashboard },
+  { to: "/notes", label: "Conhecimento", icon: BookOpen },
+  { to: "/habits", label: "Hábitos", icon: Repeat },
+  { to: "/tasks", label: "Tarefas", icon: CheckSquare },
+  { to: "/goals", label: "Metas", icon: Target },
+  { to: "/finance", label: "Finanças", icon: Wallet },
+  { to: "/journal", label: "Diário", icon: NotebookPen },
+  { to: "/stats", label: "Estatísticas", icon: BarChart3 },
 ] as const;
 
 export function AppShell({ children }: { children?: ReactNode }) {
@@ -60,7 +60,7 @@ export function AppShell({ children }: { children?: ReactNode }) {
           className="mx-3 mb-3 flex items-center gap-2 rounded-md border border-sidebar-border bg-background/30 px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
         >
           <Command className="h-3.5 w-3.5" />
-          <span>Quick switch</span>
+          <span>Troca rápida</span>
           <kbd className="ml-auto text-[10px] text-muted-foreground/80">⌘K</kbd>
         </button>
 
@@ -96,7 +96,7 @@ export function AppShell({ children }: { children?: ReactNode }) {
             )}
           >
             <Settings className="h-4 w-4" />
-            <span>Settings</span>
+            <span>Definições</span>
           </Link>
         </div>
       </aside>
@@ -113,7 +113,7 @@ export function AppShell({ children }: { children?: ReactNode }) {
           </Link>
           <button
             onClick={() => setPaletteOpen(true)}
-            aria-label="Open command palette"
+            aria-label="Abrir paleta de comandos"
             className="rounded-md p-1.5 text-muted-foreground hover:text-foreground hover:bg-accent"
           >
             <Command className="h-4 w-4" />
