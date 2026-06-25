@@ -56,46 +56,46 @@ export function Dashboard() {
   return (
     <>
       <section className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <StatCard label="Habits today" value={`${stats.habitsDone}/${stats.habitsDue}`} />
-        <StatCard label="Open tasks" value={stats.tasksOpen} hint={`${stats.tasksDueToday} due today`} />
-        <StatCard label="Active goals" value={stats.goalsActive} />
-        <StatCard label="Notes" value={stats.notes} />
+        <StatCard label="Hábitos hoje" value={`${stats.habitsDone}/${stats.habitsDue}`} />
+        <StatCard label="Tarefas abertas" value={stats.tasksOpen} hint={`${stats.tasksDueToday} para hoje`} />
+        <StatCard label="Metas ativas" value={stats.goalsActive} />
+        <StatCard label="Notas" value={stats.notes} />
       </section>
 
       <section className="grid grid-cols-1 md:grid-cols-3 gap-3">
         <StatCard
-          label="This month — income"
+          label="Este mês - receitas"
           value={formatBRL(stats.income)}
           tone="positive"
         />
         <StatCard
-          label="This month — expense"
+          label="Este mês - despesas"
           value={formatBRL(stats.expense)}
           tone="negative"
         />
         <StatCard
-          label="Savings rate"
+          label="Taxa de poupança"
           value={
             stats.income > 0
               ? `${Math.round(((stats.income - stats.expense) / stats.income) * 100)}%`
-              : "—"
+              : "-"
           }
         />
       </section>
 
       <section className="grid grid-cols-1 md:grid-cols-2 gap-3">
         <StatCard
-          label="Study hours (all time)"
+          label="Horas de estudo (total)"
           value={`${stats.studyHours.toFixed(1)} h`}
         />
         <StatCard
-          label="Current weight"
-          value={stats.weight != null ? `${stats.weight} kg` : "—"}
+          label="Peso atual"
+          value={stats.weight != null ? `${stats.weight} kg` : "-"}
         />
       </section>
 
       <p className="text-xs text-muted-foreground">
-        LifeOS v0.1 — fundação. Adicione hábitos, tarefas, metas e transações conforme os módulos
+        LifeOS v0.1 - fundação. Adicione hábitos, tarefas, metas e transações conforme os módulos
         evoluem. Seus dados ficam armazenados localmente neste navegador.
       </p>
     </>
