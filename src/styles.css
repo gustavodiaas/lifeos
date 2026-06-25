@@ -129,3 +129,46 @@
     font-family: var(--font-serif-italic);
   }
 }
+
+@layer components {
+  .accent-gold {
+    @apply text-accent;
+  }
+
+  .accent-gold-bg {
+    @apply bg-accent text-accent-foreground;
+  }
+
+  .accent-gold-border {
+    @apply border-accent;
+  }
+
+  .accent-gold-hover {
+    @apply hover:text-accent hover:border-accent transition-colors;
+  }
+
+  /* Destacar links e elementos interativos */
+  a:not(.no-accent) {
+    @apply text-accent hover:underline transition-colors;
+  }
+
+  /* Botões com destaque em ouro */
+  .btn-accent {
+    @apply bg-accent text-accent-foreground hover:bg-accent/90 shadow-md transition-all;
+  }
+
+  /* Badges e tags em ouro */
+  .badge-accent {
+    @apply inline-flex items-center rounded-full bg-accent/20 px-3 py-1 text-sm font-medium text-accent border border-accent/30;
+  }
+
+  /* Destaques de texto */
+  .highlight-accent {
+    @apply bg-accent/10 px-1 py-0.5 rounded;
+  }
+
+  /* Linhas divisórias em ouro */
+  .divider-accent {
+    @apply border-t border-accent;
+  }
+}
