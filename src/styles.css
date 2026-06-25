@@ -12,6 +12,8 @@
   --radius-2xl: calc(var(--radius) + 8px);
   --radius-3xl: calc(var(--radius) + 12px);
   --radius-4xl: calc(var(--radius) + 16px);
+  --font-serif: var(--font-serif);
+  --font-serif-italic: var(--font-serif-italic);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -44,59 +46,61 @@
 
 :root {
   --radius: 0.5rem;
-  --background: oklch(0.18 0.03 260);
-  --foreground: oklch(0.96 0.005 250);
-  --card: oklch(0.22 0.03 260);
-  --card-foreground: oklch(0.96 0.005 250);
-  --popover: oklch(0.22 0.03 260);
-  --popover-foreground: oklch(0.96 0.005 250);
-  --primary: oklch(0.72 0.13 250);
-  --primary-foreground: oklch(0.16 0.012 260);
-  --secondary: oklch(0.26 0.03 260);
-  --secondary-foreground: oklch(0.96 0.005 250);
-  --muted: oklch(0.24 0.03 260);
-  --muted-foreground: oklch(0.68 0.02 255);
-  --accent: oklch(0.28 0.03 260);
-  --accent-foreground: oklch(0.96 0.005 250);
-  --destructive: oklch(0.62 0.2 25);
-  --destructive-foreground: oklch(0.98 0.005 250);
-  --border: oklch(1 0 0 / 12%);
-  --input: oklch(1 0 0 / 12%);
-  --ring: oklch(0.6 0.1 250);
-  --sidebar: oklch(0.20 0.03 260);
-  --sidebar-foreground: oklch(0.92 0.008 250);
-  --sidebar-primary: oklch(0.72 0.13 250);
-  --sidebar-primary-foreground: oklch(0.16 0.012 260);
-  --sidebar-accent: oklch(0.26 0.03 260);
-  --sidebar-accent-foreground: oklch(0.96 0.005 250);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.6 0.1 250);
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --background: #0D0D0D;
+  --foreground: #E8E8E8;
+  --card: #091D39;
+  --card-foreground: #E8E8E8;
+  --popover: #091D39;
+  --popover-foreground: #E8E8E8;
+  --primary: #091D39;
+  --primary-foreground: #E8E8E8;
+  --secondary: #2C2C2C;
+  --secondary-foreground: #E8E8E8;
+  --muted: #2C2C2C;
+  --muted-foreground: #CFAE70;
+  --accent: #CFAE70;
+  --accent-foreground: #0D0D0D;
+  --destructive: #E63946;
+  --destructive-foreground: #E8E8E8;
+  --border: #2C2C2C;
+  --input: #2C2C2C;
+  --ring: #CFAE70;
+  --sidebar: #091D39;
+  --sidebar-foreground: #E8E8E8;
+  --sidebar-primary: #091D39;
+  --sidebar-primary-foreground: #E8E8E8;
+  --sidebar-accent: #CFAE70;
+  --sidebar-accent-foreground: #0D0D0D;
+  --sidebar-border: #2C2C2C;
+  --sidebar-ring: #CFAE70;
+  --font-sans: "Open Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Times New Roman", "Times New Roman MT Condensed", serif;
+  --font-serif-italic: "Times New Roman Italic", "Times New Roman MT Condensed Italic", serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
   color-scheme: dark;
 }
 
 .light {
-  --background: oklch(0.99 0.002 250);
-  --foreground: oklch(0.18 0.03 260);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.18 0.03 260);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.18 0.03 260);
-  --primary: oklch(0.5 0.13 255);
-  --primary-foreground: oklch(0.99 0.002 250);
-  --secondary: oklch(0.96 0.005 250);
-  --secondary-foreground: oklch(0.18 0.03 260);
-  --muted: oklch(0.96 0.005 250);
-  --muted-foreground: oklch(0.45 0.02 260);
-  --accent: oklch(0.94 0.008 250);
-  --accent-foreground: oklch(0.18 0.03 260);
-  --border: oklch(0.9 0.01 250);
-  --input: oklch(0.9 0.01 250);
-  --ring: oklch(0.5 0.13 255);
-  --sidebar: oklch(0.98 0.003 250);
-  --sidebar-foreground: oklch(0.18 0.03 260);
-  --sidebar-border: oklch(0.9 0.01 250);
+  --background: #E8E8E8;
+  --foreground: #0D0D0D;
+  --card: #FFFFFF;
+  --card-foreground: #0D0D0D;
+  --popover: #FFFFFF;
+  --popover-foreground: #0D0D0D;
+  --primary: #091D39;
+  --primary-foreground: #E8E8E8;
+  --secondary: #2C2C2C;
+  --secondary-foreground: #E8E8E8;
+  --muted: #E8E8E8;
+  --muted-foreground: #2C2C2C;
+  --accent: #CFAE70;
+  --accent-foreground: #0D0D0D;
+  --border: #D0D0D0;
+  --input: #D0D0D0;
+  --ring: #091D39;
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: #0D0D0D;
+  --sidebar-border: #D0D0D0;
   color-scheme: light;
 }
 
@@ -115,5 +119,13 @@
 
   code, pre, kbd {
     font-family: var(--font-mono);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-serif);
+  }
+
+  .serif-italic {
+    font-family: var(--font-serif-italic);
   }
 }
