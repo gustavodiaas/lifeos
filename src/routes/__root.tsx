@@ -86,7 +86,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         content:
           "O LifeOS centraliza o teu conhecimento, hábitos, tarefas, metas e finanças num único espaço de trabalho local e focado.",
       },
-      { name: "theme-color", content: "#1a1d24" },
+      { name: "theme-color", content: "#14213D" },
       { name: "apple-mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
       { name: "apple-mobile-web-app-title", content: "LifeOS" },
