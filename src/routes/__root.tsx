@@ -12,6 +12,8 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Toaster } from "../components/ui/sonner";
+import { AuthProvider, useAuthContext } from "../context/AuthContext";
+import { AuthScreen } from "../components/auth/AuthScreen";
 
 function NotFoundComponent() {
   return (
@@ -147,8 +149,29 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Outlet />
-      <Toaster />
+      <AuthProvider>
+        <AuthGuard />
+        <Toaster />
+      </AuthProvider>
     </QueryClientProvider>
   );
+}
+
+function AuthGuard() {
+  const { user, loading } = useAuthContext();
+  const pathname = typeof window !== 'undefined' ? window.location.pathname : '/';
+
+  if (loading) {
+    return (
+      <div className="h-[100dvh] flex items-center justify-center bg-white dark:bg-[#0a1128] text-sm text-gray-400 font-bold transition-colors">
+        Sincronizando...
+      </div>
+    );
+  }
+
+  if (!user && pathname !== '/auth') {
+    return <AuthScreen />;
+  }
+
+  return <Outlet />;
 }
