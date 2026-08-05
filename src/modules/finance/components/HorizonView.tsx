@@ -3,11 +3,11 @@ import { formatCurrency, buildDayRows, expandRecorrentes, calcSaldoInicial } fro
 import type { Lancamento } from '@/lib/supabase';
 
 const getSaldoColor = (v: number) => {
-  if (v > 2000) return 'bg-emerald-700 text-white';
-  if (v >= 1000) return 'bg-emerald-200 text-emerald-900 dark:bg-emerald-900 dark:text-emerald-100';
-  if (v >= 0) return 'bg-yellow-200 text-yellow-900 dark:bg-yellow-900/60 dark:text-yellow-200';
-  if (v >= -499.99) return 'bg-orange-200 text-orange-900 dark:bg-orange-900/60 dark:text-orange-200';
-  return 'bg-red-600 text-white';
+  if (v > 2000) return 'bg-emerald-500/20 text-emerald-500 font-extrabold';
+  if (v >= 1000) return 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-bold';
+  if (v >= 0) return 'bg-muted/80 text-foreground font-semibold';
+  if (v >= -499.99) return 'bg-amber-500/15 text-[#FCA311] font-bold';
+  return 'bg-red-500/20 text-red-500 font-extrabold';
 };
 
 interface Props {
