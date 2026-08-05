@@ -18,7 +18,6 @@ import {
   TrendingUp,
   Tag,
   Search,
-  Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -87,76 +86,71 @@ export function AppleFinanceView({
   })();
 
   return (
-    <div className="space-y-6 fade-in">
+    <div className="space-y-4 fade-in">
 
-      {/* ── 1. Apple Wallet Card (Cartão de Saldo do Mês) ───────────────── */}
-      <div className="glass-card p-6 md:p-8 bg-gradient-to-br from-[#14213D] via-[#1a2c52] to-[#0a1124] text-white shadow-2xl relative overflow-hidden border border-white/10">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-[#FCA311]/10 rounded-full blur-3xl pointer-events-none" />
-
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
+      {/* ── 1. Cartão Compacto de Saldo Apple Wallet ──────────────────────── */}
+      <div className="glass-card p-4 sm:p-5 bg-gradient-to-br from-[#14213D] via-[#1a2c52] to-[#0a1124] text-white shadow-xl relative overflow-hidden border border-white/10">
+        <div className="flex items-center justify-between gap-3 relative z-10">
           <div>
-            <div className="flex items-center gap-2 mb-2">
-              <span className="px-2.5 py-0.5 rounded-full bg-white/10 text-white text-[10px] font-extrabold tracking-wider uppercase backdrop-blur-md">
-                Apple Wallet Style
-              </span>
-              <span className="text-xs font-semibold text-white/70">Balanço do Mês</span>
-            </div>
-            <h2 className="text-3xl md:text-4xl font-black tracking-tight text-white">
+            <span className="text-[10px] font-bold text-white/60 uppercase tracking-wider block mb-0.5">
+              Balanço do Mês
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
               {formatBRL(balance)}
             </h2>
           </div>
 
           <button
             onClick={onNewTransaction}
-            className="btn-ios py-3 px-6 text-xs font-black uppercase tracking-wider text-black bg-[#FCA311] hover:bg-[#e8920a] shadow-lg shadow-[#FCA311]/30 self-start md:self-auto"
+            className="px-3.5 py-2 rounded-xl text-xs font-black text-black bg-[#FCA311] hover:bg-[#e8920a] shadow-md active:scale-95 transition-all flex items-center gap-1.5 shrink-0"
           >
-            <Plus size={18} strokeWidth={3} />
-            <span>Novo Lançamento</span>
+            <Plus size={16} strokeWidth={3} />
+            <span>Novo</span>
           </button>
         </div>
 
-        {/* Resumo Receitas vs Despesas */}
-        <div className="grid grid-cols-2 gap-4 pt-6 mt-6 border-t border-white/10 relative z-10">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
-              <ArrowUpRight size={20} strokeWidth={2.5} />
+        {/* Resumo Compacto Receitas vs Despesas */}
+        <div className="grid grid-cols-2 gap-2 pt-3 mt-3 border-t border-white/10 relative z-10">
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+              <ArrowUpRight size={15} strokeWidth={2.5} />
             </div>
             <div>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-white/60 block">Receitas</span>
-              <span className="text-base font-extrabold text-emerald-400">{formatBRL(income)}</span>
+              <span className="text-[9px] font-bold uppercase text-white/60 block leading-none">Receitas</span>
+              <span className="text-xs font-extrabold text-emerald-400">{formatBRL(income)}</span>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-red-500/20 text-red-400 flex items-center justify-center shrink-0">
-              <ArrowDownRight size={20} strokeWidth={2.5} />
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-xl bg-red-500/20 text-red-400 flex items-center justify-center shrink-0">
+              <ArrowDownRight size={15} strokeWidth={2.5} />
             </div>
             <div>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-white/60 block">Despesas</span>
-              <span className="text-base font-extrabold text-red-400">{formatBRL(expense)}</span>
+              <span className="text-[9px] font-bold uppercase text-white/60 block leading-none">Despesas</span>
+              <span className="text-xs font-extrabold text-red-400">{formatBRL(expense)}</span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* ── 2. Busca e Filtro de Lançamentos ────────────────────────────── */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
-        <div className="relative w-full sm:w-72">
-          <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+      {/* ── 2. Busca e Filtros Compactos ──────────────────────────────────── */}
+      <div className="flex flex-col sm:flex-row items-center gap-2">
+        <div className="relative w-full sm:flex-1">
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Buscar extrato..."
-            className="input-ios pl-10 py-2.5 text-xs"
+            className="input-ios pl-9 py-2 text-xs"
           />
         </div>
 
-        <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto">
+        <div className="flex items-center gap-1 overflow-x-auto w-full sm:w-auto shrink-0">
           <button
             onClick={() => setSelectedFilter("all")}
             className={cn(
-              "px-3.5 py-2 rounded-xl text-xs font-bold transition-all shrink-0",
+              "px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all shrink-0",
               selectedFilter === "all"
                 ? "bg-[#FCA311] text-black shadow-sm font-extrabold"
                 : "bg-muted/60 text-muted-foreground hover:bg-muted"
@@ -167,60 +161,60 @@ export function AppleFinanceView({
           <button
             onClick={() => setSelectedFilter("entrada")}
             className={cn(
-              "px-3.5 py-2 rounded-xl text-xs font-bold transition-all shrink-0 flex items-center gap-1",
+              "px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all shrink-0 flex items-center gap-1",
               selectedFilter === "entrada"
                 ? "bg-emerald-500 text-white shadow-sm font-extrabold"
                 : "bg-muted/60 text-muted-foreground hover:bg-muted"
             )}
           >
-            <ArrowUpRight size={14} /> Receitas
+            <ArrowUpRight size={13} /> Receitas
           </button>
           <button
             onClick={() => setSelectedFilter("saida")}
             className={cn(
-              "px-3.5 py-2 rounded-xl text-xs font-bold transition-all shrink-0 flex items-center gap-1",
+              "px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all shrink-0 flex items-center gap-1",
               selectedFilter === "saida"
                 ? "bg-red-500 text-white shadow-sm font-extrabold"
                 : "bg-muted/60 text-muted-foreground hover:bg-muted"
             )}
           >
-            <ArrowDownRight size={14} /> Despesas
+            <ArrowDownRight size={13} /> Despesas
           </button>
         </div>
       </div>
 
-      {/* ── 3. Extrato de Lançamentos estilo Apple Card (Feed) ──────────── */}
+      {/* ── 3. Extrato de Lançamentos Compacto ────────────────────────────── */}
       {groupedByDate.length === 0 ? (
-        <div className="glass-card p-12 text-center space-y-3">
-          <div className="w-16 h-16 rounded-3xl bg-amber-500/15 text-[#FCA311] flex items-center justify-center mx-auto">
-            <Wallet size={32} />
+        <div className="glass-card p-6 text-center space-y-2">
+          <div className="w-12 h-12 rounded-2xl bg-amber-500/15 text-[#FCA311] flex items-center justify-center mx-auto">
+            <Wallet size={24} />
           </div>
-          <h3 className="text-lg font-bold text-foreground">Nenhum lançamento no extrato</h3>
-          <p className="text-xs text-muted-foreground max-w-sm mx-auto">
-            Adicione suas entradas e saídas do mês para acompanhar o fluxo de caixa com extrato visual.
+          <h3 className="text-sm font-bold text-foreground">Nenhum lançamento no extrato</h3>
+          <p className="text-xs text-muted-foreground max-w-xs mx-auto">
+            Adicione suas entradas e saídas do mês para acompanhar o fluxo de caixa.
           </p>
         </div>
       ) : (
-        <div className="space-y-6">
+        <div className="space-y-4">
           {groupedByDate.map(([dateStr, items]) => {
             const dateFormatted = (() => {
               try {
                 const d = new Date(dateStr + "T00:00:00");
-                return d.toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" });
+                return d.toLocaleDateString("pt-BR", { weekday: "short", day: "numeric", month: "short" });
               } catch {
                 return dateStr;
               }
             })();
 
             return (
-              <div key={dateStr} className="space-y-2">
+              <div key={dateStr} className="space-y-1.5">
                 {/* Data Header */}
-                <p className="text-xs font-extrabold text-muted-foreground uppercase tracking-wider capitalize px-1 flex items-center gap-2">
+                <p className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider capitalize px-1 flex items-center gap-2">
                   <span>{dateFormatted}</span>
                   <span className="w-full h-px bg-border/40" />
                 </p>
 
-                {/* Lista de Transações no Dia */}
+                {/* Lista de Transações */}
                 <div className="glass-card divide-y divide-border/40 overflow-hidden">
                   {items.map((t) => {
                     const badge = getCategoryBadge(t.descricao, t.categoria);
@@ -230,53 +224,53 @@ export function AppleFinanceView({
                     return (
                       <div
                         key={t.id}
-                        className="p-4 flex items-center justify-between gap-4 hover:bg-muted/30 transition-colors group"
+                        className="p-3 flex items-center justify-between gap-3 hover:bg-muted/30 transition-colors group"
                       >
                         {/* Esquerda: Ícone & Detalhes */}
-                        <div className="flex items-center gap-3.5 min-w-0">
-                          <div className={`w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 ${badge.color}`}>
-                            <Icon size={20} />
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${badge.color}`}>
+                            <Icon size={16} />
                           </div>
                           <div className="min-w-0">
-                            <div className="flex items-center gap-2">
-                              <h4 className="text-sm font-extrabold text-foreground truncate">{t.descricao}</h4>
+                            <div className="flex items-center gap-1.5">
+                              <h4 className="text-xs font-extrabold text-foreground truncate">{t.descricao}</h4>
                               {t.is_recorrente && (
-                                <span className="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-amber-500/10 text-[#FCA311] border border-amber-500/20 shrink-0">
-                                  🔁 Recorrente
+                                <span className="text-[8px] font-extrabold px-1.5 py-0.2 rounded bg-amber-500/10 text-[#FCA311] border border-amber-500/20 shrink-0">
+                                  Recorrente
                                 </span>
                               )}
                             </div>
-                            <span className="text-[11px] font-semibold text-muted-foreground block truncate mt-0.5">
+                            <span className="text-[10px] font-semibold text-muted-foreground block truncate">
                               {badge.label}
                             </span>
                           </div>
                         </div>
 
                         {/* Direita: Valor & Ações */}
-                        <div className="flex items-center gap-3 shrink-0">
+                        <div className="flex items-center gap-2 shrink-0">
                           <span
                             className={cn(
-                              "text-sm font-black tracking-tight",
+                              "text-xs font-black tracking-tight",
                               isIncome ? "text-emerald-500" : "text-foreground"
                             )}
                           >
                             {isIncome ? "+" : "-"} {formatBRL(t.valor)}
                           </span>
 
-                          <div className="flex items-center gap-1 opacity-70 group-hover:opacity-100 transition-opacity">
+                          <div className="flex items-center gap-0.5 opacity-70 group-hover:opacity-100 transition-opacity">
                             <button
                               onClick={() => onEditTransaction(t)}
-                              className="p-1.5 rounded-lg bg-muted hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
+                              className="p-1 rounded-md bg-muted hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
                               title="Editar"
                             >
-                              <Edit3 size={14} />
+                              <Edit3 size={12} />
                             </button>
                             <button
                               onClick={() => onDeleteTransaction(t.id)}
-                              className="p-1.5 rounded-lg bg-muted hover:bg-red-500/10 text-muted-foreground hover:text-red-500 transition-colors"
+                              className="p-1 rounded-md bg-muted hover:bg-red-500/10 text-muted-foreground hover:text-red-500 transition-colors"
                               title="Excluir"
                             >
-                              <Trash2 size={14} />
+                              <Trash2 size={12} />
                             </button>
                           </div>
                         </div>
