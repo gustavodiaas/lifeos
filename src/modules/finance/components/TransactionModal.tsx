@@ -82,7 +82,7 @@ export function TransactionModal({ open, onClose, onSave, defaultDate, editingTr
   };
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-[200] flex items-end sm:items-center justify-center p-0 sm:p-4 fade-in">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-[300] flex items-end sm:items-center justify-center p-0 sm:p-4 fade-in">
       <div className="bg-card w-full max-w-sm rounded-t-[28px] sm:rounded-[28px] shadow-2xl border border-border overflow-hidden slide-up">
         <div className="flex items-center justify-between p-6 border-b border-border/60">
           <h2 className="text-base font-extrabold text-foreground tracking-tight">
