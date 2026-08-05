@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { useRef, useEffect, useState } from "react";
 import { useAuthContext } from "@/context/AuthContext";
 import { supabase } from "@/lib/supabase";
+import { CustomDatePicker } from "@/components/ui/CustomDatePicker";
 import {
   User,
   Camera,
@@ -339,15 +340,10 @@ function SettingsPage() {
                 </div>
 
                 <div>
-                  <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
-                    <Calendar size={14} className="text-blue-500" />
-                    Data de Aniversário
-                  </label>
-                  <input
-                    type="date"
+                  <CustomDatePicker
+                    label="Data de Aniversário"
                     value={birthDate}
-                    onChange={(e) => setBirthDate(e.target.value)}
-                    className="input-ios"
+                    onChange={setBirthDate}
                   />
                 </div>
 
