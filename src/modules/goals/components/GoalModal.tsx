@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import type { Goal, GoalScope, Habit } from "@/db/schema";
-import { X, Save, Target, Repeat, Calendar, Sparkles } from "lucide-react";
+import { X, Save, Target, Repeat, Calendar } from "lucide-react";
+import { CustomSelect } from "@/components/ui/CustomSelect";
 
 interface GoalModalProps {
   open: boolean;
@@ -58,6 +59,11 @@ export function GoalModal({
 
   if (!open) return null;
 
+  const habitOptions = [
+    { value: "", label: "Nenhum Hábito Vinculado" },
+    ...habits.map((h) => ({ value: h.id, label: h.name })),
+  ];
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim()) return;
@@ -69,7 +75,7 @@ export function GoalModal({
       target: Number(target) || 100,
       unit: unit.trim() || "%",
       progress: Number(progress) || 0,
-      linkedHabitId,
+      linkedHabitId: linkedHabitId || null,
     });
   };
 
@@ -124,7 +130,7 @@ export function GoalModal({
                 onClick={() => { setScope("year"); setPeriod(`${currentYear}`); }}
                 className={`py-2.5 px-3 rounded-xl border-2 font-bold text-xs transition-all ${
                   scope === "year"
-                    ? "border-[#FCA311] bg-[#FCA311]/15 text-[#FCA311]"
+                    ? "border-[#FCA311] bg-[#FCA311]/15 text-[#FCA311] font-extrabold"
                     : "border-border/60 bg-muted/30 text-muted-foreground hover:bg-muted"
                 }`}
               >
@@ -136,7 +142,7 @@ export function GoalModal({
                 onClick={() => { setScope("quarter"); setPeriod(`${currentYear}-Q1`); }}
                 className={`py-2.5 px-3 rounded-xl border-2 font-bold text-xs transition-all ${
                   scope === "quarter"
-                    ? "border-[#FCA311] bg-[#FCA311]/15 text-[#FCA311]"
+                    ? "border-[#FCA311] bg-[#FCA311]/15 text-[#FCA311] font-extrabold"
                     : "border-border/60 bg-muted/30 text-muted-foreground hover:bg-muted"
                 }`}
               >
@@ -148,7 +154,7 @@ export function GoalModal({
                 onClick={() => { setScope("month"); setPeriod(`${currentYear}-08`); }}
                 className={`py-2.5 px-3 rounded-xl border-2 font-bold text-xs transition-all ${
                   scope === "month"
-                    ? "border-[#FCA311] bg-[#FCA311]/15 text-[#FCA311]"
+                    ? "border-[#FCA311] bg-[#FCA311]/15 text-[#FCA311] font-extrabold"
                     : "border-border/60 bg-muted/30 text-muted-foreground hover:bg-muted"
                 }`}
               >
@@ -218,25 +224,19 @@ export function GoalModal({
             />
           </div>
 
-          {/* Vínculo com Hábito */}
+          {/* Vínculo com Hábito (CustomSelect) */}
           {habits.length > 0 && (
             <div>
               <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5 flex items-center gap-1 ml-1">
                 <Repeat size={13} className="text-[#FCA311]" />
                 Vincular a um Hábito (Opcional)
               </label>
-              <select
+              <CustomSelect
+                options={habitOptions}
                 value={linkedHabitId || ""}
-                onChange={(e) => setLinkedHabitId(e.target.value || null)}
-                className="input-ios text-sm font-semibold"
-              >
-                <option value="">Nenhum Hábito Vinculado</option>
-                {habits.map((h) => (
-                  <option key={h.id} value={h.id}>
-                    {h.name}
-                  </option>
-                ))}
-              </select>
+                onChange={(val) => setLinkedHabitId(val || null)}
+                placeholder="Selecione um Hábito..."
+              />
             </div>
           )}
 
