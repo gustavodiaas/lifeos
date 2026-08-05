@@ -163,8 +163,9 @@ function AuthGuard() {
 
   if (loading) {
     return (
-      <div className="h-[100dvh] flex items-center justify-center bg-white dark:bg-[#0a1128] text-sm text-gray-400 font-bold transition-colors">
-        Sincronizando...
+      <div className="h-[100dvh] flex flex-col items-center justify-center bg-[#14213D] text-white gap-3 select-none">
+        <div className="w-8 h-8 border-3 border-[#FCA311] border-t-transparent rounded-full animate-spin" />
+        <span className="text-xs font-semibold text-gray-400 tracking-wide">Sincronizando...</span>
       </div>
     );
   }
