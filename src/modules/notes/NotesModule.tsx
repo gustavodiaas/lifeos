@@ -1,7 +1,8 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { db, newId, nowIso } from "@/db";
-import type { Note, Folder } from "@/db/schema";
+import type { Note, Folder, Metric } from "@/db/schema";
 import { FocusTimer } from "./components/FocusTimer";
+import { StudyHeatmap } from "./components/StudyHeatmap";
 import { FolderSidebar } from "./components/FolderSidebar";
 import { NoteEditor } from "./components/NoteEditor";
 import { BacklinksPanel } from "./components/BacklinksPanel";
@@ -12,6 +13,7 @@ import { toast } from "sonner";
 export function NotesModule() {
   const [notes, setNotes] = useState<Note[]>([]);
   const [folders, setFolders] = useState<Folder[]>([]);
+  const [metrics, setMetrics] = useState<Metric[]>([]);
   const [loading, setLoading] = useState(true);
 
   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
@@ -24,17 +26,19 @@ export function NotesModule() {
     id: null,
   });
 
-  // Carrega notas e pastas do IndexedDB
+  // Carrega notas, pastas e métricas de estudo do IndexedDB
   const loadData = useCallback(async () => {
     try {
       setLoading(true);
       const d = db();
-      const [allNotes, allFolders] = await Promise.all([
+      const [allNotes, allFolders, allMetrics] = await Promise.all([
         d.notes.filter((n) => !n.deletedAt).toArray(),
         d.folders.toArray(),
+        d.metrics.filter((m) => m.key === "study_hours").toArray(),
       ]);
       setNotes(allNotes);
       setFolders(allFolders);
+      setMetrics(allMetrics);
 
       if (allNotes.length > 0 && !selectedNoteId) {
         setSelectedNoteId(allNotes[0].id);
@@ -164,11 +168,14 @@ export function NotesModule() {
       {/* ── 1. Top Header: Relógio de Foco Pomodoro ─────────────────────── */}
       <FocusTimer
         onSessionComplete={() => {
-          // Atualiza qualquer estatística se necessário
+          loadData();
         }}
       />
 
-      {/* ── 2. Hub Principal de Conhecimento (Sidebar + Editor + Backlinks) ── */}
+      {/* ── 2. Heatmap Anual de Horas de Estudo ─────────────────────────── */}
+      <StudyHeatmap metrics={metrics} />
+
+      {/* ── 3. Hub Principal de Conhecimento (Sidebar + Editor + Backlinks) ── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 min-h-[600px]">
 
         {/* Coluna 1: Sidebar de Pastas & Notas (3 Colunas) */}
