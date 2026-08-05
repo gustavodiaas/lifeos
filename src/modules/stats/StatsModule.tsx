@@ -324,6 +324,7 @@ export function StatsModule() {
               </div>
             )}
           </div>
+        </div>
       </div>
 
       {/* ── 3.5 Gráficos de Tendência (Recharts) ────────────────────────── */}
