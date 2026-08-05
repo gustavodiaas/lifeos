@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import type { Task, Project, TaskPriority, TaskStatus, ChecklistItem } from "@/db/schema";
-import { X, Save, Plus, Trash2, CheckSquare, Calendar, Folder, AlertCircle } from "lucide-react";
+import { X, Save, Plus, Trash2, CheckSquare, Calendar, Folder } from "lucide-react";
 import { newId } from "@/db";
+import { CustomSelect } from "@/components/ui/CustomSelect";
+import { CustomDatePicker } from "@/components/ui/CustomDatePicker";
 
 interface TaskModalProps {
   open: boolean;
@@ -61,6 +63,11 @@ export function TaskModal({
 
   if (!open) return null;
 
+  const projectOptions = [
+    { value: "", label: "Nenhum Projeto" },
+    ...projects.map((p) => ({ value: p.id, label: p.name })),
+  ];
+
   const handleAddChecklistItem = () => {
     if (!newChecklistText.trim()) return;
     const newItem: ChecklistItem = {
@@ -85,7 +92,7 @@ export function TaskModal({
       notes: notes.trim() || undefined,
       priority,
       dueDate: dueDate || null,
-      projectId,
+      projectId: projectId || null,
       status,
       checklist,
     });
@@ -142,7 +149,7 @@ export function TaskModal({
                 onClick={() => setPriority("low")}
                 className={`py-2.5 px-3 rounded-xl border-2 font-bold text-xs transition-all ${
                   priority === "low"
-                    ? "border-emerald-500 bg-emerald-500/15 text-emerald-500"
+                    ? "border-emerald-500 bg-emerald-500/15 text-emerald-500 font-extrabold"
                     : "border-border/60 bg-muted/30 text-muted-foreground hover:bg-muted"
                 }`}
               >
@@ -154,7 +161,7 @@ export function TaskModal({
                 onClick={() => setPriority("med")}
                 className={`py-2.5 px-3 rounded-xl border-2 font-bold text-xs transition-all ${
                   priority === "med"
-                    ? "border-amber-500 bg-amber-500/15 text-amber-500"
+                    ? "border-amber-500 bg-amber-500/15 text-amber-500 font-extrabold"
                     : "border-border/60 bg-muted/30 text-muted-foreground hover:bg-muted"
                 }`}
               >
@@ -166,7 +173,7 @@ export function TaskModal({
                 onClick={() => setPriority("high")}
                 className={`py-2.5 px-3 rounded-xl border-2 font-bold text-xs transition-all ${
                   priority === "high"
-                    ? "border-red-500 bg-red-500/15 text-red-500"
+                    ? "border-red-500 bg-red-500/15 text-red-500 font-extrabold"
                     : "border-border/60 bg-muted/30 text-muted-foreground hover:bg-muted"
                 }`}
               >
@@ -175,37 +182,26 @@ export function TaskModal({
             </div>
           </div>
 
-          {/* Grid de Projeto & Data Limite */}
+          {/* Grid de Projeto & Data Limite (Com componentes Apple Glass) */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5 flex items-center gap-1 ml-1">
                 <Folder size={13} className="text-[#FCA311]" />
                 Projeto
               </label>
-              <select
+              <CustomSelect
+                options={projectOptions}
                 value={projectId || ""}
-                onChange={(e) => setProjectId(e.target.value || null)}
-                className="input-ios text-sm font-semibold"
-              >
-                <option value="">Nenhum Projeto</option>
-                {projects.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.name}
-                  </option>
-                ))}
-              </select>
+                onChange={(val) => setProjectId(val || null)}
+                placeholder="Selecione um Projeto..."
+              />
             </div>
 
             <div>
-              <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5 flex items-center gap-1 ml-1">
-                <Calendar size={13} className="text-blue-500" />
-                Data de Entrega
-              </label>
-              <input
-                type="date"
+              <CustomDatePicker
+                label="Data de Entrega"
                 value={dueDate}
-                onChange={(e) => setDueDate(e.target.value)}
-                className="input-ios text-sm font-semibold"
+                onChange={setDueDate}
               />
             </div>
           </div>
