@@ -1,18 +1,24 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ModulePlaceholder } from "@/components/layout/ModulePlaceholder";
+import { AppShell } from "@/components/layout/AppShell";
+import { PageBody } from "@/components/layout/PageHeader";
+import { HabitsModule } from "@/modules/habits/HabitsModule";
 
 export const Route = createFileRoute("/habits")({
   head: () => ({
     meta: [
-      { title: "Hábitos - LifeOS" },
-      { name: "description", content: "Acompanha hábitos com consistência de 7/30/90 dias." },
+      { title: "Hábitos — LifeOS" },
+      { name: "description", content: "Acompanhe seus hábitos com o heatmap de consistência anual." },
     ],
   }),
-  component: () => (
-    <ModulePlaceholder
-      title="Hábitos"
-      description="Marque hábitos diariamente. Consistência em 7, 30 e 90 dias - sem streak como métrica principal."
-      roadmap="Chega na v0.2: criação, marcação diária, frequência personalizada e consistência por janela."
-    />
-  ),
+  component: HabitsPage,
 });
+
+function HabitsPage() {
+  return (
+    <AppShell>
+      <PageBody>
+        <HabitsModule />
+      </PageBody>
+    </AppShell>
+  );
+}
