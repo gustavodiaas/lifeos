@@ -16,6 +16,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { CommandPalette } from "./CommandPalette";
 import { MobileAppDrawer } from "./MobileAppDrawer";
 import { QuickActionFab } from "./QuickActionFab";
+import { NotificationManager } from "./NotificationManager";
 import { cn } from "@/lib/utils";
 import { useAuthContext } from "@/context/AuthContext";
 
@@ -285,6 +286,9 @@ export function AppShell({ children }: { children?: ReactNode }) {
 
       {/* Palette de Pesquisa Rápida */}
       <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} />
+
+      {/* Gerenciador Silencioso de Notificações PWA */}
+      <NotificationManager />
     </div>
   );
 }
