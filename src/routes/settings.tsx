@@ -9,6 +9,13 @@ import { useAuthContext } from "@/context/AuthContext";
 import { supabase } from "@/lib/supabase";
 import { CustomDatePicker } from "@/components/ui/CustomDatePicker";
 import {
+  getNotificationSettings,
+  saveNotificationSettings,
+  requestNotificationPermission,
+  sendBrowserNotification,
+  type NotificationSettings,
+} from "@/lib/notifications";
+import {
   User,
   Camera,
   Loader2,
@@ -60,6 +67,9 @@ function SettingsPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [updatingPassword, setUpdatingPassword] = useState(false);
   const [sendingResetEmail, setSendingResetEmail] = useState(false);
+
+  // Notificações State
+  const [notifSettings, setNotifSettings] = useState<NotificationSettings>(getNotificationSettings);
 
   // Carrega tema
   useEffect(() => {
@@ -435,6 +445,100 @@ function SettingsPage() {
                 <span className="text-xs">Sistema</span>
               </button>
             </div>
+          {/* ── 2.5 Notificações PWA & Lembretes ────────────────────────── */}
+          <section className="glass-card p-6 md:p-8 space-y-6">
+            <div className="flex items-center justify-between border-b border-border/60 pb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-[#FCA311]/15 text-[#FCA311] flex items-center justify-center shrink-0">
+                  <Sparkles size={20} />
+                </div>
+                <div>
+                  <h2 className="text-lg font-bold text-foreground">Notificações PWA & Lembretes</h2>
+                  <p className="text-xs text-muted-foreground font-medium">
+                    Receba alertas automáticos de hábitos pendentes e lembrete do diário.
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={async () => {
+                  if (!notifSettings.enabled) {
+                    const granted = await requestNotificationPermission();
+                    if (granted) {
+                      const updated = { ...notifSettings, enabled: true };
+                      setNotifSettings(updated);
+                      saveNotificationSettings(updated);
+                    }
+                  } else {
+                    const updated = { ...notifSettings, enabled: false };
+                    setNotifSettings(updated);
+                    saveNotificationSettings(updated);
+                    toast.info("Notificações desativadas.");
+                  }
+                }}
+                className={`px-4 py-2 rounded-xl text-xs font-black uppercase transition-all ${
+                  notifSettings.enabled
+                    ? "bg-emerald-500 text-white shadow-sm"
+                    : "bg-muted text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {notifSettings.enabled ? "Ativadas" : "Ativar Notificações"}
+              </button>
+            </div>
+
+            {notifSettings.enabled && (
+              <div className="space-y-4 fade-in">
+                {/* Lembrete de Hábitos */}
+                <div className="flex items-center justify-between p-3.5 rounded-2xl bg-muted/40 border border-border/50">
+                  <div>
+                    <span className="text-xs font-bold text-foreground block">Lembrete de Hábitos Pendentes</span>
+                    <span className="text-[11px] text-muted-foreground font-medium">Avisa às {notifSettings.habitsTime} se houver hábitos não concluídos</span>
+                  </div>
+                  <input
+                    type="time"
+                    value={notifSettings.habitsTime}
+                    onChange={(e) => {
+                      const updated = { ...notifSettings, habitsTime: e.target.value };
+                      setNotifSettings(updated);
+                      saveNotificationSettings(updated);
+                    }}
+                    className="input-ios py-1.5 px-3 text-xs w-28 font-bold"
+                  />
+                </div>
+
+                {/* Lembrete de Diário */}
+                <div className="flex items-center justify-between p-3.5 rounded-2xl bg-muted/40 border border-border/50">
+                  <div>
+                    <span className="text-xs font-bold text-foreground block">Lembrete do Diário Pessoal</span>
+                    <span className="text-[11px] text-muted-foreground font-medium">Lembrança para registrar a reflexão do dia às {notifSettings.journalTime}</span>
+                  </div>
+                  <input
+                    type="time"
+                    value={notifSettings.journalTime}
+                    onChange={(e) => {
+                      const updated = { ...notifSettings, journalTime: e.target.value };
+                      setNotifSettings(updated);
+                      saveNotificationSettings(updated);
+                    }}
+                    className="input-ios py-1.5 px-3 text-xs w-28 font-bold"
+                  />
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    sendBrowserNotification("LifeOS — Notificação de Teste ⚡", {
+                      body: "Seu sistema de notificações PWA está funcionando perfeitamente!",
+                    });
+                    toast.success("Notificação de teste enviada!");
+                  }}
+                  className="btn-ios text-xs py-2.5 px-4 font-bold"
+                >
+                  🔔 Enviar Notificação de Teste
+                </button>
+              </div>
+            )}
           </section>
 
           {/* ── 3. Segurança & Redefinição de Senha ───────────────────── */}
