@@ -1,4 +1,4 @@
-import { X, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { AlertCircle, CheckCircle2 } from 'lucide-react';
 
 interface Props {
   open: boolean;
@@ -14,35 +14,37 @@ export function AlertModal({ open, onClose, onConfirm, title, message, type = 'i
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 bg-[#0a1128]/60 dark:bg-black/60 backdrop-blur-sm z-[300] flex items-center justify-center p-6 transition-colors duration-300">
-      <div className="bg-white dark:bg-[#0a1128] w-full max-w-xs rounded-[32px] shadow-2xl overflow-hidden border border-transparent dark:border-gray-800 transition-colors">
-        <div className="p-8 flex flex-col items-center text-center">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-md z-[300] flex items-center justify-center p-6 transition-all duration-300 fade-in">
+      <div className="bg-white/90 dark:bg-[#14213D]/90 backdrop-blur-xl w-full max-w-xs rounded-[28px] shadow-2xl overflow-hidden border border-black/5 dark:border-white/10 transition-colors slide-up">
+        <div className="p-7 flex flex-col items-center text-center">
           <div
-            className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 transition-colors ${
+            className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-4 transition-colors ${
               type === 'danger'
-                ? 'bg-red-50 dark:bg-red-500/10 text-red-500'
-                : 'bg-orange-50 dark:bg-orange-500/10 text-[#ff4d00]'
+                ? 'bg-red-500/10 text-red-500'
+                : 'bg-[#FCA311]/15 text-[#FCA311]'
             }`}
           >
-            {type === 'danger' ? <AlertCircle size={32} /> : <CheckCircle2 size={32} />}
+            {type === 'danger' ? <AlertCircle size={28} /> : <CheckCircle2 size={28} />}
           </div>
 
-          <h3 className="text-xl font-black text-[#0a1128] dark:text-white tracking-tighter mb-2 transition-colors">
+          <h3 className="text-lg font-bold text-foreground tracking-tight mb-2">
             {title}
           </h3>
-          <p className="text-sm font-bold text-gray-400 dark:text-gray-500 leading-relaxed mb-8 transition-colors">
+          <p className="text-xs font-medium text-muted-foreground leading-relaxed mb-6">
             {message}
           </p>
 
-          <div className="flex flex-col w-full gap-3">
+          <div className="flex flex-col w-full gap-2.5">
             {onConfirm && (
               <button
                 onClick={() => {
                   onConfirm();
                   onClose();
                 }}
-                className={`w-full py-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all active:scale-95 ${
-                  type === 'danger' ? 'bg-red-500 text-white' : 'bg-[#ff4d00] text-white'
+                className={`w-full py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all ios-spring ${
+                  type === 'danger'
+                    ? 'bg-red-500 text-white shadow-md shadow-red-500/20'
+                    : 'bg-[#FCA311] text-black shadow-md shadow-[#FCA311]/30'
                 }`}
               >
                 {confirmText || 'Confirmar'}
@@ -50,7 +52,7 @@ export function AlertModal({ open, onClose, onConfirm, title, message, type = 'i
             )}
             <button
               onClick={onClose}
-              className="w-full py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest text-gray-400 dark:text-gray-600 hover:text-gray-600 dark:hover:text-gray-400 transition-colors"
+              className="w-full py-3 rounded-xl font-semibold text-xs text-muted-foreground hover:text-foreground transition-colors"
             >
               {onConfirm ? 'Cancelar' : 'Fechar'}
             </button>
