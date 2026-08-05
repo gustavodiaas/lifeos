@@ -1,7 +1,8 @@
-import { useState, useMemo, useCallback, useEffect } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useAuthContext } from '@/context/AuthContext';
 import { useLancamentos } from '@/hooks/useLancamentos';
 import { supabase } from '@/lib/supabase';
+import { AppleFinanceView } from './components/AppleFinanceView';
 import { SpreadsheetTable } from './components/SpreadsheetTable';
 import { MonthSummary } from './components/MonthSummary';
 import { HorizonView } from './components/HorizonView';
@@ -27,6 +28,7 @@ import {
   Layers,
   AlertCircle,
   X,
+  Table,
 } from 'lucide-react';
 
 // Toast de erro simples
@@ -49,7 +51,7 @@ function ErrorToast({ message, onClose }: { message: string; onClose: () => void
   );
 }
 
-type Tab = 'saldos' | 'totais' | 'tags' | 'horizon';
+type Tab = 'extrato' | 'planilha' | 'totais' | 'tags' | 'horizon';
 
 export function FinanceModule() {
   const { user } = useAuthContext();
@@ -59,7 +61,7 @@ export function FinanceModule() {
   const now = new Date();
   const [month, setMonth] = useState(now.getMonth());
   const [year, setYear] = useState(now.getFullYear());
-  const [activeTab, setActiveTab] = useState<Tab>('saldos');
+  const [activeTab, setActiveTab] = useState<Tab>('extrato');
   const [modalOpen, setModalOpen] = useState(false);
   const [editingLancamento, setEditingLancamento] = useState<Lancamento | null>(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
@@ -171,6 +173,11 @@ export function FinanceModule() {
   const today = new Date().toISOString().slice(0, 10);
   const defaultDate = `${year}-${String(month + 1).padStart(2, '0')}-01`;
 
+  // Cálculos do Apple Card
+  const totalIncome = rawForMonth.filter((t) => t.tipo === 'entrada').reduce((s, t) => s + t.valor, 0);
+  const totalExpense = rawForMonth.filter((t) => t.tipo === 'saida').reduce((s, t) => s + t.valor, 0);
+  const netBalance = totalIncome - totalExpense;
+
   return (
     <div className="flex flex-col h-full relative space-y-4 pb-12">
       {toastMessage && (
@@ -198,18 +205,18 @@ export function FinanceModule() {
           </button>
         </div>
 
-        {/* Pílulas de Abas do Módulo (Saldos, Totais, Tags, Horizonte) */}
+        {/* Pílulas de Abas do Módulo (Extrato, Totais, Tags, Horizonte, Planilha) */}
         <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto pb-1 sm:pb-0">
           <button
-            onClick={() => setActiveTab('saldos')}
+            onClick={() => setActiveTab('extrato')}
             className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
-              activeTab === 'saldos'
+              activeTab === 'extrato'
                 ? 'bg-[#FCA311] text-black shadow-sm font-extrabold'
                 : 'bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground'
             }`}
           >
             <Wallet size={14} />
-            <span>Saldos</span>
+            <span>Extrato</span>
           </button>
 
           <button
@@ -245,7 +252,19 @@ export function FinanceModule() {
             }`}
           >
             <LayoutGrid size={14} />
-            <span>Horizonte</span>
+            <span>Previsão</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('planilha')}
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+              activeTab === 'planilha'
+                ? 'bg-[#FCA311] text-black shadow-sm font-extrabold'
+                : 'bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground'
+            }`}
+          >
+            <Table size={14} />
+            <span>Planilha</span>
           </button>
 
           <button
@@ -254,7 +273,7 @@ export function FinanceModule() {
               setModalError(null);
               setModalOpen(true);
             }}
-            className="btn-ios text-xs py-1.5 px-3.5 ml-2"
+            className="btn-ios text-xs py-1.5 px-3.5 ml-2 shrink-0"
           >
             <Plus size={14} />
             <span>Novo</span>
@@ -262,10 +281,10 @@ export function FinanceModule() {
         </div>
       </div>
 
-      {/* Conteúdo */}
+      {/* Conteúdo Principal */}
       <div className="flex-1 overflow-y-auto space-y-6">
-        {!loading && lancamentos.length > 0 && (
-          <FinanceChart transactions={lancamentos} />
+        {!loading && rawForMonth.length > 0 && activeTab !== 'extrato' && (
+          <FinanceChart transactions={rawForMonth} />
         )}
 
         {loading ? (
@@ -275,7 +294,22 @@ export function FinanceModule() {
           </div>
         ) : (
           <>
-            {activeTab === 'saldos' && (
+            {activeTab === 'extrato' && (
+              <AppleFinanceView
+                transactions={rawForMonth}
+                income={totalIncome}
+                expense={totalExpense}
+                balance={netBalance}
+                onNewTransaction={() => {
+                  setEditingLancamento(null);
+                  setModalError(null);
+                  setModalOpen(true);
+                }}
+                onEditTransaction={handleOpenEdit}
+                onDeleteTransaction={handleRemoveClick}
+              />
+            )}
+            {activeTab === 'planilha' && (
               <SpreadsheetTable rows={rows} today={today} onDelete={handleRemoveClick} onEdit={handleOpenEdit} />
             )}
             {activeTab === 'horizon' && (
