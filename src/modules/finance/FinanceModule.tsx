@@ -31,7 +31,6 @@ import {
   Table,
 } from 'lucide-react';
 
-// Toast de erro simples
 function ErrorToast({ message, onClose }: { message: string; onClose: () => void }) {
   useEffect(() => {
     const t = setTimeout(onClose, 4000);
@@ -179,91 +178,105 @@ export function FinanceModule() {
   const netBalance = totalIncome - totalExpense;
 
   return (
-    <div className="flex flex-col h-full relative space-y-4 pb-12">
+    <div className="flex flex-col h-full relative space-y-3 pb-10">
       {toastMessage && (
         <ErrorToast message={toastMessage} onClose={() => setToastMessage(null)} />
       )}
 
-      {/* Header do módulo com Seleção de Mês e Pílulas de Navegação */}
-      <div className="glass-card p-4 flex flex-col sm:flex-row items-center justify-between gap-4 sticky top-0 z-10">
-        {/* Navegação de mês */}
-        <div className="flex items-center gap-3">
+      {/* Header Compacto do módulo de Finanças */}
+      <div className="glass-card p-3 flex flex-col sm:flex-row items-center justify-between gap-2.5 sticky top-0 z-10">
+        {/* Navegação de Mês Compacta */}
+        <div className="flex items-center justify-between w-full sm:w-auto gap-2">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={prevMonth}
+              className="p-1 rounded-lg bg-muted/60 hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <ChevronLeft size={16} strokeWidth={2.5} />
+            </button>
+            <span className="text-sm font-black tracking-tight text-foreground min-w-[65px] text-center capitalize">
+              {formatMonthLabel(year, month)}
+            </span>
+            <button
+              onClick={nextMonth}
+              className="p-1 rounded-lg bg-muted/60 hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <ChevronRight size={16} strokeWidth={2.5} />
+            </button>
+          </div>
+
           <button
-            onClick={prevMonth}
-            className="p-1.5 rounded-xl bg-muted/60 hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+            onClick={() => {
+              setEditingLancamento(null);
+              setModalError(null);
+              setModalOpen(true);
+            }}
+            className="sm:hidden btn-ios text-xs py-1 px-3"
           >
-            <ChevronLeft size={18} strokeWidth={2.5} />
-          </button>
-          <span className="text-base font-black tracking-tight text-foreground min-w-[70px] text-center capitalize">
-            {formatMonthLabel(year, month)}
-          </span>
-          <button
-            onClick={nextMonth}
-            className="p-1.5 rounded-xl bg-muted/60 hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <ChevronRight size={18} strokeWidth={2.5} />
+            <Plus size={14} />
+            <span>Novo</span>
           </button>
         </div>
 
-        {/* Pílulas de Abas do Módulo (Extrato, Totais, Tags, Horizonte, Planilha) */}
-        <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto pb-1 sm:pb-0">
+        {/* Pílulas de Sub-telas Compactas (Extrato, Totais, Tags, Previsão, Planilha) */}
+        <div className="flex items-center gap-1 overflow-x-auto w-full sm:w-auto pb-0.5 sm:pb-0">
           <button
             onClick={() => setActiveTab('extrato')}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+            className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all flex items-center gap-1 shrink-0 ${
               activeTab === 'extrato'
                 ? 'bg-[#FCA311] text-black shadow-sm font-extrabold'
                 : 'bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground'
             }`}
           >
-            <Wallet size={14} />
+            <Wallet size={13} />
             <span>Extrato</span>
           </button>
 
           <button
             onClick={() => setActiveTab('totais')}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+            className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all flex items-center gap-1 shrink-0 ${
               activeTab === 'totais'
                 ? 'bg-[#FCA311] text-black shadow-sm font-extrabold'
                 : 'bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground'
             }`}
           >
-            <PieChart size={14} />
+            <PieChart size={13} />
             <span>Totais</span>
           </button>
 
           <button
             onClick={() => setActiveTab('tags')}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+            className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all flex items-center gap-1 shrink-0 ${
               activeTab === 'tags'
                 ? 'bg-[#FCA311] text-black shadow-sm font-extrabold'
                 : 'bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground'
             }`}
           >
-            <Layers size={14} />
+            <Layers size={13} />
             <span>Tags</span>
           </button>
 
           <button
             onClick={() => setActiveTab('horizon')}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+            className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all flex items-center gap-1 shrink-0 ${
               activeTab === 'horizon'
                 ? 'bg-[#FCA311] text-black shadow-sm font-extrabold'
                 : 'bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground'
             }`}
           >
-            <LayoutGrid size={14} />
+            <LayoutGrid size={13} />
             <span>Previsão</span>
           </button>
 
           <button
             onClick={() => setActiveTab('planilha')}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+            className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all flex items-center gap-1 shrink-0 ${
               activeTab === 'planilha'
                 ? 'bg-[#FCA311] text-black shadow-sm font-extrabold'
                 : 'bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground'
             }`}
           >
-            <Table size={14} />
+            <Table size={13} />
             <span>Planilha</span>
           </button>
 
@@ -273,7 +286,7 @@ export function FinanceModule() {
               setModalError(null);
               setModalOpen(true);
             }}
-            className="btn-ios text-xs py-1.5 px-3.5 ml-2 shrink-0"
+            className="hidden sm:flex btn-ios text-xs py-1 px-3 ml-2 shrink-0"
           >
             <Plus size={14} />
             <span>Novo</span>
@@ -282,14 +295,14 @@ export function FinanceModule() {
       </div>
 
       {/* Conteúdo Principal */}
-      <div className="flex-1 overflow-y-auto space-y-6">
+      <div className="flex-1 overflow-y-auto space-y-4">
         {!loading && rawForMonth.length > 0 && activeTab !== 'extrato' && (
           <FinanceChart transactions={rawForMonth} />
         )}
 
         {loading ? (
-          <div className="py-20 text-center">
-            <div className="w-6 h-6 border-2 border-[#FCA311] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+          <div className="py-16 text-center">
+            <div className="w-5 h-5 border-2 border-[#FCA311] border-t-transparent rounded-full animate-spin mx-auto mb-2" />
             <p className="text-xs text-muted-foreground">Sincronizando...</p>
           </div>
         ) : (
