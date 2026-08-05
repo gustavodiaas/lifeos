@@ -10,11 +10,12 @@ import {
   BarChart3,
   Settings,
   Search,
-  ChevronRight,
-  ShieldCheck,
+  Grid,
 } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { CommandPalette } from "./CommandPalette";
+import { MobileAppDrawer } from "./MobileAppDrawer";
+import { QuickActionFab } from "./QuickActionFab";
 import { cn } from "@/lib/utils";
 import { useAuthContext } from "@/context/AuthContext";
 
@@ -32,13 +33,12 @@ const NAV_MODULES = [
   { to: "/stats", label: "Estatísticas", icon: BarChart3 },
 ] as const;
 
-// Tab bar no mobile — 5 itens mais usados
+// Tab bar no mobile — 4 mais usados + "Mais" (App Sheet)
 const TAB_NAV = [
   { to: "/", label: "Painel", icon: LayoutDashboard },
   { to: "/habits", label: "Hábitos", icon: Repeat },
   { to: "/finance", label: "Finanças", icon: Wallet },
   { to: "/tasks", label: "Tarefas", icon: CheckSquare },
-  { to: "/settings", label: "Ajustes", icon: Settings },
 ] as const;
 
 const PAGE_TITLES: Record<string, string> = {
@@ -55,6 +55,7 @@ const PAGE_TITLES: Record<string, string> = {
 
 export function AppShell({ children }: { children?: ReactNode }) {
   const [paletteOpen, setPaletteOpen] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const { user } = useAuthContext();
 
@@ -76,7 +77,7 @@ export function AppShell({ children }: { children?: ReactNode }) {
   return (
     <div className="flex h-[100dvh] w-full bg-background text-foreground overflow-hidden">
 
-      {/* ── Desktop Sidebar — macOS/iPadOS Style ─────────────────────── */}
+      {/* ── Desktop Sidebar — macOS Style ───────────────────────────── */}
       <aside className="hidden md:flex w-64 shrink-0 flex-col glass-panel border-r border-[var(--glass-border)] select-none">
         {/* Header / Brand */}
         <div className="px-5 pt-6 pb-4">
@@ -227,10 +228,13 @@ export function AppShell({ children }: { children?: ReactNode }) {
         </header>
 
         {/* Page body content */}
-        <div className="flex-1 min-w-0 overflow-y-auto pb-[calc(env(safe-area-inset-bottom)+72px)] md:pb-0">
+        <div className="flex-1 min-w-0 overflow-y-auto pb-[calc(env(safe-area-inset-bottom)+76px)] md:pb-0">
           {children ?? <Outlet />}
         </div>
       </main>
+
+      {/* ── Mobile Quick Action FAB (+ Botão Flutuante) ─────────────── */}
+      <QuickActionFab />
 
       {/* ── Mobile Tab Bar — iOS Style ──────────────────────────────── */}
       <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 glass-panel border-t border-[var(--glass-border)]">
@@ -262,9 +266,24 @@ export function AppShell({ children }: { children?: ReactNode }) {
               </li>
             );
           })}
+
+          {/* Botão "Mais" que abre o App Sheet iOS */}
+          <li>
+            <button
+              onClick={() => setDrawerOpen(true)}
+              className="flex flex-col items-center gap-1 pt-3 pb-1 px-3 transition-all ios-spring select-none text-muted-foreground hover:text-foreground"
+            >
+              <Grid className="h-6 w-6" strokeWidth={1.75} />
+              <span className="text-[10px] font-semibold tracking-tight">Mais</span>
+            </button>
+          </li>
         </ul>
       </nav>
 
+      {/* Drawer de Todos os Apps */}
+      <MobileAppDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
+
+      {/* Palette de Pesquisa Rápida */}
       <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} />
     </div>
   );
