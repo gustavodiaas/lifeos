@@ -89,13 +89,13 @@ export function TransactionModal({ open, onClose, onSave, defaultDate, editingTr
             </p>
             <button
               onClick={() => { onSave(pendingData, 'one'); }}
-              className="w-full py-4 bg-gray-50 dark:bg-[#111827] rounded-2xl font-black text-sm text-[#0a1128] dark:text-white border-2 border-transparent hover:border-[#ff4d00] transition-all"
+              className="w-full py-4 bg-gray-50 dark:bg-[#111827] rounded-2xl font-black text-sm text-[#0a1128] dark:text-white border-2 border-transparent hover:border-[#FCA311] transition-all"
             >
               Só este mês
             </button>
             <button
               onClick={() => { onSave(pendingData, 'all'); }}
-              className="w-full py-4 bg-[#ff4d00] text-white rounded-2xl font-black text-sm active:scale-95 transition-all"
+              className="w-full py-4 bg-[#FCA311] text-white rounded-2xl font-black text-sm active:scale-95 transition-all"
             >
               Todos os futuros
             </button>
@@ -147,7 +147,7 @@ export function TransactionModal({ open, onClose, onSave, defaultDate, editingTr
                     value={valor}
                     onChange={(e) => handleValorChange(e.target.value)}
                     placeholder="0,00"
-                    className="w-full p-4 bg-gray-50 dark:bg-[#111827] border-2 border-transparent focus:border-[#ff4d00] dark:focus:border-[#ff4d00] rounded-2xl text-2xl font-black outline-none transition-all text-[#0a1128] dark:text-white"
+                    className="w-full p-4 bg-gray-50 dark:bg-[#111827] border-2 border-transparent focus:border-[#FCA311] dark:focus:border-[#FCA311] rounded-2xl text-2xl font-black outline-none transition-all text-[#0a1128] dark:text-white"
                     required
                   />
                 </div>
@@ -159,7 +159,7 @@ export function TransactionModal({ open, onClose, onSave, defaultDate, editingTr
                     value={descricao}
                     onChange={(e) => setDescricao(e.target.value)}
                     placeholder="Ex: Aluguel, Mercado..."
-                    className="w-full p-4 bg-gray-50 dark:bg-[#111827] border-2 border-transparent focus:border-[#ff4d00] rounded-2xl text-sm font-bold outline-none transition-all text-[#0a1128] dark:text-white"
+                    className="w-full p-4 bg-gray-50 dark:bg-[#111827] border-2 border-transparent focus:border-[#FCA311] rounded-2xl text-sm font-bold outline-none transition-all text-[#0a1128] dark:text-white"
                     required
                   />
                 </div>
@@ -170,7 +170,7 @@ export function TransactionModal({ open, onClose, onSave, defaultDate, editingTr
                     type="date"
                     value={data}
                     onChange={(e) => setData(e.target.value)}
-                    className="w-full h-[58px] px-4 bg-gray-50 dark:bg-[#111827] border-2 border-transparent focus:border-[#ff4d00] rounded-2xl text-sm font-bold outline-none transition-all text-[#0a1128] dark:text-white appearance-none"
+                    className="w-full h-[58px] px-4 bg-gray-50 dark:bg-[#111827] border-2 border-transparent focus:border-[#FCA311] rounded-2xl text-sm font-bold outline-none transition-all text-[#0a1128] dark:text-white appearance-none"
                     required
                   />
                 </div>
@@ -178,13 +178,13 @@ export function TransactionModal({ open, onClose, onSave, defaultDate, editingTr
                 <button
                   type="button"
                   onClick={() => setIsRecorrente(!isRecorrente)}
-                  className={`w-full p-4 rounded-2xl flex items-center justify-between border-2 transition-all ${isRecorrente ? 'bg-orange-50 dark:bg-orange-500/10 border-[#ff4d00] text-[#ff4d00]' : 'bg-gray-50 dark:bg-[#111827] border-transparent text-gray-400 dark:text-gray-500'}`}
+                  className={`w-full p-4 rounded-2xl flex items-center justify-between border-2 transition-all ${isRecorrente ? 'bg-orange-50 dark:bg-orange-500/10 border-[#FCA311] text-[#FCA311]' : 'bg-gray-50 dark:bg-[#111827] border-transparent text-gray-400 dark:text-gray-500'}`}
                 >
                   <div className="flex items-center gap-3">
                     <Repeat size={20} strokeWidth={isRecorrente ? 3 : 2} />
                     <span className="text-[10px] font-black uppercase tracking-widest">Lançamento Fixo Mensal</span>
                   </div>
-                  <div className={`w-4 h-4 rounded-full border-2 ${isRecorrente ? 'bg-[#ff4d00] border-[#ff4d00]' : 'border-gray-300 dark:border-gray-600'}`} />
+                  <div className={`w-4 h-4 rounded-full border-2 ${isRecorrente ? 'bg-[#FCA311] border-[#FCA311]' : 'border-gray-300 dark:border-gray-600'}`} />
                 </button>
 
                 {tipo === 'saida' && (
@@ -193,7 +193,7 @@ export function TransactionModal({ open, onClose, onSave, defaultDate, editingTr
                     <select
                       value={categoria}
                       onChange={(e) => setCategoria(e.target.value)}
-                      className="w-full p-4 bg-gray-50 dark:bg-[#111827] border-2 border-transparent focus:border-[#ff4d00] rounded-2xl text-sm font-bold outline-none transition-all appearance-none text-[#0a1128] dark:text-white"
+                      className="w-full p-4 bg-gray-50 dark:bg-[#111827] border-2 border-transparent focus:border-[#FCA311] rounded-2xl text-sm font-bold outline-none transition-all appearance-none text-[#0a1128] dark:text-white"
                     >
                       <option value="diario">Gasto Diário (Variável)</option>
                       <option value="fixo">Custo Fixo (Essencial)</option>
@@ -212,7 +212,7 @@ export function TransactionModal({ open, onClose, onSave, defaultDate, editingTr
 
               <button
                 type="submit"
-                className="w-full py-5 bg-[#ff4d00] text-white rounded-2xl font-black text-sm uppercase tracking-widest active:scale-95 transition-all shadow-lg shadow-orange-500/30 flex items-center justify-center gap-2"
+                className="w-full py-5 bg-[#FCA311] text-white rounded-2xl font-black text-sm uppercase tracking-widest active:scale-95 transition-all shadow-lg shadow-orange-500/30 flex items-center justify-center gap-2"
               >
                 <Save size={18} />
                 {editingTransaction ? 'Atualizar Dados' : 'Confirmar Lançamento'}
