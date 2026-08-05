@@ -7,12 +7,10 @@ import {
   Edit2,
   Folder as FolderIcon,
   Tag,
-  Share2,
-  Clock,
   Sparkles,
-  Check,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { CustomSelect } from "@/components/ui/CustomSelect";
 
 interface NoteEditorProps {
   note: Note | null;
@@ -56,6 +54,11 @@ export function NoteEditor({ note, folders, onSave, onDelete }: NoteEditorProps)
     );
   }
 
+  const folderOptions = [
+    { value: "", label: "Sem Pasta (Raiz)" },
+    ...folders.map((f) => ({ value: f.id, label: `📁 ${f.name}` })),
+  ];
+
   const handleSave = () => {
     const tagsArray = tagsInput
       .split(",")
@@ -66,7 +69,7 @@ export function NoteEditor({ note, folders, onSave, onDelete }: NoteEditorProps)
       id: note.id,
       title: title.trim() || "Nota Sem Título",
       content,
-      folderId,
+      folderId: folderId || null,
       tags: tagsArray,
     });
   };
@@ -119,21 +122,14 @@ export function NoteEditor({ note, folders, onSave, onDelete }: NoteEditorProps)
 
       {/* ── Action Toolbar ────────────────────────────────────────── */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border/60 pb-3">
-        {/* Folder Selector */}
-        <div className="flex items-center gap-2">
-          <FolderIcon size={16} className="text-[#FCA311]" />
-          <select
+        {/* Custom Folder Select */}
+        <div className="w-56">
+          <CustomSelect
+            options={folderOptions}
             value={folderId || ""}
-            onChange={(e) => setFolderId(e.target.value || null)}
-            className="bg-muted text-foreground text-xs font-bold px-3 py-1.5 rounded-xl border border-border/50 outline-none"
-          >
-            <option value="">Sem Pasta (Raiz)</option>
-            {folders.map((f) => (
-              <option key={f.id} value={f.id}>
-                📁 {f.name}
-              </option>
-            ))}
-          </select>
+            onChange={(val) => setFolderId(val || null)}
+            placeholder="Selecione uma pasta..."
+          />
         </div>
 
         {/* Toggle Editor / Live Preview + Delete + Save */}
