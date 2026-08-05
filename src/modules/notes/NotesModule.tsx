@@ -3,6 +3,7 @@ import { db, newId, nowIso } from "@/db";
 import type { Note, Folder, Metric } from "@/db/schema";
 import { FocusTimer } from "./components/FocusTimer";
 import { StudyHeatmap } from "./components/StudyHeatmap";
+import { BookTracker } from "./components/BookTracker";
 import { FolderSidebar } from "./components/FolderSidebar";
 import { NoteEditor } from "./components/NoteEditor";
 import { BacklinksPanel } from "./components/BacklinksPanel";
@@ -174,6 +175,9 @@ export function NotesModule() {
 
       {/* ── 2. Heatmap Anual de Horas de Estudo ─────────────────────────── */}
       <StudyHeatmap metrics={metrics} />
+
+      {/* ── 2.5 Gerenciador de Leituras & Livros ────────────────────────── */}
+      <BookTracker />
 
       {/* ── 3. Hub Principal de Conhecimento (Sidebar + Editor + Backlinks) ── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 min-h-[600px]">
