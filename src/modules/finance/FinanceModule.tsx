@@ -1,18 +1,32 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
+import { useAuthContext } from '@/context/AuthContext';
 import { useLancamentos } from '@/hooks/useLancamentos';
+import { supabase } from '@/lib/supabase';
 import { SpreadsheetTable } from './components/SpreadsheetTable';
 import { MonthSummary } from './components/MonthSummary';
 import { HorizonView } from './components/HorizonView';
 import { TagsView } from './components/TagsView';
 import { TransactionModal } from './components/TransactionModal';
-import { DeleteConfirmDialog } from './components/DeleteConfirmDialog';
-import { expandRecorrentes, buildDayRows, calcSaldoInicial, calcSummary, formatMonthLabel } from '@/lib/finance';
-import type { Lancamento } from '@/lib/supabase';
+import { AlertModal } from './components/AlertModal';
 import {
-  ChevronLeft, ChevronRight, Plus, LayoutGrid,
-  Wallet, PieChart, Layers, AlertCircle, X,
+  expandRecorrentes,
+  buildDayRows,
+  calcSaldoInicial,
+  calcSummary,
+  formatMonthLabel,
+} from '@/lib/finance';
+import type { Lancamento, Profile } from '@/lib/supabase';
+import {
+  ChevronLeft,
+  ChevronRight,
+  Plus,
+  LayoutGrid,
+  Wallet,
+  PieChart,
+  Layers,
+  AlertCircle,
+  X,
 } from 'lucide-react';
-import { useEffect } from 'react';
 
 // Toast de erro simples
 function ErrorToast({ message, onClose }: { message: string; onClose: () => void }) {
@@ -23,7 +37,7 @@ function ErrorToast({ message, onClose }: { message: string; onClose: () => void
 
   return (
     <div className="fixed top-4 left-4 right-4 z-[200] md:left-auto md:right-6 md:w-80">
-      <div className="bg-destructive text-destructive-foreground rounded-xl px-4 py-3 flex items-center gap-3 shadow-xl">
+      <div className="bg-red-500 text-white rounded-xl px-4 py-3 flex items-center gap-3 shadow-xl">
         <AlertCircle size={16} className="shrink-0" />
         <span className="text-xs font-bold flex-1">{message}</span>
         <button onClick={onClose} className="shrink-0 opacity-70 hover:opacity-100">
@@ -37,8 +51,10 @@ function ErrorToast({ message, onClose }: { message: string; onClose: () => void
 type Tab = 'saldos' | 'totais' | 'tags' | 'horizon';
 
 export function FinanceModule() {
-  const { lancamentos, setLancamentos, loading, error, add, remove, update } = useLancamentos();
+  const { user } = useAuthContext();
+  const { lancamentos, setLancamentos, loading, error, add, remove, update } = useLancamentos(user?.id);
 
+  const [perfil, setPerfil] = useState<Profile | null>(null);
   const now = new Date();
   const [month, setMonth] = useState(now.getMonth());
   const [year, setYear] = useState(now.getFullYear());
@@ -51,6 +67,20 @@ export function FinanceModule() {
     open: false,
     id: null,
   });
+
+  // Carrega perfil do usuário (para renda de referência)
+  useEffect(() => {
+    if (!user?.id) return;
+    async function loadProfile() {
+      const { data } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user!.id)
+        .maybeSingle();
+      if (data) setPerfil(data as Profile);
+    }
+    loadProfile();
+  }, [user?.id]);
 
   useEffect(() => {
     if (error && !modalOpen) setToastMessage(error);
@@ -66,10 +96,14 @@ export function FinanceModule() {
     [],
   );
 
+  const rendaReferencia = Number(perfil?.monthly_income) || 0;
   const saldoInicial = useMemo(() => calcSaldoInicial(lancamentos, year, month), [lancamentos, year, month]);
   const expanded = useMemo(() => expandRecorrentes(lancamentos, year, month), [lancamentos, year, month]);
   const rows = useMemo(() => buildDayRows(expanded, year, month, saldoInicial), [expanded, year, month, saldoInicial]);
-  const summary = useMemo(() => calcSummary(rows, saldoInicial, year, month), [rows, saldoInicial, year, month]);
+  const summary = useMemo(
+    () => calcSummary(rows, saldoInicial, year, month, rendaReferencia),
+    [rows, saldoInicial, year, month, rendaReferencia],
+  );
 
   const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 
@@ -85,9 +119,21 @@ export function FinanceModule() {
     setModalError(null);
   };
 
-  const handleSave = async (data: any) => {
+  const handleSave = async (data: any, mode: 'one' | 'all' = 'all') => {
+    if (!user) return;
     setModalError(null);
-    const sucesso = data.id ? await update(data.id, data) : await add(data);
+
+    // mode 'one': lançamento recorrente editado apenas desta vez
+    if (mode === 'one') {
+      const { id: _id, ...newPayload } = { ...data, user_id: user.id };
+      newPayload.is_recorrente = false;
+      const sucesso = await add(newPayload);
+      if (sucesso) handleCloseModal();
+      return;
+    }
+
+    const payload = { ...data, user_id: user.id };
+    const sucesso = data.id ? await update(data.id, payload) : await add(payload);
     if (sucesso) handleCloseModal();
   };
 
@@ -97,7 +143,6 @@ export function FinanceModule() {
 
   const confirmDelete = async () => {
     if (deleteConfig.id) await remove(deleteConfig.id);
-    setDeleteConfig({ open: false, id: null });
   };
 
   return (
@@ -133,7 +178,7 @@ export function FinanceModule() {
             onClick={() => setActiveTab((t) => (t === 'horizon' ? 'saldos' : 'horizon'))}
             className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${
               activeTab === 'horizon'
-                ? 'bg-primary text-primary-foreground'
+                ? 'bg-[#ff4d00] text-white'
                 : 'bg-muted text-muted-foreground hover:text-foreground'
             }`}
             title="Visão Horizonte"
@@ -143,8 +188,11 @@ export function FinanceModule() {
 
           {/* Botão novo lançamento (desktop) */}
           <button
-            onClick={() => { setModalError(null); setModalOpen(true); }}
-            className="hidden md:flex items-center gap-1.5 h-8 px-3 bg-primary text-primary-foreground rounded-lg text-xs font-bold hover:bg-primary/90 transition-colors"
+            onClick={() => {
+              setModalError(null);
+              setModalOpen(true);
+            }}
+            className="hidden md:flex items-center gap-1.5 h-8 px-3 bg-[#ff4d00] text-white rounded-lg text-xs font-bold hover:bg-[#e04400] transition-colors"
           >
             <Plus size={14} />
             Novo
@@ -156,7 +204,7 @@ export function FinanceModule() {
       <div className="flex-1 overflow-y-auto">
         {loading ? (
           <div className="py-20 text-center">
-            <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+            <div className="w-6 h-6 border-2 border-[#ff4d00] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
             <p className="text-xs text-muted-foreground">Sincronizando...</p>
           </div>
         ) : (
@@ -180,7 +228,7 @@ export function FinanceModule() {
         <button
           onClick={() => setActiveTab('saldos')}
           className={`flex flex-col items-center gap-0.5 px-3 py-1.5 text-[10px] font-black uppercase transition-colors ${
-            activeTab === 'saldos' ? 'text-primary' : 'text-muted-foreground'
+            activeTab === 'saldos' ? 'text-[#ff4d00]' : 'text-muted-foreground'
           }`}
         >
           <Wallet size={20} />
@@ -189,7 +237,7 @@ export function FinanceModule() {
         <button
           onClick={() => setActiveTab('totais')}
           className={`flex flex-col items-center gap-0.5 px-3 py-1.5 text-[10px] font-black uppercase transition-colors ${
-            activeTab === 'totais' ? 'text-primary' : 'text-muted-foreground'
+            activeTab === 'totais' ? 'text-[#ff4d00]' : 'text-muted-foreground'
           }`}
         >
           <PieChart size={20} />
@@ -199,8 +247,11 @@ export function FinanceModule() {
         {/* FAB central */}
         <div className="relative">
           <button
-            onClick={() => { setModalError(null); setModalOpen(true); }}
-            className="absolute -top-8 left-1/2 -translate-x-1/2 w-14 h-14 bg-primary text-primary-foreground rounded-full flex items-center justify-center shadow-lg active:scale-95 transition-all border-4 border-background"
+            onClick={() => {
+              setModalError(null);
+              setModalOpen(true);
+            }}
+            className="absolute -top-8 left-1/2 -translate-x-1/2 w-14 h-14 bg-[#ff4d00] text-white rounded-full flex items-center justify-center shadow-lg active:scale-95 transition-all border-4 border-background"
           >
             <Plus size={26} strokeWidth={2.5} />
           </button>
@@ -209,22 +260,24 @@ export function FinanceModule() {
         <button
           onClick={() => setActiveTab('tags')}
           className={`flex flex-col items-center gap-0.5 px-3 py-1.5 text-[10px] font-black uppercase transition-colors ${
-            activeTab === 'tags' ? 'text-primary' : 'text-muted-foreground'
+            activeTab === 'tags' ? 'text-[#ff4d00]' : 'text-muted-foreground'
           }`}
         >
           <Layers size={20} />
           <span>Tags</span>
         </button>
-        <div className="w-16" /> {/* espaço para equilibrar o FAB */}
+        <div className="w-16" />
       </nav>
 
       {/* Desktop tab bar */}
       <div className="hidden md:flex border-t border-border bg-background px-4 gap-1 py-1">
-        {([
-          { key: 'saldos', label: 'Saldos', icon: Wallet },
-          { key: 'totais', label: 'Totais', icon: PieChart },
-          { key: 'tags', label: 'Categorias', icon: Layers },
-        ] as const).map(({ key, label, icon: Icon }) => (
+        {(
+          [
+            { key: 'saldos', label: 'Saldos', icon: Wallet },
+            { key: 'totais', label: 'Totais', icon: PieChart },
+            { key: 'tags', label: 'Categorias', icon: Layers },
+          ] as const
+        ).map(({ key, label, icon: Icon }) => (
           <button
             key={key}
             onClick={() => setActiveTab(key)}
@@ -251,10 +304,14 @@ export function FinanceModule() {
       />
 
       {/* Confirm delete */}
-      <DeleteConfirmDialog
+      <AlertModal
         open={deleteConfig.open}
         onClose={() => setDeleteConfig({ open: false, id: null })}
         onConfirm={confirmDelete}
+        title="Apagar Registro?"
+        message="Essa ação não pode ser desfeita e afetará teu saldo acumulado."
+        type="danger"
+        confirmText="Sim, Apagar"
       />
     </div>
   );
