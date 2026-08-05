@@ -4,8 +4,8 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* ─── Google Fonts: SF Pro alternativa ─────────────────────────────────── */
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;1,14..32,400&display=swap');
+/* ─── Google Fonts & Apple SF Font Fallbacks ────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
@@ -36,7 +36,6 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
-  --color-ring-offset-background: var(--background);
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-primary: var(--sidebar-primary);
@@ -47,130 +46,129 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
-/* ─── Light Mode (padrão) ───────────────────────────────────────────────── */
+/* ─── Light Mode (Apple iOS Soft Off-White Background + Crisp Elevated Cards) ─── */
 :root {
-  --radius: 0.875rem;
+  --radius: 1rem;
 
-  /* Paleta base */
+  /* Paleta base iOS */
   --ios-white:   #FFFFFF;
-  --ios-gray:    #E5E5E5;
+  --ios-gray:    #E5E5EA;
   --ios-amber:   #FCA311;
   --ios-navy:    #14213D;
-  --ios-black:   #000000;
-  --ios-surface: #F2F2F7;
-  --ios-muted:   #8E8E93;
+  --ios-black:   #0F172A;
+  --ios-surface: #F4F5F8;
+  --ios-muted:   #64748B;
 
   /* Tokens Tailwind */
-  --background:             #FFFFFF;
-  --foreground:             #000000;
-  --card:                   #F2F2F7;
-  --card-foreground:        #000000;
+  --background:             #F4F5F8;
+  --foreground:             #0F172A;
+  --card:                   #FFFFFF;
+  --card-foreground:        #0F172A;
   --popover:                #FFFFFF;
-  --popover-foreground:     #000000;
+  --popover-foreground:     #0F172A;
   --primary:                #14213D;
   --primary-foreground:     #FFFFFF;
-  --secondary:              #E5E5E5;
+  --secondary:              #E2E8F0;
   --secondary-foreground:   #14213D;
-  --muted:                  #F2F2F7;
-  --muted-foreground:       #8E8E93;
+  --muted:                  #F1F5F9;
+  --muted-foreground:       #64748B;
   --accent:                 #FCA311;
   --accent-foreground:      #000000;
   --destructive:            #FF3B30;
   --destructive-foreground: #FFFFFF;
-  --border:                 #E5E5E5;
-  --input:                  #F2F2F7;
+  --border:                 #E2E8F0;
+  --input:                  #F8FAFC;
   --ring:                   #FCA311;
 
   /* Sidebar light */
-  --sidebar:                      rgba(255,255,255,0.85);
-  --sidebar-foreground:           #14213D;
+  --sidebar:                      rgba(255, 255, 255, 0.88);
+  --sidebar-foreground:           #0F172A;
   --sidebar-primary:              #14213D;
   --sidebar-primary-foreground:   #FFFFFF;
-  --sidebar-accent:               rgba(252,163,17,0.12);
+  --sidebar-accent:               rgba(252, 163, 17, 0.12);
   --sidebar-accent-foreground:    #14213D;
-  --sidebar-border:               rgba(0,0,0,0.06);
+  --sidebar-border:               rgba(226, 232, 240, 0.8);
   --sidebar-ring:                 #FCA311;
 
-  /* Glass */
-  --glass-bg:     rgba(255, 255, 255, 0.72);
-  --glass-border: rgba(0, 0, 0, 0.06);
-  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  /* Glass Light */
+  --glass-bg:     rgba(255, 255, 255, 0.82);
+  --glass-border: rgba(0, 0, 0, 0.05);
+  --glass-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.05), 0 4px 12px -2px rgba(15, 23, 42, 0.03);
 
   color-scheme: light;
 }
 
-/* ─── Dark Mode (azul marinho como fundo) ───────────────────────────────── */
+/* ─── Dark Mode (Deep Premium Navy Canvas + Elevated Navy Glass Cards) ─── */
 .dark {
   --background:             #14213D;
-  --foreground:             #FFFFFF;
+  --foreground:             #F8FAFC;
   --card:                   #1C2E4A;
-  --card-foreground:        #FFFFFF;
+  --card-foreground:        #F8FAFC;
   --popover:                #1C2E4A;
-  --popover-foreground:     #FFFFFF;
+  --popover-foreground:     #F8FAFC;
   --primary:                #FFFFFF;
   --primary-foreground:     #14213D;
   --secondary:              #243352;
-  --secondary-foreground:   #FFFFFF;
+  --secondary-foreground:   #F8FAFC;
   --muted:                  #1C2E4A;
-  --muted-foreground:       #8E8E93;
+  --muted-foreground:       #94A3B8;
   --accent:                 #FCA311;
   --accent-foreground:      #000000;
   --destructive:            #FF453A;
   --destructive-foreground: #FFFFFF;
-  --border:                 rgba(255, 255, 255, 0.10);
-  --input:                  rgba(255, 255, 255, 0.08);
+  --border:                 rgba(255, 255, 255, 0.08);
+  --input:                  rgba(255, 255, 255, 0.06);
   --ring:                   #FCA311;
 
   /* Sidebar dark */
-  --sidebar:                      rgba(20, 33, 61, 0.85);
-  --sidebar-foreground:           #FFFFFF;
+  --sidebar:                      rgba(20, 33, 61, 0.88);
+  --sidebar-foreground:           #F8FAFC;
   --sidebar-primary:              #FFFFFF;
   --sidebar-primary-foreground:   #14213D;
-  --sidebar-accent:               rgba(252,163,17,0.15);
+  --sidebar-accent:               rgba(252, 163, 17, 0.15);
   --sidebar-accent-foreground:    #FCA311;
   --sidebar-border:               rgba(255, 255, 255, 0.08);
   --sidebar-ring:                 #FCA311;
 
   /* Glass dark */
-  --glass-bg:     rgba(20, 33, 61, 0.72);
-  --glass-border: rgba(255, 255, 255, 0.10);
-  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.32);
+  --glass-bg:     rgba(28, 46, 74, 0.78);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.35);
 
   color-scheme: dark;
 }
 
-/* ─── também suporta class="light" para toggle manual ──────────────────── */
 .light {
-  --background:             #FFFFFF;
-  --foreground:             #000000;
-  --card:                   #F2F2F7;
-  --card-foreground:        #000000;
+  --background:             #F4F5F8;
+  --foreground:             #0F172A;
+  --card:                   #FFFFFF;
+  --card-foreground:        #0F172A;
   --popover:                #FFFFFF;
-  --popover-foreground:     #000000;
+  --popover-foreground:     #0F172A;
   --primary:                #14213D;
   --primary-foreground:     #FFFFFF;
-  --secondary:              #E5E5E5;
+  --secondary:              #E2E8F0;
   --secondary-foreground:   #14213D;
-  --muted:                  #F2F2F7;
-  --muted-foreground:       #8E8E93;
+  --muted:                  #F1F5F9;
+  --muted-foreground:       #64748B;
   --accent:                 #FCA311;
   --accent-foreground:      #000000;
   --destructive:            #FF3B30;
   --destructive-foreground: #FFFFFF;
-  --border:                 #E5E5E5;
-  --input:                  #F2F2F7;
+  --border:                 #E2E8F0;
+  --input:                  #F8FAFC;
   --ring:                   #FCA311;
-  --sidebar:                      rgba(255,255,255,0.85);
-  --sidebar-foreground:           #14213D;
+  --sidebar:                      rgba(255, 255, 255, 0.88);
+  --sidebar-foreground:           #0F172A;
   --sidebar-primary:              #14213D;
   --sidebar-primary-foreground:   #FFFFFF;
-  --sidebar-accent:               rgba(252,163,17,0.12);
+  --sidebar-accent:               rgba(252, 163, 17, 0.12);
   --sidebar-accent-foreground:    #14213D;
-  --sidebar-border:               rgba(0,0,0,0.06);
+  --sidebar-border:               rgba(226, 232, 240, 0.8);
   --sidebar-ring:                 #FCA311;
-  --glass-bg:     rgba(255, 255, 255, 0.72);
-  --glass-border: rgba(0, 0, 0, 0.06);
-  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  --glass-bg:     rgba(255, 255, 255, 0.82);
+  --glass-border: rgba(0, 0, 0, 0.05);
+  --glass-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.05), 0 4px 12px -2px rgba(15, 23, 42, 0.03);
   color-scheme: light;
 }
 
@@ -181,21 +179,19 @@
   }
 
   html {
-    /* Suporte a safe-area do iPhone */
     padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
   }
 
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
-    /* Sistema Apple → Inter como fallback */
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", "Helvetica Neue", Arial, sans-serif;
+    font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
   }
 
-  /* Scrollbar invisível estilo iOS */
+  /* Hide scrollbars cleanly */
   * {
     scrollbar-width: none;
     -ms-overflow-style: none;
@@ -205,19 +201,19 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", sans-serif;
-    letter-spacing: -0.02em;
+    font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+    letter-spacing: -0.025em;
   }
 
   code, pre, kbd {
-    font-family: "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+    font-family: "JetBrains Mono", ui-monospace, monospace;
   }
 }
 
-/* ─── Components: Glass iOS ─────────────────────────────────────────────── */
+/* ─── Components: Glass & Apple Widget Aesthetics ─────────────────────── */
 @layer components {
 
-  /* Painel glass — equivale ao frosted glass do iOS */
+  /* Apple Glass Panel */
   .glass-panel {
     background: var(--glass-bg);
     backdrop-filter: blur(24px) saturate(1.8);
@@ -226,39 +222,75 @@
     box-shadow: var(--glass-shadow);
   }
 
-  /* Card glass menor */
+  /* Apple Glass Widget Card */
   .glass-card {
-    background: var(--glass-bg);
-    backdrop-filter: blur(16px) saturate(1.6);
-    -webkit-backdrop-filter: blur(16px) saturate(1.6);
-    border: 1px solid var(--glass-border);
+    background: var(--color-card);
+    border: 1px solid var(--color-border);
     border-radius: 1.25rem;
-    box-shadow: var(--glass-shadow);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.04), 0 4px 10px -2px rgba(0, 0, 0, 0.02);
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease, border-color 0.2s ease;
   }
 
-  /* Botão primário iOS amber */
+  .dark .glass-card {
+    background: rgba(28, 46, 74, 0.75);
+    backdrop-filter: blur(20px) saturate(1.6);
+    -webkit-backdrop-filter: blur(20px) saturate(1.6);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 12px 32px -4px rgba(0, 0, 0, 0.3);
+  }
+
+  .glass-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 32px -6px rgba(0, 0, 0, 0.08), 0 6px 16px -4px rgba(0, 0, 0, 0.04);
+  }
+  .dark .glass-card:hover {
+    border-color: rgba(252, 163, 17, 0.3);
+    box-shadow: 0 20px 40px -8px rgba(0, 0, 0, 0.45);
+  }
+
+  /* Apple Squircle Icon Containers */
+  .ios-squircle {
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease;
+  }
+  .ios-squircle:hover {
+    transform: scale(1.05);
+  }
+
+  /* Primary Button iOS Amber */
   .btn-ios {
-    background: #FCA311;
+    background: linear-gradient(135deg, #FCA311 0%, #E8920A 100%);
     color: #000000;
     font-weight: 700;
     border-radius: 14px;
-    padding: 0.875rem 1.5rem;
-    font-size: 0.9375rem;
+    padding: 0.75rem 1.25rem;
+    font-size: 0.875rem;
     letter-spacing: -0.01em;
     transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-    box-shadow: 0 4px 16px rgba(252, 163, 17, 0.35);
+    box-shadow: 0 4px 16px rgba(252, 163, 17, 0.3);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+  .btn-ios:hover {
+    box-shadow: 0 6px 20px rgba(252, 163, 17, 0.45);
+    transform: translateY(-1px);
   }
   .btn-ios:active {
     transform: scale(0.97);
-    box-shadow: 0 2px 8px rgba(252, 163, 17, 0.25);
+    box-shadow: 0 2px 8px rgba(252, 163, 17, 0.2);
   }
 
   /* Input estilo iOS */
   .input-ios {
     background: var(--color-input);
     border: 1px solid var(--color-border);
-    border-radius: 12px;
-    padding: 0.875rem 1rem;
+    border-radius: 14px;
+    padding: 0.75rem 1rem;
     font-size: 0.9375rem;
     color: var(--color-foreground);
     outline: none;
@@ -267,7 +299,7 @@
   }
   .input-ios:focus {
     border-color: #FCA311;
-    box-shadow: 0 0 0 3px rgba(252, 163, 17, 0.18);
+    box-shadow: 0 0 0 3px rgba(252, 163, 17, 0.2);
   }
 
   /* Tab bar item ativo */
@@ -282,7 +314,7 @@
   .nav-pill-active {
     background: rgba(252, 163, 17, 0.12);
     color: #FCA311;
-    font-weight: 600;
+    font-weight: 700;
   }
   .nav-pill-inactive {
     color: var(--color-muted-foreground);
@@ -294,7 +326,7 @@
 
   /* Spring animation iOS-like */
   .ios-spring {
-    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
   .ios-spring:active {
     transform: scale(0.96);
@@ -302,19 +334,19 @@
 
   /* Fade in suave */
   .fade-in {
-    animation: fadeIn 0.22s ease forwards;
+    animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
   @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(6px); }
+    from { opacity: 0; transform: translateY(8px); }
     to   { opacity: 1; transform: translateY(0); }
   }
 
-  /* Slide up — modais e sheets */
+  /* Slide up */
   .slide-up {
-    animation: slideUp 0.32s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
   @keyframes slideUp {
-    from { opacity: 0; transform: translateY(40px); }
+    from { opacity: 0; transform: translateY(30px); }
     to   { opacity: 1; transform: translateY(0); }
   }
 
@@ -322,13 +354,7 @@
   .ios-divider {
     height: 1px;
     background: var(--color-border);
-    margin-left: 1rem;
   }
-
-  /* Accent utilities */
-  .accent-amber { color: #FCA311; }
-  .bg-amber     { background: #FCA311; }
-  .ring-amber   { box-shadow: 0 0 0 3px rgba(252, 163, 17, 0.25); }
 
   /* Badge */
   .badge-ios {
@@ -339,8 +365,7 @@
     color: #FCA311;
     font-size: 0.6875rem;
     font-weight: 700;
-    padding: 0.2rem 0.6rem;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
+    padding: 0.2rem 0.65rem;
+    letter-spacing: 0.03em;
   }
 }
