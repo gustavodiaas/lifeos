@@ -4,6 +4,7 @@ import type { Metric } from "@/db/schema";
 import { todayIso, monthIso, formatBRL } from "@/lib/date";
 import { ActivityRing } from "./components/ActivityRing";
 import { MetricLoggerModal } from "./components/MetricLoggerModal";
+import { MetricTrendChart } from "./components/WeightTrendChart";
 import { toast } from "sonner";
 import {
   BarChart3,
@@ -323,8 +324,24 @@ export function StatsModule() {
               </div>
             )}
           </div>
-        </div>
+      </div>
 
+      {/* ── 3.5 Gráficos de Tendência (Recharts) ────────────────────────── */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <MetricTrendChart
+          metrics={metrics}
+          metricKey="weight"
+          title="Gráfico de Evolução de Peso"
+          unit="kg"
+          color="#FCA311"
+        />
+        <MetricTrendChart
+          metrics={metrics}
+          metricKey="study_hours"
+          title="Gráfico de Sessões de Estudo"
+          unit="h"
+          color="#6366F1"
+        />
       </div>
 
       {/* ── 4. Quadro Comparativo dos Módulos ───────────────────────────── */}
