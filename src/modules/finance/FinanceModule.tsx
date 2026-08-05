@@ -178,7 +178,7 @@ export function FinanceModule() {
             onClick={() => setActiveTab((t) => (t === 'horizon' ? 'saldos' : 'horizon'))}
             className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${
               activeTab === 'horizon'
-                ? 'bg-[#ff4d00] text-white'
+                ? 'bg-[#FCA311] text-white'
                 : 'bg-muted text-muted-foreground hover:text-foreground'
             }`}
             title="Visão Horizonte"
@@ -192,7 +192,7 @@ export function FinanceModule() {
               setModalError(null);
               setModalOpen(true);
             }}
-            className="hidden md:flex items-center gap-1.5 h-8 px-3 bg-[#ff4d00] text-white rounded-lg text-xs font-bold hover:bg-[#e04400] transition-colors"
+            className="hidden md:flex items-center gap-1.5 h-8 px-3 bg-[#FCA311] text-white rounded-lg text-xs font-bold hover:bg-[#e04400] transition-colors"
           >
             <Plus size={14} />
             Novo
@@ -204,7 +204,7 @@ export function FinanceModule() {
       <div className="flex-1 overflow-y-auto">
         {loading ? (
           <div className="py-20 text-center">
-            <div className="w-6 h-6 border-2 border-[#ff4d00] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+            <div className="w-6 h-6 border-2 border-[#FCA311] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
             <p className="text-xs text-muted-foreground">Sincronizando...</p>
           </div>
         ) : (
@@ -228,7 +228,7 @@ export function FinanceModule() {
         <button
           onClick={() => setActiveTab('saldos')}
           className={`flex flex-col items-center gap-0.5 px-3 py-1.5 text-[10px] font-black uppercase transition-colors ${
-            activeTab === 'saldos' ? 'text-[#ff4d00]' : 'text-muted-foreground'
+            activeTab === 'saldos' ? 'text-[#FCA311]' : 'text-muted-foreground'
           }`}
         >
           <Wallet size={20} />
@@ -237,7 +237,7 @@ export function FinanceModule() {
         <button
           onClick={() => setActiveTab('totais')}
           className={`flex flex-col items-center gap-0.5 px-3 py-1.5 text-[10px] font-black uppercase transition-colors ${
-            activeTab === 'totais' ? 'text-[#ff4d00]' : 'text-muted-foreground'
+            activeTab === 'totais' ? 'text-[#FCA311]' : 'text-muted-foreground'
           }`}
         >
           <PieChart size={20} />
@@ -251,7 +251,7 @@ export function FinanceModule() {
               setModalError(null);
               setModalOpen(true);
             }}
-            className="absolute -top-8 left-1/2 -translate-x-1/2 w-14 h-14 bg-[#ff4d00] text-white rounded-full flex items-center justify-center shadow-lg active:scale-95 transition-all border-4 border-background"
+            className="absolute -top-8 left-1/2 -translate-x-1/2 w-14 h-14 bg-[#FCA311] text-white rounded-full flex items-center justify-center shadow-lg active:scale-95 transition-all border-4 border-background"
           >
             <Plus size={26} strokeWidth={2.5} />
           </button>
@@ -260,7 +260,7 @@ export function FinanceModule() {
         <button
           onClick={() => setActiveTab('tags')}
           className={`flex flex-col items-center gap-0.5 px-3 py-1.5 text-[10px] font-black uppercase transition-colors ${
-            activeTab === 'tags' ? 'text-[#ff4d00]' : 'text-muted-foreground'
+            activeTab === 'tags' ? 'text-[#FCA311]' : 'text-muted-foreground'
           }`}
         >
           <Layers size={20} />
