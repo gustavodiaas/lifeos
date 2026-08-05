@@ -193,8 +193,8 @@ export function AppShell({ children }: { children?: ReactNode }) {
       {/* ── Main content area ────────────────────────────────────────── */}
       <main className="flex-1 min-w-0 flex flex-col overflow-hidden">
 
-        {/* Mobile top bar — iOS Style Header */}
-        <header className="md:hidden flex items-center justify-between px-5 pt-[max(env(safe-area-inset-top),14px)] pb-3 glass-panel border-b border-[var(--glass-border)] z-30">
+        {/* Mobile top bar — Unificado com a Status Bar do iPhone */}
+        <header className="md:hidden flex items-center justify-between px-5 pt-[max(env(safe-area-inset-top),16px)] pb-3 bg-background z-30 select-none">
           <div>
             <h1 className="text-xl font-extrabold text-foreground tracking-tight leading-tight">{pageTitle}</h1>
           </div>
