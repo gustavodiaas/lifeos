@@ -445,6 +445,7 @@ function SettingsPage() {
                 <span className="text-xs">Sistema</span>
               </button>
             </div>
+          </section>
           {/* ── 2.5 Notificações PWA & Lembretes ────────────────────────── */}
           <section className="glass-card p-6 md:p-8 space-y-6">
             <div className="flex items-center justify-between border-b border-border/60 pb-4">
