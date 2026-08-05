@@ -73,6 +73,8 @@ function SettingsPage() {
         description="Gere as tuas preferências do LifeOS e os dados locais."
       />
       <PageBody>
+        <ProfileSection />
+
         <section className="rounded-lg border border-border bg-card/60 p-5 space-y-4">
           <div>
             <h2 className="text-sm font-semibold">Aparência</h2>
@@ -106,7 +108,7 @@ function SettingsPage() {
           <div>
             <h2 className="text-sm font-semibold">Dados locais</h2>
             <p className="text-xs text-muted-foreground mt-1">
-              Os teus dados residem neste navegador (IndexedDB). A sincronização na nuvem chega na v1.0.
+              Exporta ou importa uma cópia de segurança dos teus dados locais.
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -139,5 +141,146 @@ function SettingsPage() {
         </section>
       </PageBody>
     </AppShell>
+  );
+}
+
+function ProfileSection() {
+  const { user, signOut } = useAuthContext();
+  const [username, setUsername] = useState("");
+  const [income, setIncome] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState(user?.user_metadata?.avatar_url || "");
+  const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+
+  useEffect(() => {
+    if (!user?.id) return;
+    async function loadProfile() {
+      const { data } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", user!.id)
+        .maybeSingle();
+      if (data) {
+        setUsername(data.username || "");
+        setIncome(data.monthly_income?.toString().replace(".", ",") || "");
+      }
+    }
+    loadProfile();
+  }, [user?.id]);
+
+  async function uploadAvatar(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+    try {
+      setUploading(true);
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${user.id}-${Math.random()}.${fileExt}`;
+      const { error: uploadError } = await supabase.storage.from("avatars").upload(fileName, file);
+      if (uploadError) throw uploadError;
+      const { data: { publicUrl } } = supabase.storage.from("avatars").getPublicUrl(fileName);
+      await supabase.auth.updateUser({ data: { avatar_url: publicUrl } });
+      setAvatarUrl(publicUrl);
+      toast.success("Avatar atualizado!");
+    } catch {
+      toast.error("Erro no upload do avatar.");
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  async function handleSave() {
+    if (!user) return;
+    setSaving(true);
+    const numIncome = parseFloat(income.replace(",", "."));
+    const { error } = await supabase.from("profiles").upsert({
+      id: user.id,
+      username,
+      monthly_income: isNaN(numIncome) ? 0 : numIncome,
+      updated_at: new Date().toISOString(),
+    });
+    setSaving(false);
+    if (!error) toast.success("Perfil atualizado!");
+    else toast.error("Erro ao guardar perfil.");
+  }
+
+  if (!user) return null;
+
+  return (
+    <section className="rounded-lg border border-border bg-card/60 p-5 space-y-5">
+      <div>
+        <h2 className="text-sm font-semibold">Perfil</h2>
+        <p className="text-xs text-muted-foreground mt-1">
+          Dados do teu perfil e renda mensal de referência para cálculos financeiros.
+        </p>
+      </div>
+
+      <div className="flex items-center gap-4">
+        <div className="relative">
+          <div className="w-16 h-16 rounded-full bg-muted border border-border overflow-hidden flex items-center justify-center">
+            {avatarUrl ? (
+              <img src={avatarUrl} className="w-full h-full object-cover" alt="" />
+            ) : (
+              <User size={28} className="text-muted-foreground" />
+            )}
+          </div>
+          <label className="absolute -bottom-1 -right-1 w-7 h-7 bg-primary border-2 border-background rounded-full flex items-center justify-center cursor-pointer">
+            {uploading ? (
+              <Loader2 size={12} className="text-primary-foreground animate-spin" />
+            ) : (
+              <Camera size={12} className="text-primary-foreground" />
+            )}
+            <input type="file" className="hidden" accept="image/*" onChange={uploadAvatar} disabled={uploading} />
+          </label>
+        </div>
+        <div>
+          <p className="text-sm font-semibold">{username || "Sem nome"}</p>
+          <p className="text-xs text-muted-foreground">{user.email}</p>
+        </div>
+      </div>
+
+      <div className="space-y-3">
+        <div>
+          <label className="text-xs font-medium text-muted-foreground mb-1 block">Nome de exibição</label>
+          <input
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            placeholder="Como queres ser chamado?"
+            className="w-full px-3 py-2.5 bg-background border border-border rounded-md text-sm outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
+          />
+        </div>
+
+        <div>
+          <label className="text-xs font-medium text-muted-foreground mb-1 flex items-center gap-1.5">
+            <Banknote size={12} />
+            Renda Mensal (referência para cálculos)
+          </label>
+          <input
+            type="text"
+            inputMode="decimal"
+            value={income}
+            onChange={(e) => setIncome(e.target.value.replace(/[^0-9,]/g, ""))}
+            placeholder="0,00"
+            className="w-full px-3 py-2.5 bg-background border border-border rounded-md text-sm outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
+          />
+        </div>
+      </div>
+
+      <div className="flex flex-wrap gap-2 pt-1">
+        <Button onClick={handleSave} disabled={saving} size="sm">
+          {saving ? <Loader2 size={14} className="animate-spin mr-1" /> : <Save size={14} className="mr-1" />}
+          Guardar
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={signOut}
+          className="text-destructive hover:text-destructive hover:bg-destructive/10"
+        >
+          <LogOut size={14} className="mr-1" />
+          Sair da conta
+        </Button>
+      </div>
+    </section>
   );
 }
