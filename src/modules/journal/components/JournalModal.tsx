@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import type { JournalEntry } from "@/db/schema";
-import { X, Save, NotebookPen, Sparkles, Plus, Trash2, Calendar } from "lucide-react";
+import { X, Save, NotebookPen, Sparkles, Plus } from "lucide-react";
 import { todayIso } from "@/lib/date";
+import { CustomDatePicker } from "@/components/ui/CustomDatePicker";
 
 interface JournalModalProps {
   open: boolean;
@@ -100,20 +101,12 @@ export function JournalModal({
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-5 overflow-y-auto">
-          {/* Data do Registro */}
-          <div>
-            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5 flex items-center gap-1 ml-1">
-              <Calendar size={13} className="text-[#FCA311]" />
-              Data da Reflexão
-            </label>
-            <input
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              className="input-ios font-bold text-sm"
-              required
-            />
-          </div>
+          {/* Custom Date Picker */}
+          <CustomDatePicker
+            label="Data da Reflexão"
+            value={date}
+            onChange={setDate}
+          />
 
           {/* Seleção de Humor (Mood Tracker) */}
           <div>
