@@ -210,6 +210,22 @@
   }
 }
 
+/* ─── PWA Native Smooth Scroll & Scrollbar Hiding ──────────────────────── */
+* {
+  scrollbar-width: none !important; /* Firefox */
+  -ms-overflow-style: none !important; /* IE/Edge */
+}
+*::-webkit-scrollbar {
+  display: none !important; /* Chrome, Safari, iOS, Android */
+  width: 0 !important;
+  height: 0 !important;
+}
+
+html, body {
+  overscroll-behavior-y: none; /* Desativa o efeito borracha do browser que quebra a sensação de PWA */
+  -webkit-overflow-scrolling: touch; /* Momentum smooth scrolling nativo iOS */
+}
+
 /* ─── Components: Glass & Apple Widget Aesthetics ─────────────────────── */
 @layer components {
 
