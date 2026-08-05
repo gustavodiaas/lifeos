@@ -8,6 +8,7 @@ import { HorizonView } from './components/HorizonView';
 import { TagsView } from './components/TagsView';
 import { TransactionModal } from './components/TransactionModal';
 import { AlertModal } from './components/AlertModal';
+import { FinanceChart } from './components/FinanceChart';
 import {
   expandRecorrentes,
   buildDayRows,
@@ -201,7 +202,11 @@ export function FinanceModule() {
       </div>
 
       {/* Conteúdo */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto space-y-6">
+        {!loading && lancamentos.length > 0 && (
+          <FinanceChart transactions={lancamentos} />
+        )}
+
         {loading ? (
           <div className="py-20 text-center">
             <div className="w-6 h-6 border-2 border-[#FCA311] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
