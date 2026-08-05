@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { X, Save, Clock, Scale, Plus, Calendar } from "lucide-react";
+import { X, Save, Clock, Scale, Plus } from "lucide-react";
 import { todayIso } from "@/lib/date";
+import { CustomDatePicker } from "@/components/ui/CustomDatePicker";
 
 interface MetricLoggerModalProps {
   open: boolean;
@@ -64,7 +65,7 @@ export function MetricLoggerModal({
                 onClick={() => setKey("weight")}
                 className={`p-3 rounded-xl border-2 font-bold text-xs flex items-center justify-center gap-2 transition-all ${
                   key === "weight"
-                    ? "border-[#FCA311] bg-[#FCA311]/15 text-[#FCA311]"
+                    ? "border-[#FCA311] bg-[#FCA311]/15 text-[#FCA311] font-extrabold"
                     : "border-border/60 bg-muted/30 text-muted-foreground hover:bg-muted"
                 }`}
               >
@@ -77,7 +78,7 @@ export function MetricLoggerModal({
                 onClick={() => setKey("study_hours")}
                 className={`p-3 rounded-xl border-2 font-bold text-xs flex items-center justify-center gap-2 transition-all ${
                   key === "study_hours"
-                    ? "border-indigo-500 bg-indigo-500/15 text-indigo-500"
+                    ? "border-indigo-500 bg-indigo-500/15 text-indigo-500 font-extrabold"
                     : "border-border/60 bg-muted/30 text-muted-foreground hover:bg-muted"
                 }`}
               >
@@ -104,20 +105,12 @@ export function MetricLoggerModal({
             />
           </div>
 
-          {/* Data */}
-          <div>
-            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5 flex items-center gap-1">
-              <Calendar size={13} className="text-blue-500" />
-              Data da Medição
-            </label>
-            <input
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              className="input-ios font-semibold text-sm"
-              required
-            />
-          </div>
+          {/* Custom Date Picker */}
+          <CustomDatePicker
+            label="Data da Medição"
+            value={date}
+            onChange={setDate}
+          />
 
           <button type="submit" className="btn-ios w-full py-3.5 mt-2 text-xs font-black uppercase tracking-wider">
             <Save size={16} />
