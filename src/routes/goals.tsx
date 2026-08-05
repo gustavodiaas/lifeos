@@ -1,18 +1,24 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ModulePlaceholder } from "@/components/layout/ModulePlaceholder";
+import { AppShell } from "@/components/layout/AppShell";
+import { PageBody } from "@/components/layout/PageHeader";
+import { GoalsModule } from "@/modules/goals/GoalsModule";
 
 export const Route = createFileRoute("/goals")({
   head: () => ({
     meta: [
-      { title: "Metas - LifeOS" },
-      { name: "description", content: "Metas anuais, trimestrais e mensais." },
+      { title: "Metas — LifeOS" },
+      { name: "description", content: "Defina e acompanhe metas anuais, trimestrais e mensais com vínculos a hábitos." },
     ],
   }),
-  component: () => (
-    <ModulePlaceholder
-      title="Metas"
-      description="Metas anuais, trimestrais e mensais - vinculadas a hábitos e métricas."
-      roadmap="Chega na v0.5: metas com escopo, progresso e vínculo a hábitos/métricas."
-    />
-  ),
+  component: GoalsPage,
 });
+
+function GoalsPage() {
+  return (
+    <AppShell>
+      <PageBody>
+        <GoalsModule />
+      </PageBody>
+    </AppShell>
+  );
+}
