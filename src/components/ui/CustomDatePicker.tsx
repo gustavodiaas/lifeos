@@ -49,6 +49,10 @@ export function CustomDatePicker({ value, onChange, label, className }: CustomDa
     "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
   ];
 
+  // Gera lista de anos (de 1940 até 2035)
+  const currentYear = new Date().getFullYear();
+  const yearOptions = Array.from({ length: 96 }, (_, i) => 1940 + i);
+
   // Formatação em Português
   const displayFormatted = (() => {
     if (!value) return "Selecione uma data...";
@@ -69,6 +73,15 @@ export function CustomDatePicker({ value, onChange, label, className }: CustomDa
     const dd = String(dayNum).padStart(2, "0");
     const formatted = `${viewYear}-${mm}-${dd}`;
     onChange(formatted);
+    setOpen(false);
+  };
+
+  const handleSelectToday = () => {
+    const now = new Date();
+    const formatted = now.toISOString().slice(0, 10);
+    onChange(formatted);
+    setViewYear(now.getFullYear());
+    setViewMonth(now.getMonth());
     setOpen(false);
   };
 
@@ -111,23 +124,50 @@ export function CustomDatePicker({ value, onChange, label, className }: CustomDa
       </button>
 
       {open && (
-        <div className="absolute left-0 right-0 top-full mt-2 glass-card p-4 z-[160] shadow-2xl border border-border w-72 fade-in">
-          {/* Header do Mês */}
-          <div className="flex items-center justify-between pb-3 border-b border-border/50">
+        <div className="absolute left-0 right-0 top-full mt-2 glass-card p-4 z-[160] shadow-2xl border border-border w-80 fade-in">
+          
+          {/* Header com Seletores Rápidos de Mês e Ano */}
+          <div className="flex items-center justify-between gap-1 pb-3 border-b border-border/50">
             <button
               type="button"
               onClick={handlePrevMonth}
-              className="p-1.5 rounded-lg bg-muted/60 hover:bg-muted text-muted-foreground hover:text-foreground"
+              className="p-1.5 rounded-lg bg-muted/60 hover:bg-muted text-muted-foreground hover:text-foreground shrink-0"
+              title="Mês Anterior"
             >
               <ChevronLeft size={16} />
             </button>
-            <span className="text-xs font-extrabold text-foreground capitalize">
-              {monthNames[viewMonth]} {viewYear}
-            </span>
+
+            {/* Seletor Rápido de Mês */}
+            <select
+              value={viewMonth}
+              onChange={(e) => setViewMonth(parseInt(e.target.value))}
+              className="bg-muted text-foreground text-xs font-bold px-2 py-1.5 rounded-xl border border-border/50 outline-none capitalize shrink-0"
+            >
+              {monthNames.map((mName, idx) => (
+                <option key={idx} value={idx}>
+                  {mName}
+                </option>
+              ))}
+            </select>
+
+            {/* Seletor Rápido de Ano (1940 - 2035) */}
+            <select
+              value={viewYear}
+              onChange={(e) => setViewYear(parseInt(e.target.value))}
+              className="bg-muted text-foreground text-xs font-bold px-2 py-1.5 rounded-xl border border-border/50 outline-none shrink-0"
+            >
+              {yearOptions.map((y) => (
+                <option key={y} value={y}>
+                  {y}
+                </option>
+              ))}
+            </select>
+
             <button
               type="button"
               onClick={handleNextMonth}
-              className="p-1.5 rounded-lg bg-muted/60 hover:bg-muted text-muted-foreground hover:text-foreground"
+              className="p-1.5 rounded-lg bg-muted/60 hover:bg-muted text-muted-foreground hover:text-foreground shrink-0"
+              title="Próximo Mês"
             >
               <ChevronRight size={16} />
             </button>
@@ -167,6 +207,17 @@ export function CustomDatePicker({ value, onChange, label, className }: CustomDa
                 </button>
               );
             })}
+          </div>
+
+          {/* Botão de Atalho "Hoje" */}
+          <div className="pt-3 mt-2 border-t border-border/50 flex justify-end">
+            <button
+              type="button"
+              onClick={handleSelectToday}
+              className="text-xs font-bold text-[#FCA311] hover:underline px-2 py-1 rounded-lg hover:bg-amber-500/10 transition-colors"
+            >
+              Ir para Hoje
+            </button>
           </div>
         </div>
       )}
