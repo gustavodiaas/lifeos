@@ -9,8 +9,11 @@ interface CustomDatePickerProps {
   className?: string;
 }
 
+type ViewMode = "calendar" | "months" | "years";
+
 export function CustomDatePicker({ value, onChange, label, className }: CustomDatePickerProps) {
   const [open, setOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<ViewMode>("calendar");
   const ref = useRef<HTMLDivElement>(null);
 
   // Parse YYYY-MM-DD
@@ -38,6 +41,7 @@ export function CustomDatePicker({ value, onChange, label, className }: CustomDa
     const handleClickOutside = (e: MouseEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) {
         setOpen(false);
+        setViewMode("calendar");
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -49,8 +53,12 @@ export function CustomDatePicker({ value, onChange, label, className }: CustomDa
     "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
   ];
 
-  // Gera lista de anos (de 1940 até 2035)
-  const currentYear = new Date().getFullYear();
+  const shortMonthNames = [
+    "Jan", "Fev", "Mar", "Abr", "Mai", "Jun",
+    "Jul", "Ago", "Set", "Out", "Nov", "Dez"
+  ];
+
+  // Anos de 1940 a 2035
   const yearOptions = Array.from({ length: 96 }, (_, i) => 1940 + i);
 
   // Formatação em Português
@@ -74,6 +82,7 @@ export function CustomDatePicker({ value, onChange, label, className }: CustomDa
     const formatted = `${viewYear}-${mm}-${dd}`;
     onChange(formatted);
     setOpen(false);
+    setViewMode("calendar");
   };
 
   const handleSelectToday = () => {
@@ -83,6 +92,7 @@ export function CustomDatePicker({ value, onChange, label, className }: CustomDa
     setViewYear(now.getFullYear());
     setViewMonth(now.getMonth());
     setOpen(false);
+    setViewMode("calendar");
   };
 
   const handlePrevMonth = () => {
@@ -114,7 +124,10 @@ export function CustomDatePicker({ value, onChange, label, className }: CustomDa
 
       <button
         type="button"
-        onClick={() => setOpen(!open)}
+        onClick={() => {
+          setOpen(!open);
+          setViewMode("calendar");
+        }}
         className="w-full input-ios py-3 px-4 flex items-center justify-between gap-2 text-left font-bold text-sm transition-all"
       >
         <span className="flex items-center gap-2 truncate">
@@ -126,88 +139,149 @@ export function CustomDatePicker({ value, onChange, label, className }: CustomDa
       {open && (
         <div className="absolute left-0 right-0 top-full mt-2 glass-card p-4 z-[160] shadow-2xl border border-border w-80 fade-in">
           
-          {/* Header com Seletores Rápidos de Mês e Ano */}
+          {/* Header com Botões Estilo Apple Glass para alternar entre Visão de Calendário, Mês e Ano */}
           <div className="flex items-center justify-between gap-1 pb-3 border-b border-border/50">
             <button
               type="button"
               onClick={handlePrevMonth}
-              className="p-1.5 rounded-lg bg-muted/60 hover:bg-muted text-muted-foreground hover:text-foreground shrink-0"
+              className="p-1.5 rounded-xl bg-muted/60 hover:bg-muted text-muted-foreground hover:text-foreground shrink-0 transition-colors"
               title="Mês Anterior"
             >
               <ChevronLeft size={16} />
             </button>
 
-            {/* Seletor Rápido de Mês */}
-            <select
-              value={viewMonth}
-              onChange={(e) => setViewMonth(parseInt(e.target.value))}
-              className="bg-muted text-foreground text-xs font-bold px-2 py-1.5 rounded-xl border border-border/50 outline-none capitalize shrink-0"
+            {/* Botão Customizado de Mês (Nativo do App) */}
+            <button
+              type="button"
+              onClick={() => setViewMode(viewMode === "months" ? "calendar" : "months")}
+              className={cn(
+                "px-3 py-1.5 rounded-xl text-xs font-extrabold capitalize transition-all border",
+                viewMode === "months"
+                  ? "bg-[#FCA311] text-black border-[#FCA311] shadow-sm font-black"
+                  : "bg-muted/60 text-foreground border-border/50 hover:bg-muted"
+              )}
             >
-              {monthNames.map((mName, idx) => (
-                <option key={idx} value={idx}>
-                  {mName}
-                </option>
-              ))}
-            </select>
+              {monthNames[viewMonth]}
+            </button>
 
-            {/* Seletor Rápido de Ano (1940 - 2035) */}
-            <select
-              value={viewYear}
-              onChange={(e) => setViewYear(parseInt(e.target.value))}
-              className="bg-muted text-foreground text-xs font-bold px-2 py-1.5 rounded-xl border border-border/50 outline-none shrink-0"
+            {/* Botão Customizado de Ano (Nativo do App) */}
+            <button
+              type="button"
+              onClick={() => setViewMode(viewMode === "years" ? "calendar" : "years")}
+              className={cn(
+                "px-3 py-1.5 rounded-xl text-xs font-extrabold transition-all border",
+                viewMode === "years"
+                  ? "bg-[#FCA311] text-black border-[#FCA311] shadow-sm font-black"
+                  : "bg-muted/60 text-foreground border-border/50 hover:bg-muted"
+              )}
             >
-              {yearOptions.map((y) => (
-                <option key={y} value={y}>
-                  {y}
-                </option>
-              ))}
-            </select>
+              {viewYear}
+            </button>
 
             <button
               type="button"
               onClick={handleNextMonth}
-              className="p-1.5 rounded-lg bg-muted/60 hover:bg-muted text-muted-foreground hover:text-foreground shrink-0"
+              className="p-1.5 rounded-xl bg-muted/60 hover:bg-muted text-muted-foreground hover:text-foreground shrink-0 transition-colors"
               title="Próximo Mês"
             >
               <ChevronRight size={16} />
             </button>
           </div>
 
-          {/* Dias da Semana */}
-          <div className="grid grid-cols-7 gap-1 text-center my-2 text-[10px] font-extrabold text-muted-foreground">
-            <span>D</span><span>S</span><span>T</span><span>Q</span><span>Q</span><span>S</span><span>S</span>
-          </div>
+          {/* ── VISÃO 1: Seleção de Meses (Grade 12 Meses Apple Glass) ────── */}
+          {viewMode === "months" && (
+            <div className="grid grid-cols-3 gap-2 py-3 fade-in">
+              {shortMonthNames.map((mName, idx) => {
+                const isSelected = viewMonth === idx;
+                return (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => {
+                      setViewMonth(idx);
+                      setViewMode("calendar");
+                    }}
+                    className={cn(
+                      "py-3 rounded-2xl text-xs font-bold transition-all border",
+                      isSelected
+                        ? "bg-[#FCA311] text-black border-[#FCA311] font-black shadow-md scale-105"
+                        : "bg-muted/30 border-border/50 text-foreground hover:bg-muted"
+                    )}
+                  >
+                    {mName}
+                  </button>
+                );
+              })}
+            </div>
+          )}
 
-          {/* Matriz de Dias */}
-          <div className="grid grid-cols-7 gap-1 text-center">
-            {Array.from({ length: firstDayOfWeek }).map((_, i) => (
-              <div key={`empty-${i}`} />
-            ))}
+          {/* ── VISÃO 2: Seleção de Anos (Grade Rolável de Anos 1940-2035) ── */}
+          {viewMode === "years" && (
+            <div className="grid grid-cols-4 gap-2 py-3 max-h-56 overflow-y-auto fade-in pr-1">
+              {yearOptions.map((y) => {
+                const isSelected = viewYear === y;
+                return (
+                  <button
+                    key={y}
+                    type="button"
+                    onClick={() => {
+                      setViewYear(y);
+                      setViewMode("calendar");
+                    }}
+                    className={cn(
+                      "py-2 rounded-xl text-xs font-bold transition-all border text-center",
+                      isSelected
+                        ? "bg-[#FCA311] text-black border-[#FCA311] font-black shadow-md scale-105"
+                        : "bg-muted/30 border-border/50 text-foreground hover:bg-muted"
+                    )}
+                  >
+                    {y}
+                  </button>
+                );
+              })}
+            </div>
+          )}
 
-            {Array.from({ length: daysInMonth }).map((_, i) => {
-              const dayNum = i + 1;
-              const isSelected =
-                selectedDate.getFullYear() === viewYear &&
-                selectedDate.getMonth() === viewMonth &&
-                selectedDate.getDate() === dayNum;
+          {/* ── VISÃO 3: Grade de Calendário Convencional ───────────────────── */}
+          {viewMode === "calendar" && (
+            <>
+              {/* Dias da Semana */}
+              <div className="grid grid-cols-7 gap-1 text-center my-2 text-[10px] font-extrabold text-muted-foreground">
+                <span>D</span><span>S</span><span>T</span><span>Q</span><span>Q</span><span>S</span><span>S</span>
+              </div>
 
-              return (
-                <button
-                  key={dayNum}
-                  type="button"
-                  onClick={() => handleSelectDay(dayNum)}
-                  className={cn(
-                    "w-8 h-8 rounded-xl text-xs font-bold transition-all flex items-center justify-center mx-auto",
-                    isSelected
-                      ? "bg-[#FCA311] text-black shadow-md shadow-[#FCA311]/30 font-black scale-105"
-                      : "hover:bg-muted text-foreground"
-                  )}
-                >
-                  {dayNum}
-                </button>
-              );
-            })}
-          </div>
+              {/* Matriz de Dias */}
+              <div className="grid grid-cols-7 gap-1 text-center">
+                {Array.from({ length: firstDayOfWeek }).map((_, i) => (
+                  <div key={`empty-${i}`} />
+                ))}
+
+                {Array.from({ length: daysInMonth }).map((_, i) => {
+                  const dayNum = i + 1;
+                  const isSelected =
+                    selectedDate.getFullYear() === viewYear &&
+                    selectedDate.getMonth() === viewMonth &&
+                    selectedDate.getDate() === dayNum;
+
+                  return (
+                    <button
+                      key={dayNum}
+                      type="button"
+                      onClick={() => handleSelectDay(dayNum)}
+                      className={cn(
+                        "w-8 h-8 rounded-xl text-xs font-bold transition-all flex items-center justify-center mx-auto",
+                        isSelected
+                          ? "bg-[#FCA311] text-black shadow-md shadow-[#FCA311]/30 font-black scale-105"
+                          : "hover:bg-muted text-foreground"
+                      )}
+                    >
+                      {dayNum}
+                    </button>
+                  );
+                })}
+              </div>
+            </>
+          )}
 
           {/* Botão de Atalho "Hoje" */}
           <div className="pt-3 mt-2 border-t border-border/50 flex justify-end">
