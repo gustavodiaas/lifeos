@@ -61,142 +61,203 @@ export function FinanceModule() {
   const [year, setYear] = useState(now.getFullYear());
   const [activeTab, setActiveTab] = useState<Tab>('saldos');
   const [modalOpen, setModalOpen] = useState(false);
-  const [editingTransaction, setEditingTransaction] = useState<Lancamento | null>(null);
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
-  const [modalError, setModalError] = useState<string | null>(null);
-  const [deleteConfig, setDeleteConfig] = useState<{ open: boolean; id: string | null }>({
-    open: false,
-    id: null,
-  });
+  const [editingLancamento, setEditingLancamento] = useState<Lancamento | null>(null);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
-  // Carrega perfil do usuário (para renda de referência)
+  const [modalError, setModalError] = useState<string | null>(null);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
   useEffect(() => {
     if (!user?.id) return;
-    async function loadProfile() {
-      const { data } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user!.id)
-        .maybeSingle();
-      if (data) setPerfil(data as Profile);
-    }
-    loadProfile();
+    supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', user.id)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data) setPerfil(data);
+      });
   }, [user?.id]);
 
-  useEffect(() => {
-    if (error && !modalOpen) setToastMessage(error);
-    if (error && modalOpen) setModalError(error);
-  }, [error, modalOpen]);
-
-  const prevMonth = useCallback(
-    () => setMonth((m) => (m === 0 ? (setYear((y) => y - 1), 11) : m - 1)),
-    [],
+  const expanded = useMemo(() => expandRecorrentes(lancamentos), [lancamentos]);
+  const saldoInicial = useMemo(
+    () => calcSaldoInicial(expanded, year, month, perfil?.monthly_income ?? 0),
+    [expanded, year, month, perfil]
   );
-  const nextMonth = useCallback(
-    () => setMonth((m) => (m === 11 ? (setYear((y) => y + 1), 0) : m + 1)),
-    [],
-  );
-
-  const rendaReferencia = Number(perfil?.monthly_income) || 0;
-  const saldoInicial = useMemo(() => calcSaldoInicial(lancamentos, year, month), [lancamentos, year, month]);
-  const expanded = useMemo(() => expandRecorrentes(lancamentos, year, month), [lancamentos, year, month]);
   const rows = useMemo(() => buildDayRows(expanded, year, month, saldoInicial), [expanded, year, month, saldoInicial]);
-  const summary = useMemo(
-    () => calcSummary(rows, saldoInicial, year, month, rendaReferencia),
-    [rows, saldoInicial, year, month, rendaReferencia],
-  );
 
-  const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+  const rawForMonth = useMemo(() => {
+    const mmStr = String(month + 1).padStart(2, '0');
+    return expanded.filter((l) => l.data.startsWith(`${year}-${mmStr}`));
+  }, [expanded, year, month]);
 
-  const handleOpenEdit = (transaction: Lancamento) => {
-    setModalError(null);
-    setEditingTransaction(transaction);
-    setModalOpen(true);
-  };
+  const summary = useMemo(() => calcSummary(rawForMonth), [rawForMonth]);
 
-  const handleCloseModal = () => {
-    setModalOpen(false);
-    setEditingTransaction(null);
-    setModalError(null);
-  };
-
-  const handleSave = async (data: any, mode: 'one' | 'all' = 'all') => {
-    if (!user) return;
-    setModalError(null);
-
-    // mode 'one': lançamento recorrente editado apenas desta vez
-    if (mode === 'one') {
-      const { id: _id, ...newPayload } = { ...data, user_id: user.id };
-      newPayload.is_recorrente = false;
-      const sucesso = await add(newPayload);
-      if (sucesso) handleCloseModal();
-      return;
+  const prevMonth = () => {
+    if (month === 0) {
+      setMonth(11);
+      setYear((y) => y - 1);
+    } else {
+      setMonth((m) => m - 1);
     }
+  };
 
-    const payload = { ...data, user_id: user.id };
-    const sucesso = data.id ? await update(data.id, payload) : await add(payload);
-    if (sucesso) handleCloseModal();
+  const nextMonth = () => {
+    if (month === 11) {
+      setMonth(0);
+      setYear((y) => y + 1);
+    } else {
+      setMonth((m) => m + 1);
+    }
+  };
+
+  const handleSave = async (data: any, mode: 'one' | 'all' = 'one') => {
+    setModalError(null);
+    try {
+      if (editingLancamento) {
+        if (mode === 'all' && editingLancamento.grupo_recorrencia_id) {
+          const { error: err } = await supabase
+            .from('lancamentos')
+            .update({
+              tipo: data.tipo,
+              valor: data.valor,
+              descricao: data.descricao,
+              categoria: data.categoria,
+            })
+            .eq('grupo_recorrencia_id', editingLancamento.grupo_recorrencia_id);
+
+          if (err) throw err;
+          setLancamentos((prev) =>
+            prev.map((l) =>
+              l.grupo_recorrencia_id === editingLancamento.grupo_recorrencia_id
+                ? { ...l, ...data }
+                : l
+            )
+          );
+        } else {
+          await update(editingLancamento.id, data);
+        }
+      } else {
+        await add(data);
+      }
+      setModalOpen(false);
+      setEditingLancamento(null);
+    } catch (err: any) {
+      setModalError(err.message || 'Erro ao salvar lançamento.');
+    }
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deleteConfirmId) return;
+    try {
+      await remove(deleteConfirmId);
+      setDeleteConfirmId(null);
+    } catch (err: any) {
+      setToastMessage(err.message || 'Erro ao excluir.');
+      setDeleteConfirmId(null);
+    }
   };
 
   const handleRemoveClick = (id: string) => {
-    setDeleteConfig({ open: true, id });
+    setDeleteConfirmId(id);
   };
 
-  const confirmDelete = async () => {
-    if (deleteConfig.id) await remove(deleteConfig.id);
+  const handleOpenEdit = (l: Lancamento) => {
+    setEditingLancamento(l);
+    setModalError(null);
+    setModalOpen(true);
   };
+
+  const today = new Date().toISOString().slice(0, 10);
+  const defaultDate = `${year}-${String(month + 1).padStart(2, '0')}-01`;
 
   return (
-    <div className="flex flex-col h-full relative">
+    <div className="flex flex-col h-full relative space-y-4 pb-12">
       {toastMessage && (
         <ErrorToast message={toastMessage} onClose={() => setToastMessage(null)} />
       )}
 
-      {/* Header do módulo */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-background sticky top-0 z-10">
+      {/* Header do módulo com Seleção de Mês e Pílulas de Navegação */}
+      <div className="glass-card p-4 flex flex-col sm:flex-row items-center justify-between gap-4 sticky top-0 z-10">
         {/* Navegação de mês */}
         <div className="flex items-center gap-3">
           <button
             onClick={prevMonth}
-            className="text-muted-foreground hover:text-foreground transition-colors"
+            className="p-1.5 rounded-xl bg-muted/60 hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
           >
-            <ChevronLeft size={20} strokeWidth={2.5} />
+            <ChevronLeft size={18} strokeWidth={2.5} />
           </button>
-          <span className="text-base font-black tracking-tight text-foreground min-w-[60px] text-center">
+          <span className="text-base font-black tracking-tight text-foreground min-w-[70px] text-center capitalize">
             {formatMonthLabel(year, month)}
           </span>
           <button
             onClick={nextMonth}
-            className="text-muted-foreground hover:text-foreground transition-colors"
+            className="p-1.5 rounded-xl bg-muted/60 hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
           >
-            <ChevronRight size={20} strokeWidth={2.5} />
+            <ChevronRight size={18} strokeWidth={2.5} />
           </button>
         </div>
 
-        {/* Toggle horizon view */}
-        <div className="flex items-center gap-2">
+        {/* Pílulas de Abas do Módulo (Saldos, Totais, Tags, Horizonte) */}
+        <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto pb-1 sm:pb-0">
           <button
-            onClick={() => setActiveTab((t) => (t === 'horizon' ? 'saldos' : 'horizon'))}
-            className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${
-              activeTab === 'horizon'
-                ? 'bg-[#FCA311] text-white'
-                : 'bg-muted text-muted-foreground hover:text-foreground'
+            onClick={() => setActiveTab('saldos')}
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+              activeTab === 'saldos'
+                ? 'bg-[#FCA311] text-black shadow-sm font-extrabold'
+                : 'bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground'
             }`}
-            title="Visão Horizonte"
           >
-            <LayoutGrid size={16} />
+            <Wallet size={14} />
+            <span>Saldos</span>
           </button>
 
-          {/* Botão novo lançamento (desktop) */}
+          <button
+            onClick={() => setActiveTab('totais')}
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+              activeTab === 'totais'
+                ? 'bg-[#FCA311] text-black shadow-sm font-extrabold'
+                : 'bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground'
+            }`}
+          >
+            <PieChart size={14} />
+            <span>Totais</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('tags')}
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+              activeTab === 'tags'
+                ? 'bg-[#FCA311] text-black shadow-sm font-extrabold'
+                : 'bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground'
+            }`}
+          >
+            <Layers size={14} />
+            <span>Tags</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('horizon')}
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+              activeTab === 'horizon'
+                ? 'bg-[#FCA311] text-black shadow-sm font-extrabold'
+                : 'bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground'
+            }`}
+          >
+            <LayoutGrid size={14} />
+            <span>Horizonte</span>
+          </button>
+
           <button
             onClick={() => {
+              setEditingLancamento(null);
               setModalError(null);
               setModalOpen(true);
             }}
-            className="hidden md:flex items-center gap-1.5 h-8 px-3 bg-[#FCA311] text-white rounded-lg text-xs font-bold hover:bg-[#e04400] transition-colors"
+            className="btn-ios text-xs py-1.5 px-3.5 ml-2"
           >
             <Plus size={14} />
-            Novo
+            <span>Novo</span>
           </button>
         </div>
       </div>
@@ -228,95 +289,28 @@ export function FinanceModule() {
         )}
       </div>
 
-      {/* Bottom nav do módulo (mobile) */}
-      <nav className="md:hidden flex items-center justify-around px-2 py-2 bg-background border-t border-border fixed bottom-16 inset-x-0 z-30">
-        <button
-          onClick={() => setActiveTab('saldos')}
-          className={`flex flex-col items-center gap-0.5 px-3 py-1.5 text-[10px] font-black uppercase transition-colors ${
-            activeTab === 'saldos' ? 'text-[#FCA311]' : 'text-muted-foreground'
-          }`}
-        >
-          <Wallet size={20} />
-          <span>Saldos</span>
-        </button>
-        <button
-          onClick={() => setActiveTab('totais')}
-          className={`flex flex-col items-center gap-0.5 px-3 py-1.5 text-[10px] font-black uppercase transition-colors ${
-            activeTab === 'totais' ? 'text-[#FCA311]' : 'text-muted-foreground'
-          }`}
-        >
-          <PieChart size={20} />
-          <span>Totais</span>
-        </button>
-
-        {/* FAB central */}
-        <div className="relative">
-          <button
-            onClick={() => {
-              setModalError(null);
-              setModalOpen(true);
-            }}
-            className="absolute -top-8 left-1/2 -translate-x-1/2 w-14 h-14 bg-[#FCA311] text-white rounded-full flex items-center justify-center shadow-lg active:scale-95 transition-all border-4 border-background"
-          >
-            <Plus size={26} strokeWidth={2.5} />
-          </button>
-        </div>
-
-        <button
-          onClick={() => setActiveTab('tags')}
-          className={`flex flex-col items-center gap-0.5 px-3 py-1.5 text-[10px] font-black uppercase transition-colors ${
-            activeTab === 'tags' ? 'text-[#FCA311]' : 'text-muted-foreground'
-          }`}
-        >
-          <Layers size={20} />
-          <span>Tags</span>
-        </button>
-        <div className="w-16" />
-      </nav>
-
-      {/* Desktop tab bar */}
-      <div className="hidden md:flex border-t border-border bg-background px-4 gap-1 py-1">
-        {(
-          [
-            { key: 'saldos', label: 'Saldos', icon: Wallet },
-            { key: 'totais', label: 'Totais', icon: PieChart },
-            { key: 'tags', label: 'Categorias', icon: Layers },
-          ] as const
-        ).map(({ key, label, icon: Icon }) => (
-          <button
-            key={key}
-            onClick={() => setActiveTab(key)}
-            className={`flex items-center gap-1.5 px-3 py-2 rounded-md text-xs font-bold transition-colors ${
-              activeTab === key
-                ? 'bg-accent text-foreground'
-                : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
-            }`}
-          >
-            <Icon size={14} />
-            {label}
-          </button>
-        ))}
-      </div>
-
-      {/* Modal de lançamento */}
+      {/* Modal de Lançamento */}
       <TransactionModal
         open={modalOpen}
-        onClose={handleCloseModal}
+        onClose={() => {
+          setModalOpen(false);
+          setEditingLancamento(null);
+        }}
         onSave={handleSave}
-        defaultDate={today}
-        editingTransaction={editingTransaction}
+        defaultDate={defaultDate}
+        editingTransaction={editingLancamento}
         error={modalError}
       />
 
-      {/* Confirm delete */}
+      {/* Modal de Alerta para Exclusão */}
       <AlertModal
-        open={deleteConfig.open}
-        onClose={() => setDeleteConfig({ open: false, id: null })}
-        onConfirm={confirmDelete}
-        title="Apagar Registro?"
-        message="Essa ação não pode ser desfeita e afetará teu saldo acumulado."
+        open={!!deleteConfirmId}
+        onClose={() => setDeleteConfirmId(null)}
+        onConfirm={handleConfirmDelete}
+        title="Excluir Lançamento?"
+        message="Tem certeza que deseja excluir este lançamento financeiro?"
         type="danger"
-        confirmText="Sim, Apagar"
+        confirmText="Sim, Excluir"
       />
     </div>
   );
