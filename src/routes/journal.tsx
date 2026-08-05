@@ -1,18 +1,24 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ModulePlaceholder } from "@/components/layout/ModulePlaceholder";
+import { AppShell } from "@/components/layout/AppShell";
+import { PageBody } from "@/components/layout/PageHeader";
+import { JournalModule } from "@/modules/journal/JournalModule";
 
 export const Route = createFileRoute("/journal")({
   head: () => ({
     meta: [
-      { title: "Diário - LifeOS" },
-      { name: "description", content: "Diário com humor e destaques." },
+      { title: "Diário — LifeOS" },
+      { name: "description", content: "Registre seu dia, pensamentos, rastreador de humor e conquistas pessoais." },
     ],
   }),
-  component: () => (
-    <ModulePlaceholder
-      title="Diário"
-      description="Registro diário, humor, reflexões e conquistas."
-      roadmap="Chega na v0.5: calendário, entrada diária, humor e highlights."
-    />
-  ),
+  component: JournalPage,
 });
+
+function JournalPage() {
+  return (
+    <AppShell>
+      <PageBody>
+        <JournalModule />
+      </PageBody>
+    </AppShell>
+  );
+}
