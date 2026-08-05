@@ -11,6 +11,7 @@ import {
   Settings,
   Search,
   Grid,
+  Plus,
 } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { CommandPalette } from "./CommandPalette";
@@ -34,14 +35,6 @@ const NAV_MODULES = [
   { to: "/stats", label: "Estatísticas", icon: BarChart3 },
 ] as const;
 
-// Tab bar no mobile — 4 mais usados + "Mais" (App Sheet)
-const TAB_NAV = [
-  { to: "/", label: "Painel", icon: LayoutDashboard },
-  { to: "/habits", label: "Hábitos", icon: Repeat },
-  { to: "/finance", label: "Finanças", icon: Wallet },
-  { to: "/tasks", label: "Tarefas", icon: CheckSquare },
-] as const;
-
 const PAGE_TITLES: Record<string, string> = {
   "/": "LifeOS",
   "/notes": "Conhecimento",
@@ -57,6 +50,7 @@ const PAGE_TITLES: Record<string, string> = {
 export function AppShell({ children }: { children?: ReactNode }) {
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [fabOpen, setFabOpen] = useState(false);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const { user } = useAuthContext();
 
@@ -110,7 +104,6 @@ export function AppShell({ children }: { children?: ReactNode }) {
 
         {/* Navigation Categories */}
         <nav className="flex-1 px-3 space-y-5 overflow-y-auto pt-2">
-          {/* Seção Principal */}
           <div className="space-y-1">
             <p className="px-3 text-[10px] font-extrabold text-muted-foreground/70 uppercase tracking-widest mb-1.5">
               Principal
@@ -136,7 +129,6 @@ export function AppShell({ children }: { children?: ReactNode }) {
             })}
           </div>
 
-          {/* Seção Gestão & Módulos */}
           <div className="space-y-1">
             <p className="px-3 text-[10px] font-extrabold text-muted-foreground/70 uppercase tracking-widest mb-1.5">
               Módulos
@@ -229,57 +221,85 @@ export function AppShell({ children }: { children?: ReactNode }) {
         </header>
 
         {/* Page body content */}
-        <div className="flex-1 min-w-0 overflow-y-auto pb-[calc(env(safe-area-inset-bottom)+76px)] md:pb-0">
+        <div className="flex-1 min-w-0 overflow-y-auto pb-28 md:pb-0">
           {children ?? <Outlet />}
         </div>
       </main>
 
-      {/* ── Mobile Quick Action FAB (+ Botão Flutuante) ─────────────── */}
-      <QuickActionFab />
+      {/* ── iOS 26 Floating Glass Pill Bar no Mobile ────────────────── */}
+      <div className="md:hidden fixed bottom-3 inset-x-0 z-[100] px-4 pointer-events-none flex justify-center">
+        <nav className="pointer-events-auto w-full max-w-md bg-card/85 dark:bg-[#14213D]/90 backdrop-blur-2xl border border-white/20 dark:border-white/10 shadow-2xl rounded-full px-3 py-1.5 flex items-center justify-between">
+          
+          {/* Painel */}
+          <Link
+            to="/"
+            className={cn(
+              "flex flex-col items-center gap-0.5 px-2 py-1 transition-all active:scale-95",
+              pathname === "/" ? "text-[#FCA311] font-bold" : "text-muted-foreground"
+            )}
+          >
+            <LayoutDashboard size={20} strokeWidth={pathname === "/" ? 2.5 : 1.75} />
+            <span className="text-[9px] tracking-tight">Painel</span>
+          </Link>
 
-      {/* ── Mobile Tab Bar — iOS Style ──────────────────────────────── */}
-      <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 glass-panel border-t border-[var(--glass-border)]">
-        <ul
-          className="flex justify-around items-end px-2"
-          style={{ paddingBottom: "max(env(safe-area-inset-bottom), 10px)" }}
-        >
-          {TAB_NAV.map(({ to, label, icon: Icon }) => {
-            const active = to === "/" ? pathname === "/" : pathname.startsWith(to);
-            return (
-              <li key={to}>
-                <Link
-                  to={to}
-                  className={cn(
-                    "flex flex-col items-center gap-1 pt-3 pb-1 px-3 transition-all ios-spring select-none",
-                    active ? "tab-active" : "tab-inactive"
-                  )}
-                >
-                  <div className="relative">
-                    <Icon className="h-6 w-6" strokeWidth={active ? 2.5 : 1.75} />
-                    {active && (
-                      <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-[#FCA311]" />
-                    )}
-                  </div>
-                  <span className={cn("text-[10px] tracking-tight", active ? "font-bold" : "font-semibold")}>
-                    {label}
-                  </span>
-                </Link>
-              </li>
-            );
-          })}
+          {/* Hábitos */}
+          <Link
+            to="/habits"
+            className={cn(
+              "flex flex-col items-center gap-0.5 px-2 py-1 transition-all active:scale-95",
+              pathname.startsWith("/habits") ? "text-[#FCA311] font-bold" : "text-muted-foreground"
+            )}
+          >
+            <Repeat size={20} strokeWidth={pathname.startsWith("/habits") ? 2.5 : 1.75} />
+            <span className="text-[9px] tracking-tight">Hábitos</span>
+          </Link>
 
-          {/* Botão "Mais" que abre o App Sheet iOS */}
-          <li>
-            <button
-              onClick={() => setDrawerOpen(true)}
-              className="flex flex-col items-center gap-1 pt-3 pb-1 px-3 transition-all ios-spring select-none text-muted-foreground hover:text-foreground"
-            >
-              <Grid className="h-6 w-6" strokeWidth={1.75} />
-              <span className="text-[10px] font-semibold tracking-tight">Mais</span>
-            </button>
-          </li>
-        </ul>
-      </nav>
+          {/* BOTÃO CENTRAL INTEGRADOR (+) DE AÇÃO RÁPIDA */}
+          <button
+            onClick={() => setFabOpen(true)}
+            className="w-12 h-12 rounded-full bg-[#FCA311] text-black shadow-lg shadow-[#FCA311]/40 flex items-center justify-center active:scale-90 transition-all mx-1 shrink-0"
+            title="Nova Ação"
+          >
+            <Plus size={24} strokeWidth={3} />
+          </button>
+
+          {/* Finanças */}
+          <Link
+            to="/finance"
+            className={cn(
+              "flex flex-col items-center gap-0.5 px-2 py-1 transition-all active:scale-95",
+              pathname.startsWith("/finance") ? "text-[#FCA311] font-bold" : "text-muted-foreground"
+            )}
+          >
+            <Wallet size={20} strokeWidth={pathname.startsWith("/finance") ? 2.5 : 1.75} />
+            <span className="text-[9px] tracking-tight">Finanças</span>
+          </Link>
+
+          {/* Tarefas */}
+          <Link
+            to="/tasks"
+            className={cn(
+              "flex flex-col items-center gap-0.5 px-2 py-1 transition-all active:scale-95",
+              pathname.startsWith("/tasks") ? "text-[#FCA311] font-bold" : "text-muted-foreground"
+            )}
+          >
+            <CheckSquare size={20} strokeWidth={pathname.startsWith("/tasks") ? 2.5 : 1.75} />
+            <span className="text-[9px] tracking-tight">Tarefas</span>
+          </Link>
+
+          {/* Mais (App Sheet) */}
+          <button
+            onClick={() => setDrawerOpen(true)}
+            className="flex flex-col items-center gap-0.5 px-2 py-1 transition-all active:scale-95 text-muted-foreground hover:text-foreground"
+          >
+            <Grid size={20} strokeWidth={1.75} />
+            <span className="text-[9px] tracking-tight font-semibold">Mais</span>
+          </button>
+        </nav>
+      </div>
+
+      {/* Modal Speed Dial da Ação Rápida */}
+      <QuickActionFab open={fabOpen} onClose={() => setFabOpen(false)} />
 
       {/* Drawer de Todos os Apps */}
       <MobileAppDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
