@@ -5,6 +5,7 @@ export interface SummaryData {
   custoVida: number;
   gastosDiarios: number;
   investimentos: number;
+  rendaReferencia: number;
   totalSaidas: number;
   economizado: number;
   saldoFinal: number;
@@ -141,6 +142,7 @@ export function calcSummary(
   saldoInicial: number,
   year: number,
   month: number,
+  rendaReferencia: number = 0,
 ): SummaryData {
   const now = new Date();
   const totais = rows.reduce(
@@ -163,10 +165,13 @@ export function calcSummary(
   const diasNoMes = new Date(year, month + 1, 0).getDate();
 
   const isPast = year < now.getFullYear() || (year === now.getFullYear() && month < now.getMonth());
+  const isFuture = year > now.getFullYear() || (year === now.getFullYear() && month > now.getMonth());
 
   let diarioMedio = 0;
   if (isPast) {
     diarioMedio = totalSaidas / diasNoMes;
+  } else if (isFuture) {
+    diarioMedio = economizado / diasNoMes;
   } else {
     const diasRestantes = Math.max(1, diasNoMes - now.getDate());
     diarioMedio = economizado / diasRestantes;
@@ -174,6 +179,7 @@ export function calcSummary(
 
   return {
     ...totais,
+    rendaReferencia,
     totalSaidas,
     economizado,
     saldoFinal: saldoInicial + economizado,
