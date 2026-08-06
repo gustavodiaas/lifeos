@@ -70,7 +70,7 @@ export function AppShell({ children }: { children?: ReactNode }) {
   }, []);
 
   return (
-    <div className="flex h-[100dvh] w-full bg-background text-foreground overflow-hidden">
+    <div className="flex h-[100dvh] w-full bg-background text-foreground">
 
       {/* ── Desktop Sidebar — macOS Style ───────────────────────────── */}
       <aside className="hidden md:flex w-64 shrink-0 flex-col glass-panel border-r border-[var(--glass-border)] select-none">
