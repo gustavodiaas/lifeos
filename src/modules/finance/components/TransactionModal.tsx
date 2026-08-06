@@ -3,6 +3,7 @@ import { X, Save, Repeat, AlertCircle } from 'lucide-react';
 import type { Lancamento } from '@/lib/supabase';
 import { CustomSelect } from '@/components/ui/CustomSelect';
 import { CustomDatePicker } from '@/components/ui/CustomDatePicker';
+import { ModalPortal } from '@/components/ui/ModalPortal';
 
 interface Props {
   open: boolean;
@@ -82,7 +83,7 @@ export function TransactionModal({ open, onClose, onSave, defaultDate, editingTr
   };
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-[300] flex items-end sm:items-center justify-center p-0 sm:p-4 fade-in">
+    <ModalPortal open={open} onClose={onClose}>
       <div className="bg-card w-full max-w-sm rounded-t-[28px] sm:rounded-[28px] shadow-2xl border border-border overflow-hidden slide-up">
         <div className="flex items-center justify-between p-6 border-b border-border/60">
           <h2 className="text-base font-extrabold text-foreground tracking-tight">
@@ -225,6 +226,6 @@ export function TransactionModal({ open, onClose, onSave, defaultDate, editingTr
           </form>
         )}
       </div>
-    </div>
+    </ModalPortal>
   );
 }
