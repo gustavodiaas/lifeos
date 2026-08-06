@@ -1,6 +1,8 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
-import { db, newId, nowIso } from "@/db";
-import type { Goal, Habit, GoalScope } from "@/db/schema";
+import { useState, useMemo } from "react";
+import { useAuthContext } from "@/context/AuthContext";
+import { useGoals } from "@/hooks/useGoals";
+import { useHabits } from "@/hooks/useHabits";
+import type { Goal, GoalScope } from "@/lib/supabase";
 import { GoalCard } from "./components/GoalCard";
 import { GoalModal } from "./components/GoalModal";
 import { AlertModal } from "@/modules/finance/components/AlertModal";
@@ -18,9 +20,9 @@ import {
 import { cn } from "@/lib/utils";
 
 export function GoalsModule() {
-  const [goals, setGoals] = useState<Goal[]>([]);
-  const [habits, setHabits] = useState<Habit[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { user } = useAuthContext();
+  const { goals, loading, addGoal, updateGoal, removeGoal, updateProgress } = useGoals(user?.id);
+  const { habits } = useHabits(user?.id);
 
   const [selectedScope, setSelectedScope] = useState<GoalScope | "all">("all");
   const [searchQuery, setSearchQuery] = useState("");
@@ -33,43 +35,15 @@ export function GoalsModule() {
     id: null,
   });
 
-  // Carrega metas e hábitos do IndexedDB
-  const loadData = useCallback(async () => {
-    try {
-      setLoading(true);
-      const d = db();
-      const [allGoals, allHabits] = await Promise.all([
-        d.goals.toArray(),
-        d.habits.filter((h) => !h.archivedAt).toArray(),
-      ]);
-      setGoals(allGoals);
-      setHabits(allHabits);
-    } catch (err) {
-      console.error("Erro ao carregar metas:", err);
-      toast.error("Erro ao carregar metas.");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    loadData();
-  }, [loadData]);
-
   // Atualizar progresso rápido da meta
   const handleUpdateProgress = async (goalId: string, newProgress: number) => {
     try {
-      const d = db();
-      const now = nowIso();
-      await d.goals.update(goalId, { progress: newProgress, updatedAt: now });
-
-      setGoals((prev) =>
-        prev.map((g) => (g.id === goalId ? { ...g, progress: newProgress, updatedAt: now } : g))
-      );
-
-      const target = goals.find((g) => g.id === goalId)?.target || 100;
-      if (newProgress >= target) {
-        toast.success("🏆 Meta Concluída com sucesso! Parabéns!");
+      const ok = await updateProgress(goalId, newProgress);
+      if (ok) {
+        const target = goals.find((g) => g.id === goalId)?.target || 100;
+        if (newProgress >= target) {
+          toast.success("🏆 Meta Concluída com sucesso! Parabéns!");
+        }
       }
     } catch (err) {
       console.error(err);
@@ -89,11 +63,8 @@ export function GoalsModule() {
     linkedHabitId?: string | null;
   }) => {
     try {
-      const d = db();
-      const now = nowIso();
-
       if (goalData.id) {
-        await d.goals.update(goalData.id, {
+        const ok = await updateGoal(goalData.id, {
           title: goalData.title,
           scope: goalData.scope,
           period: goalData.period,
@@ -101,12 +72,10 @@ export function GoalsModule() {
           unit: goalData.unit,
           progress: goalData.progress,
           linkedHabitId: goalData.linkedHabitId,
-          updatedAt: now,
         });
-        toast.success("Meta atualizada!");
+        if (ok) toast.success("Meta atualizada!");
       } else {
-        const newGoal: Goal = {
-          id: newId(),
+        const ok = await addGoal({
           title: goalData.title,
           scope: goalData.scope,
           period: goalData.period,
@@ -114,16 +83,12 @@ export function GoalsModule() {
           unit: goalData.unit,
           progress: goalData.progress,
           linkedHabitId: goalData.linkedHabitId,
-          createdAt: now,
-          updatedAt: now,
-        };
-        await d.goals.add(newGoal);
-        toast.success("Nova meta cadastrada!");
+        });
+        if (ok) toast.success("Nova meta cadastrada!");
       }
 
       setModalOpen(false);
       setEditingGoal(null);
-      await loadData();
     } catch (err) {
       console.error(err);
       toast.error("Erro ao salvar meta.");
@@ -134,10 +99,9 @@ export function GoalsModule() {
   const confirmDeleteGoal = async () => {
     if (!deleteConfig.id) return;
     try {
-      const d = db();
-      await d.goals.delete(deleteConfig.id);
-      toast.success("Meta excluída.");
-      await loadData();
+      const ok = await removeGoal(deleteConfig.id);
+      if (ok) toast.success("Meta excluída.");
+      setDeleteConfig({ open: false, id: null });
     } catch (err) {
       console.error(err);
       toast.error("Erro ao excluir meta.");
