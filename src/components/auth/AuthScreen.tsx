@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { supabase } from '@/lib/supabase';
-import { Mail, Lock, ArrowRight, Loader2, Eye, EyeOff } from 'lucide-react';
+import { Mail, Lock, ArrowRight, Loader2, Eye, EyeOff, User } from 'lucide-react';
 
 export function AuthScreen() {
   const [isLogin, setIsLogin] = useState(true);
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPass, setShowPass] = useState(false);
@@ -22,14 +23,25 @@ export function AuthScreen() {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
       } else {
-        const { error } = await supabase.auth.signUp({ email, password });
+        if (!name.trim()) {
+          setError('Por favor, insere o teu nome antes de criar a conta.');
+          setLoading(false);
+          return;
+        }
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: { data: { username: name.trim() } },
+        });
         if (error) throw error;
-        setSuccessMsg('Conta criada! Verifica o teu e-mail para confirmar.');
+        setSuccessMsg('Conta criada! Podes entrar agora ou verifica o teu e-mail se pedido.');
       }
     } catch (err: any) {
       console.error('Erro de Autenticação:', err);
       const msg = err.message || '';
-      if (msg.includes('User already registered') || msg.includes('user_already_exists')) {
+      if (msg.includes('Failed to fetch') || msg.includes('fetch')) {
+        setError('Não foi possível conectar ao Supabase. Verifique se as variáveis VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY foram adicionadas nas configurações do Vercel.');
+      } else if (msg.includes('User already registered') || msg.includes('user_already_exists')) {
         setError('Este e-mail já está cadastrado. Clique em "Entrar" na aba acima.');
       } else if (msg.includes('Invalid login credentials')) {
         setError('E-mail ou senha inválidos. Verifica e tenta novamente.');
@@ -151,6 +163,28 @@ export function AuthScreen() {
               <div className="rounded-[12px] px-4 py-3 text-xs font-semibold fade-in"
                 style={{ background: 'rgba(52,199,89,0.15)', color: '#32D74B', border: '1px solid rgba(52,199,89,0.25)' }}>
                 {successMsg}
+              </div>
+            )}
+
+            {/* Nome — só no cadastro */}
+            {!isLogin && (
+              <div className="relative">
+                <User size={16} className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: 'rgba(255,255,255,0.35)' }} />
+                <input
+                  type="text"
+                  placeholder="Como queres ser chamado?"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full pl-11 pr-4 py-3.5 rounded-[14px] text-[15px] font-medium outline-none transition-all"
+                  style={{
+                    background: 'rgba(255,255,255,0.09)',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    color: '#FFFFFF',
+                  }}
+                  onFocus={e => { e.currentTarget.style.borderColor = '#FCA311'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(252,163,17,0.15)'; }}
+                  onBlur={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'; e.currentTarget.style.boxShadow = 'none'; }}
+                  autoComplete="name"
+                />
               </div>
             )}
 
