@@ -1,6 +1,7 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
-import { db, newId, nowIso } from "@/db";
-import type { Habit, HabitLog } from "@/db/schema";
+import { useState, useMemo } from "react";
+import { useAuthContext } from "@/context/AuthContext";
+import { useHabits } from "@/hooks/useHabits";
+import type { Habit } from "@/lib/supabase";
 import { todayIso, lastNDates } from "@/lib/date";
 import { HabitHeatmap } from "./components/HabitHeatmap";
 import { HabitCard } from "./components/HabitCard";
@@ -20,9 +21,19 @@ import {
 } from "lucide-react";
 
 export function HabitsModule() {
-  const [habits, setHabits] = useState<Habit[]>([]);
-  const [logs, setLogs] = useState<HabitLog[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { user } = useAuthContext();
+  const {
+    habits,
+    logs,
+    loading,
+    addHabit,
+    updateHabit,
+    removeHabit,
+    archiveHabit,
+    toggleHabitLog,
+  } = useHabits(user?.id);
+
+  const activeHabits = useMemo(() => habits.filter((h) => !h.archivedAt && !h.archived_at), [habits]);
 
   const [selectedDate, setSelectedDate] = useState(todayIso());
   const [selectedHabitId, setSelectedHabitId] = useState<string | null>(null);
@@ -35,62 +46,11 @@ export function HabitsModule() {
     id: null,
   });
 
-  // Carrega hábitos e logs do IndexedDB
-  const loadData = useCallback(async () => {
-    try {
-      setLoading(true);
-      const d = db();
-      const [allHabits, allLogs] = await Promise.all([
-        d.habits.filter((h) => !h.archivedAt).toArray(),
-        d.habit_logs.toArray(),
-      ]);
-      setHabits(allHabits);
-      setLogs(allLogs);
-    } catch (err) {
-      console.error("Erro ao carregar hábitos:", err);
-      toast.error("Erro ao carregar hábitos.");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    loadData();
-  }, [loadData]);
-
   // Alternar marcação de um hábito em uma data específica
   const handleToggleHabit = async (habitId: string, date: string) => {
     try {
-      const d = db();
-      const existing = logs.find((l) => l.habitId === habitId && l.date === date);
-
-      if (existing) {
-        if (existing.done) {
-          // Desmarca
-          await d.habit_logs.update(existing.id, { done: false, updatedAt: nowIso() });
-          setLogs((prev) =>
-            prev.map((l) => (l.id === existing.id ? { ...l, done: false, updatedAt: nowIso() } : l))
-          );
-        } else {
-          // Marca de novo
-          await d.habit_logs.update(existing.id, { done: true, updatedAt: nowIso() });
-          setLogs((prev) =>
-            prev.map((l) => (l.id === existing.id ? { ...l, done: true, updatedAt: nowIso() } : l))
-          );
-        }
-      } else {
-        // Cria novo log
-        const newLog: HabitLog = {
-          id: newId(),
-          habitId,
-          date,
-          done: true,
-          createdAt: nowIso(),
-          updatedAt: nowIso(),
-        };
-        await d.habit_logs.add(newLog);
-        setLogs((prev) => [...prev, newLog]);
-      }
+      const ok = await toggleHabitLog(habitId, date);
+      if (!ok) toast.error("Erro ao salvar alteração.");
     } catch (err) {
       console.error("Erro ao marcar hábito:", err);
       toast.error("Erro ao salvar alteração.");
@@ -100,35 +60,26 @@ export function HabitsModule() {
   // Salvar/Editar hábito
   const handleSaveHabit = async (data: { id?: string; name: string; frequency: any; targetPerWeek: number }) => {
     try {
-      const d = db();
-      const now = nowIso();
-
       if (data.id) {
         // Edição
-        await d.habits.update(data.id, {
+        const ok = await updateHabit(data.id, {
           name: data.name,
           frequency: data.frequency,
           targetPerWeek: data.targetPerWeek,
-          updatedAt: now,
         });
-        toast.success("Hábito atualizado!");
+        if (ok) toast.success("Hábito atualizado!");
       } else {
         // Criação
-        const newHabit: Habit = {
-          id: newId(),
+        const ok = await addHabit({
           name: data.name,
           frequency: data.frequency,
           targetPerWeek: data.targetPerWeek,
-          createdAt: now,
-          updatedAt: now,
-        };
-        await d.habits.add(newHabit);
-        toast.success("Novo hábito criado!");
+        });
+        if (ok) toast.success("Novo hábito criado!");
       }
 
       setModalOpen(false);
       setEditingHabit(null);
-      await loadData();
     } catch (err) {
       console.error(err);
       toast.error("Erro ao salvar hábito.");
@@ -139,14 +90,9 @@ export function HabitsModule() {
   const confirmDelete = async () => {
     if (!deleteConfig.id) return;
     try {
-      const d = db();
-      await d.habits.delete(deleteConfig.id);
-      // Apaga logs associados
-      const habitLogs = await d.habit_logs.where("habitId").equals(deleteConfig.id).toArray();
-      await d.habit_logs.bulkDelete(habitLogs.map((l) => l.id));
-
-      toast.success("Hábito excluído.");
-      await loadData();
+      const ok = await removeHabit(deleteConfig.id);
+      if (ok) toast.success("Hábito excluído.");
+      setDeleteConfig({ open: false, id: null });
     } catch (err) {
       console.error(err);
       toast.error("Erro ao excluir hábito.");
@@ -156,10 +102,8 @@ export function HabitsModule() {
   // Arquivar hábito
   const handleArchiveHabit = async (habitId: string) => {
     try {
-      const d = db();
-      await d.habits.update(habitId, { archivedAt: nowIso() });
-      toast.success("Hábito arquivado.");
-      await loadData();
+      const ok = await archiveHabit(habitId);
+      if (ok) toast.success("Hábito arquivado.");
     } catch (err) {
       console.error(err);
       toast.error("Erro ao arquivar hábito.");
@@ -176,29 +120,29 @@ export function HabitsModule() {
       const isToday = dStr === todayIso();
 
       // Conta quantos hábitos foram feitos nesse dia
-      const doneCount = habits.filter((h) =>
-        logs.some((l) => l.habitId === h.id && l.date === dStr && l.done)
+      const doneCount = activeHabits.filter((h) =>
+        logs.some((l) => (l.habitId === h.id || l.habit_id === h.id) && l.date === dStr && l.done)
       ).length;
 
       return { dStr, dayName, dayNum, isToday, doneCount };
     });
-  }, [habits, logs]);
+  }, [activeHabits, logs]);
 
   // Hábitos filtrados por busca e seleção
   const filteredHabits = useMemo(() => {
-    return habits.filter((h) => {
+    return activeHabits.filter((h) => {
       if (searchQuery && !h.name.toLowerCase().includes(searchQuery.toLowerCase())) return false;
       if (selectedHabitId && h.id !== selectedHabitId) return false;
       return true;
     });
-  }, [habits, searchQuery, selectedHabitId]);
+  }, [activeHabits, searchQuery, selectedHabitId]);
 
   // Estatísticas calculadas
-  const habitsDoneToday = habits.filter((h) =>
-    logs.some((l) => l.habitId === h.id && l.date === selectedDate && l.done)
+  const habitsDoneToday = activeHabits.filter((h) =>
+    logs.some((l) => (l.habitId === h.id || l.habit_id === h.id) && l.date === selectedDate && l.done)
   ).length;
 
-  const selectedHabitName = habits.find((h) => h.id === selectedHabitId)?.name;
+  const selectedHabitName = activeHabits.find((h) => h.id === selectedHabitId)?.name;
 
   return (
     <div className="space-y-6 fade-in pb-12">
@@ -297,10 +241,10 @@ export function HabitsModule() {
                 : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground"
             }`}
           >
-            Todos os Hábitos ({habits.length})
+            Todos os Hábitos ({activeHabits.length})
           </button>
 
-          {habits.map((h) => (
+          {activeHabits.map((h) => (
             <button
               key={h.id}
               onClick={() => setSelectedHabitId(selectedHabitId === h.id ? null : h.id)}
