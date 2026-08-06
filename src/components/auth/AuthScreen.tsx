@@ -26,8 +26,18 @@ export function AuthScreen() {
         if (error) throw error;
         setSuccessMsg('Conta criada! Verifica o teu e-mail para confirmar.');
       }
-    } catch {
-      setError('E-mail ou senha inválidos. Verifica e tenta novamente.');
+    } catch (err: any) {
+      console.error('Erro de Autenticação:', err);
+      const msg = err.message || '';
+      if (msg.includes('User already registered') || msg.includes('user_already_exists')) {
+        setError('Este e-mail já está cadastrado. Clique em "Entrar" na aba acima.');
+      } else if (msg.includes('Invalid login credentials')) {
+        setError('E-mail ou senha inválidos. Verifica e tenta novamente.');
+      } else if (msg.includes('Email not confirmed')) {
+        setError('E-mail não confirmado. Verifica a tua caixa de entrada para confirmar a conta.');
+      } else {
+        setError(msg || 'Erro ao realizar autenticação. Tenta novamente.');
+      }
     } finally {
       setLoading(false);
     }
