@@ -1,4 +1,4 @@
-import type { Note } from "@/db/schema";
+import type { Note } from "@/lib/supabase";
 import { Link2, Sparkles, FileText, ArrowRight } from "lucide-react";
 
 interface BacklinksPanelProps {
