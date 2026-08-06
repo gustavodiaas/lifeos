@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { Play, Pause, RotateCcw, Clock, Sparkles, CheckCircle2, Volume2, VolumeX } from "lucide-react";
 import { toast } from "sonner";
-import { db, newId, nowIso } from "@/db";
+import { useAuthContext } from "@/context/AuthContext";
+import { useMetrics } from "@/hooks/useMetrics";
 import { todayIso } from "@/lib/date";
 
 interface FocusTimerProps {
@@ -17,6 +18,9 @@ const MODE_CONFIG = {
 };
 
 export function FocusTimer({ onSessionComplete }: FocusTimerProps) {
+  const { user } = useAuthContext();
+  const { addMetric } = useMetrics(user?.id);
+
   const [mode, setMode] = useState<Mode>("focus");
   const [timeLeft, setTimeLeft] = useState(MODE_CONFIG.focus.duration);
   const [isRunning, setIsRunning] = useState(false);
@@ -56,25 +60,17 @@ export function FocusTimer({ onSessionComplete }: FocusTimerProps) {
 
   // Quando a sessão de foco termina
   const handleFinishSession = async () => {
-    const config = MODE_CONFIG[mode];
-
     if (mode === "focus") {
       setCompletedSessions((s) => s + 1);
       const hoursLogged = 25 / 60; // 0.42h
 
       try {
-        const d = db();
-        const now = nowIso();
         const today = todayIso();
-
-        await d.metrics.add({
-          id: newId(),
+        await addMetric({
           key: "study_hours",
           value: parseFloat(hoursLogged.toFixed(2)),
           unit: "h",
           date: today,
-          createdAt: now,
-          updatedAt: now,
         });
 
         toast.success("🧠 Sessão de Foco concluída! 25 min gravados no seu histórico de estudos!");
