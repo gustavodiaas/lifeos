@@ -1,9 +1,13 @@
 import { useState, useEffect } from "react";
-import type { Task, Project, TaskPriority, TaskStatus, ChecklistItem } from "@/db/schema";
+import type { Task, Project, TaskPriority, TaskStatus, ChecklistItem } from "@/lib/supabase";
 import { X, Save, Plus, Trash2, CheckSquare, Calendar, Folder } from "lucide-react";
-import { newId } from "@/db";
 import { CustomSelect } from "@/components/ui/CustomSelect";
 import { CustomDatePicker } from "@/components/ui/CustomDatePicker";
+
+const generateId = () =>
+  typeof crypto !== "undefined" && "randomUUID" in crypto
+    ? crypto.randomUUID()
+    : Math.random().toString(36).slice(2);
 
 interface TaskModalProps {
   open: boolean;
@@ -71,7 +75,7 @@ export function TaskModal({
   const handleAddChecklistItem = () => {
     if (!newChecklistText.trim()) return;
     const newItem: ChecklistItem = {
-      id: newId(),
+      id: generateId(),
       text: newChecklistText.trim(),
       done: false,
     };
