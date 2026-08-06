@@ -1,4 +1,4 @@
-import type { JournalEntry } from "@/db/schema";
+import type { JournalEntry } from "@/lib/supabase";
 import { Calendar, Smile, Edit3, Trash2, Sparkles, Quote } from "lucide-react";
 
 interface JournalEntryCardProps {
