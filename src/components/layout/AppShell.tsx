@@ -36,14 +36,15 @@ function getGreeting(): string {
   return "Boa noite";
 }
 
-/** Returns first name from email or display name */
+/** Returns display name: username > full_name > email prefix */
 function getFirstName(user: any): string {
-  const full =
+  const name =
+    user?.user_metadata?.username ||
     user?.user_metadata?.full_name ||
     user?.user_metadata?.name ||
     user?.email?.split("@")[0] ||
     "Você";
-  return full.split(/[\s.]/)[0];
+  return name.split(/[\s.]/)[0];
 }
 
 type WeatherInfo = { icon: React.ReactNode; label: string } | null;
@@ -152,16 +153,14 @@ export function AppShell({ children }: { children?: ReactNode }) {
               </span>
             </div>
             <div>
-              <div className="flex items-center gap-1.5">
-                <p className="text-base font-extrabold text-foreground tracking-tight">{firstName}</p>
-                {weather ? (
-                  <span className="flex items-center gap-1 badge-ios" title={weather.label}>
-                    {weather.icon}
-                    <span className="text-[9px]">{weather.label}</span>
-                  </span>
-                ) : null}
-              </div>
+              <p className="text-base font-extrabold text-foreground tracking-tight">{firstName}</p>
               <p className="text-[11px] text-muted-foreground font-medium">{greeting} 👋</p>
+              {weather ? (
+                <span className="flex items-center gap-1 mt-0.5 text-[10px] text-muted-foreground">
+                  {weather.icon}
+                  <span>{weather.label}</span>
+                </span>
+              ) : null}
             </div>
           </Link>
         </div>
