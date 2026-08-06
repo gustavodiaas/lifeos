@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import type { JournalEntry } from "@/db/schema";
+import type { JournalEntry } from "@/lib/supabase";
 import { X, Save, NotebookPen, Sparkles, Plus } from "lucide-react";
 import { todayIso } from "@/lib/date";
 import { CustomDatePicker } from "@/components/ui/CustomDatePicker";
