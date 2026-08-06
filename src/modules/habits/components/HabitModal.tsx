@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import type { Habit, HabitFrequency } from "@/lib/supabase";
 import { X, Save, Repeat, Sparkles } from "lucide-react";
+import { ModalPortal } from "@/components/ui/ModalPortal";
 
 interface HabitModalProps {
   open: boolean;
@@ -40,7 +41,7 @@ export function HabitModal({ open, onClose, onSave, editingHabit }: HabitModalPr
   };
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 fade-in">
+    <ModalPortal open={open} onClose={onClose}>
       <div className="bg-card w-full max-w-lg rounded-t-[28px] sm:rounded-[28px] shadow-2xl border border-border overflow-hidden flex flex-col max-h-[95vh] slide-up">
         {/* Header */}
         <div className="px-6 py-4 border-b border-border/60 flex items-center justify-between shrink-0">
@@ -143,6 +144,6 @@ export function HabitModal({ open, onClose, onSave, editingHabit }: HabitModalPr
           </button>
         </form>
       </div>
-    </div>
+    </ModalPortal>
   );
 }
