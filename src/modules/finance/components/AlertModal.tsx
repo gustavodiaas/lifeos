@@ -1,4 +1,5 @@
 import { AlertCircle, CheckCircle2 } from 'lucide-react';
+import { ModalPortal } from '@/components/ui/ModalPortal';
 
 interface Props {
   open: boolean;
@@ -14,7 +15,7 @@ export function AlertModal({ open, onClose, onConfirm, title, message, type = 'i
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-md z-[300] flex items-center justify-center p-6 transition-all duration-300 fade-in">
+    <ModalPortal open={open} onClose={onClose}>
       <div className="bg-white/90 dark:bg-[#14213D]/90 backdrop-blur-xl w-full max-w-xs rounded-[28px] shadow-2xl overflow-hidden border border-black/5 dark:border-white/10 transition-colors slide-up">
         <div className="p-7 flex flex-col items-center text-center">
           <div
@@ -59,6 +60,6 @@ export function AlertModal({ open, onClose, onConfirm, title, message, type = 'i
           </div>
         </div>
       </div>
-    </div>
+    </ModalPortal>
   );
 }
