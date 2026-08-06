@@ -12,6 +12,13 @@ import {
   Search,
   Grid,
   Plus,
+  Cloud,
+  CloudRain,
+  CloudSnow,
+  Sun,
+  CloudLightning,
+  Wind,
+  CloudDrizzle,
 } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { CommandPalette } from "./CommandPalette";
@@ -20,6 +27,65 @@ import { QuickActionFab } from "./QuickActionFab";
 import { NotificationManager } from "./NotificationManager";
 import { cn } from "@/lib/utils";
 import { useAuthContext } from "@/context/AuthContext";
+
+/** Returns greeting based on current hour */
+function getGreeting(): string {
+  const h = new Date().getHours();
+  if (h >= 5 && h < 12) return "Bom dia";
+  if (h >= 12 && h < 18) return "Boa tarde";
+  return "Boa noite";
+}
+
+/** Returns first name from email or display name */
+function getFirstName(user: any): string {
+  const full =
+    user?.user_metadata?.full_name ||
+    user?.user_metadata?.name ||
+    user?.email?.split("@")[0] ||
+    "Você";
+  return full.split(/[\s.]/)[0];
+}
+
+type WeatherInfo = { icon: React.ReactNode; label: string } | null;
+
+/** WMO weather code -> icon + label */
+function wmoToInfo(code: number): WeatherInfo {
+  if (code === 0) return { icon: <Sun size={14} className="text-yellow-400" />, label: "Sol" };
+  if (code <= 2) return { icon: <Cloud size={14} className="text-slate-400" />, label: "Nublado" };
+  if (code <= 9) return { icon: <Wind size={14} className="text-blue-300" />, label: "Ventoso" };
+  if (code <= 29) return { icon: <CloudDrizzle size={14} className="text-blue-400" />, label: "Garoa" };
+  if (code <= 39) return { icon: <CloudRain size={14} className="text-blue-500" />, label: "Chuva" };
+  if (code <= 49) return { icon: <CloudSnow size={14} className="text-blue-200" />, label: "Neve" };
+  if (code <= 59) return { icon: <CloudDrizzle size={14} className="text-blue-400" />, label: "Garoa" };
+  if (code <= 69) return { icon: <CloudRain size={14} className="text-blue-500" />, label: "Chuva" };
+  if (code <= 79) return { icon: <CloudSnow size={14} className="text-blue-200" />, label: "Neve" };
+  if (code <= 84) return { icon: <CloudRain size={14} className="text-blue-600" />, label: "Pancadas" };
+  if (code <= 89) return { icon: <CloudLightning size={14} className="text-yellow-500" />, label: "Temporal" };
+  return { icon: <CloudLightning size={14} className="text-yellow-500" />, label: "Temporal" };
+}
+
+function useWeather(): WeatherInfo {
+  const [weather, setWeather] = useState<WeatherInfo>(null);
+
+  useEffect(() => {
+    if (!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+      async ({ coords }) => {
+        try {
+          const res = await fetch(
+            `https://api.open-meteo.com/v1/forecast?latitude=${coords.latitude}&longitude=${coords.longitude}&current_weather=true`
+          );
+          const data = await res.json();
+          const code = data?.current_weather?.weathercode ?? -1;
+          if (code >= 0) setWeather(wmoToInfo(code));
+        } catch {}
+      },
+      () => {} // silently ignore denied
+    );
+  }, []);
+
+  return weather;
+}
 
 const NAV_MAIN = [
   { to: "/", label: "Painel", icon: LayoutDashboard },
@@ -53,6 +119,9 @@ export function AppShell({ children }: { children?: ReactNode }) {
   const [fabOpen, setFabOpen] = useState(false);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const { user } = useAuthContext();
+  const weather = useWeather();
+  const greeting = getGreeting();
+  const firstName = getFirstName(user);
 
   const pageTitle = Object.entries(PAGE_TITLES)
     .sort((a, b) => b[0].length - a[0].length)
@@ -78,14 +147,21 @@ export function AppShell({ children }: { children?: ReactNode }) {
         <div className="px-5 pt-6 pb-4">
           <Link to="/" className="flex items-center gap-3 group">
             <div className="h-10 w-10 rounded-2xl bg-[#14213D] dark:bg-[#FCA311] flex items-center justify-center shadow-lg shadow-black/10 dark:shadow-[#FCA311]/20 transition-transform group-hover:scale-105">
-              <span className="text-white dark:text-black text-base font-extrabold tracking-tight">L</span>
+              <span className="text-white dark:text-black text-base font-extrabold tracking-tight">
+                {firstName[0]?.toUpperCase() ?? "L"}
+              </span>
             </div>
             <div>
               <div className="flex items-center gap-1.5">
-                <p className="text-base font-extrabold text-foreground tracking-tight">LifeOS</p>
-                <span className="badge-ios">v0.4</span>
+                <p className="text-base font-extrabold text-foreground tracking-tight">{firstName}</p>
+                {weather ? (
+                  <span className="flex items-center gap-1 badge-ios" title={weather.label}>
+                    {weather.icon}
+                    <span className="text-[9px]">{weather.label}</span>
+                  </span>
+                ) : null}
               </div>
-              <p className="text-[11px] text-muted-foreground font-medium">Sistema Pessoal Pro</p>
+              <p className="text-[11px] text-muted-foreground font-medium">{greeting} 👋</p>
             </div>
           </Link>
         </div>
