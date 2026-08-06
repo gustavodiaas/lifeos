@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { X, Save, FolderPlus } from "lucide-react";
+import { ModalPortal } from "@/components/ui/ModalPortal";
 
 interface FolderModalProps {
   open: boolean;
@@ -20,7 +21,7 @@ export function FolderModal({ open, onClose, onSave }: FolderModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 fade-in">
+    <ModalPortal open={open} onClose={onClose}>
       <div className="bg-card w-full max-w-sm rounded-t-[28px] sm:rounded-[28px] shadow-2xl border border-border overflow-hidden flex flex-col slide-up">
 
         {/* Header */}
@@ -62,6 +63,6 @@ export function FolderModal({ open, onClose, onSave }: FolderModalProps) {
           </button>
         </form>
       </div>
-    </div>
+    </ModalPortal>
   );
 }
