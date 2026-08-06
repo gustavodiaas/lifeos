@@ -1,6 +1,7 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
-import { db, newId, nowIso } from "@/db";
-import type { JournalEntry } from "@/db/schema";
+import { useState, useMemo } from "react";
+import { useAuthContext } from "@/context/AuthContext";
+import { useJournal } from "@/hooks/useJournal";
+import type { JournalEntry } from "@/lib/supabase";
 import { todayIso } from "@/lib/date";
 import { JournalEntryCard } from "./components/JournalEntryCard";
 import { JournalModal } from "./components/JournalModal";
@@ -20,8 +21,8 @@ import {
 import { cn } from "@/lib/utils";
 
 export function JournalModule() {
-  const [entries, setEntries] = useState<JournalEntry[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { user } = useAuthContext();
+  const { entries, loading, saveEntry, removeEntry } = useJournal(user?.id);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedMoodFilter, setSelectedMoodFilter] = useState<number | "all">("all");
@@ -34,25 +35,6 @@ export function JournalModule() {
     id: null,
   });
 
-  // Carrega entradas do diário do IndexedDB
-  const loadData = useCallback(async () => {
-    try {
-      setLoading(true);
-      const d = db();
-      const allEntries = await d.journal_entries.orderBy("date").reverse().toArray();
-      setEntries(allEntries);
-    } catch (err) {
-      console.error("Erro ao carregar diário:", err);
-      toast.error("Erro ao carregar registros do diário.");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    loadData();
-  }, [loadData]);
-
   // Salvar / Editar Registro
   const handleSaveEntry = async (entryData: {
     id?: string;
@@ -62,47 +44,12 @@ export function JournalModule() {
     highlights: string[];
   }) => {
     try {
-      const d = db();
-      const now = nowIso();
-
-      if (entryData.id) {
-        await d.journal_entries.update(entryData.id, {
-          date: entryData.date,
-          mood: entryData.mood,
-          content: entryData.content,
-          highlights: entryData.highlights,
-          updatedAt: now,
-        });
-        toast.success("Registro do diário atualizado!");
-      } else {
-        // Verifica se já existe um para a mesma data
-        const existing = entries.find((e) => e.date === entryData.date);
-        if (existing) {
-          await d.journal_entries.update(existing.id, {
-            mood: entryData.mood,
-            content: entryData.content,
-            highlights: entryData.highlights,
-            updatedAt: now,
-          });
-          toast.success("Registro da data atualizado!");
-        } else {
-          const newEntry: JournalEntry = {
-            id: newId(),
-            date: entryData.date,
-            mood: entryData.mood,
-            content: entryData.content,
-            highlights: entryData.highlights,
-            createdAt: now,
-            updatedAt: now,
-          };
-          await d.journal_entries.add(newEntry);
-          toast.success("Novo registro salvo no diário!");
-        }
+      const ok = await saveEntry(entryData);
+      if (ok) {
+        toast.success("Registro salvo no diário!");
+        setModalOpen(false);
+        setEditingEntry(null);
       }
-
-      setModalOpen(false);
-      setEditingEntry(null);
-      await loadData();
     } catch (err) {
       console.error(err);
       toast.error("Erro ao salvar no diário.");
@@ -113,10 +60,9 @@ export function JournalModule() {
   const confirmDeleteEntry = async () => {
     if (!deleteConfig.id) return;
     try {
-      const d = db();
-      await d.journal_entries.delete(deleteConfig.id);
-      toast.success("Registro excluído.");
-      await loadData();
+      const ok = await removeEntry(deleteConfig.id);
+      if (ok) toast.success("Registro excluído.");
+      setDeleteConfig({ open: false, id: null });
     } catch (err) {
       console.error(err);
       toast.error("Erro ao excluir registro.");
