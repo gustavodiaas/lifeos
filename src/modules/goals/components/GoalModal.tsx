@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import type { Goal, GoalScope, Habit } from "@/db/schema";
+import type { Goal, GoalScope, Habit } from "@/lib/supabase";
 import { X, Save, Target, Repeat, Calendar } from "lucide-react";
 import { CustomSelect } from "@/components/ui/CustomSelect";
 
