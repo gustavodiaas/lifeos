@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { Note, Folder } from "@/db/schema";
+import type { Note, Folder } from "@/lib/supabase";
 import {
   Folder as FolderIcon,
   FileText,
