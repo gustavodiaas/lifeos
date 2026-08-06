@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import type { Habit, HabitFrequency } from "@/db/schema";
+import type { Habit, HabitFrequency } from "@/lib/supabase";
 import { X, Save, Repeat, Sparkles } from "lucide-react";
 
 interface HabitModalProps {
