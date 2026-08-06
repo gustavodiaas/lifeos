@@ -124,10 +124,6 @@ export function NotesModule() {
       toast.error("Erro ao criar pasta.");
     }
   };
-      console.error(err);
-      toast.error("Erro ao criar pasta.");
-    }
-  };
 
   return (
     <div className="space-y-6 fade-in pb-12">
