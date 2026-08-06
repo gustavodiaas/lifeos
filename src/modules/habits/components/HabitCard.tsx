@@ -1,4 +1,4 @@
-import type { Habit, HabitLog } from "@/db/schema";
+import type { Habit, HabitLog } from "@/lib/supabase";
 import { Check, Flame, MoreVertical, Trash2, Edit3, Archive } from "lucide-react";
 import { useState } from "react";
 
