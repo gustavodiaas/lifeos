@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { Task, Project, TaskStatus } from "@/db/schema";
+import type { Task, Project, TaskStatus } from "@/lib/supabase";
 import {
   Check,
   Clock,
