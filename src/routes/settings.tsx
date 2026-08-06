@@ -2,7 +2,6 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AppShell } from "@/components/layout/AppShell";
 import { PageBody, PageHeader } from "@/components/layout/PageHeader";
 import { Button } from "@/components/ui/button";
-import { exportAll, importAll } from "@/db";
 import { toast } from "sonner";
 import { useRef, useEffect, useState } from "react";
 import { useAuthContext } from "@/context/AuthContext";
@@ -229,11 +228,29 @@ function SettingsPage() {
     }
   }
 
-  // Exportar Backup Local
+  // Exportar Backup Supabase
   async function handleExport() {
+    if (!user) return;
     try {
-      const data = await exportAll();
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+      const tables = [
+        "habits",
+        "habit_logs",
+        "projects",
+        "tasks",
+        "goals",
+        "notes",
+        "folders",
+        "journal_entries",
+        "metrics",
+        "lancamentos",
+      ];
+      const backupData: Record<string, any[]> = {};
+      for (const table of tables) {
+        const { data } = await supabase.from(table).select("*").eq("user_id", user.id);
+        backupData[table] = data || [];
+      }
+
+      const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: "application/json" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
@@ -246,13 +263,21 @@ function SettingsPage() {
     }
   }
 
-  // Importar Backup Local
+  // Importar Backup Supabase
   async function handleImport(file: File) {
+    if (!user) return;
     try {
       const text = await file.text();
-      const data = JSON.parse(text);
-      await importAll(data);
-      toast.success("Dados importados com sucesso!");
+      const backupData = JSON.parse(text);
+      let count = 0;
+      for (const table of Object.keys(backupData)) {
+        const rows = backupData[table];
+        if (!Array.isArray(rows) || rows.length === 0) continue;
+        const formattedRows = rows.map((r: any) => ({ ...r, user_id: user.id }));
+        const { error } = await supabase.from(table).upsert(formattedRows);
+        if (!error) count += formattedRows.length;
+      }
+      toast.success(`${count} registros importados com sucesso!`);
     } catch {
       toast.error("Ficheiro de segurança inválido.");
     }
