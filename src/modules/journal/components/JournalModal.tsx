@@ -3,6 +3,7 @@ import type { JournalEntry } from "@/lib/supabase";
 import { X, Save, NotebookPen, Sparkles, Plus } from "lucide-react";
 import { todayIso } from "@/lib/date";
 import { CustomDatePicker } from "@/components/ui/CustomDatePicker";
+import { ModalPortal } from "@/components/ui/ModalPortal";
 
 interface JournalModalProps {
   open: boolean;
@@ -78,7 +79,7 @@ export function JournalModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-[300] flex items-end sm:items-center justify-center p-0 sm:p-4 fade-in">
+    <ModalPortal open={open} onClose={onClose}>
       <div className="bg-card w-full max-w-lg rounded-t-[28px] sm:rounded-[28px] shadow-2xl border border-border overflow-hidden flex flex-col max-h-[92vh] slide-up">
 
         {/* Header */}
@@ -211,6 +212,6 @@ export function JournalModal({
           </button>
         </form>
       </div>
-    </div>
+    </ModalPortal>
   );
 }
