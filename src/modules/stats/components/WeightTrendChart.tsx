@@ -1,10 +1,10 @@
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
-import type { Metric } from "@/db/schema";
-import { Scale, Clock } from "lucide-react";
+import type { Metric } from "@/lib/supabase";
+import { Scale, Clock, Activity } from "lucide-react";
 
 interface MetricTrendChartProps {
   metrics: Metric[];
-  metricKey: "weight" | "study_hours";
+  metricKey: string;
   title: string;
   unit: string;
   color: string;
