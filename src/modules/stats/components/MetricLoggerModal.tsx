@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { X, Save, Clock, Scale, Plus, Moon, Droplets, Dumbbell, Sparkles } from "lucide-react";
 import { todayIso } from "@/lib/date";
 import { CustomDatePicker } from "@/components/ui/CustomDatePicker";
+import { ModalPortal } from "@/components/ui/ModalPortal";
 
 interface MetricLoggerModalProps {
   open: boolean;
@@ -60,7 +61,7 @@ export function MetricLoggerModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-[300] flex items-end sm:items-center justify-center p-0 sm:p-4 fade-in">
+    <ModalPortal open={open} onClose={onClose}>
       <div className="bg-card w-full max-w-md rounded-t-[28px] sm:rounded-[28px] shadow-2xl border border-border overflow-hidden flex flex-col slide-up max-h-[95vh] overflow-y-auto">
 
         {/* Header */}
@@ -171,6 +172,6 @@ export function MetricLoggerModal({
           </button>
         </form>
       </div>
-    </div>
+    </ModalPortal>
   );
 }
