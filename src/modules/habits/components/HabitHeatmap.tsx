@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import type { HabitLog } from "@/db/schema";
+import type { HabitLog } from "@/lib/supabase";
 import { ChevronLeft, ChevronRight, Calendar, Flame, CheckCircle2 } from "lucide-react";
 
 interface HabitHeatmapProps {
