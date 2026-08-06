@@ -44,11 +44,15 @@ export function MobileAppDrawer({ open, onClose }: MobileAppDrawerProps) {
         <div className="flex items-center justify-between border-b border-border/50 pb-3">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-xl bg-[#FCA311] flex items-center justify-center text-black font-black">
-              L
+              {(user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email || "L")[0].toUpperCase()}
             </div>
             <div>
-              <h3 className="text-base font-extrabold text-foreground tracking-tight">LifeOS Apps</h3>
-              <p className="text-[11px] font-medium text-muted-foreground">Todas as ferramentas na sua mão</p>
+              <h3 className="text-base font-extrabold text-foreground tracking-tight">
+                {(user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email?.split("@")[0] || "Você").split(/[\s.]/)[0]}
+              </h3>
+              <p className="text-[11px] font-medium text-muted-foreground">
+                {(() => { const h = new Date().getHours(); return h >= 5 && h < 12 ? "Bom dia ☀️" : h >= 12 && h < 18 ? "Boa tarde 🌤️" : "Boa noite 🌙"; })()}
+              </p>
             </div>
           </div>
 
