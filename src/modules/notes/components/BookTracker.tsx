@@ -1,8 +1,12 @@
 import { useState, useEffect } from "react";
 import { BookOpen, Plus, Trash2, CheckCircle2, Bookmark, Quote, Edit3 } from "lucide-react";
-import { db, newId, nowIso } from "@/db";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+
+const generateId = () =>
+  typeof crypto !== "undefined" && "randomUUID" in crypto
+    ? crypto.randomUUID()
+    : Math.random().toString(36).slice(2);
 
 export interface Book {
   id: string;
@@ -54,7 +58,7 @@ export function BookTracker() {
     if (!title.trim()) return;
 
     const newBook: Book = {
-      id: newId(),
+      id: generateId(),
       title: title.trim(),
       author: author.trim() || "Autor Desconhecido",
       currentPage: Number(currentPage) || 0,
