@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { Goal, Habit } from "@/db/schema";
+import type { Goal, Habit } from "@/lib/supabase";
 import {
   Target,
   Trophy,
