@@ -1,6 +1,8 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
-import { db, newId, nowIso } from "@/db";
-import type { Note, Folder, Metric } from "@/db/schema";
+import { useState, useMemo } from "react";
+import { useAuthContext } from "@/context/AuthContext";
+import { useNotes } from "@/hooks/useNotes";
+import { useMetrics } from "@/hooks/useMetrics";
+import type { Note, Folder } from "@/lib/supabase";
 import { FocusTimer } from "./components/FocusTimer";
 import { StudyHeatmap } from "./components/StudyHeatmap";
 import { BookTracker } from "./components/BookTracker";
@@ -12,10 +14,17 @@ import { AlertModal } from "@/modules/finance/components/AlertModal";
 import { toast } from "sonner";
 
 export function NotesModule() {
-  const [notes, setNotes] = useState<Note[]>([]);
-  const [folders, setFolders] = useState<Folder[]>([]);
-  const [metrics, setMetrics] = useState<Metric[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { user } = useAuthContext();
+  const {
+    notes,
+    folders,
+    loading,
+    addNote,
+    updateNote,
+    removeNote,
+    addFolder,
+  } = useNotes(user?.id);
+  const { metrics, refetch: refetchMetrics } = useMetrics(user?.id);
 
   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
   const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
@@ -27,43 +36,20 @@ export function NotesModule() {
     id: null,
   });
 
-  // Carrega notas, pastas e métricas de estudo do IndexedDB
-  const loadData = useCallback(async () => {
-    try {
-      setLoading(true);
-      const d = db();
-      const [allNotes, allFolders, allMetrics] = await Promise.all([
-        d.notes.filter((n) => !n.deletedAt).toArray(),
-        d.folders.toArray(),
-        d.metrics.filter((m) => m.key === "study_hours").toArray(),
-      ]);
-      setNotes(allNotes);
-      setFolders(allFolders);
-      setMetrics(allMetrics);
-
-      if (allNotes.length > 0 && !selectedNoteId) {
-        setSelectedNoteId(allNotes[0].id);
-      }
-    } catch (err) {
-      console.error("Erro ao carregar conhecimento:", err);
-      toast.error("Erro ao carregar notas.");
-    } finally {
-      setLoading(false);
-    }
-  }, [selectedNoteId]);
-
-  useEffect(() => {
-    loadData();
-  }, [loadData]);
+  const activeNotes = useMemo(() => notes.filter((n) => !n.deletedAt && !n.deleted_at), [notes]);
 
   // Nota Selecionada Atual
   const selectedNote = useMemo(() => {
-    return notes.find((n) => n.id === selectedNoteId) || null;
-  }, [notes, selectedNoteId]);
+    if (selectedNoteId) {
+      const found = activeNotes.find((n) => n.id === selectedNoteId);
+      if (found) return found;
+    }
+    return activeNotes[0] || null;
+  }, [activeNotes, selectedNoteId]);
 
   // Notas Filtradas
   const filteredNotes = useMemo(() => {
-    return notes.filter((n) => {
+    return activeNotes.filter((n) => {
       if (
         searchQuery &&
         !n.title.toLowerCase().includes(searchQuery.toLowerCase()) &&
@@ -72,30 +58,25 @@ export function NotesModule() {
       ) {
         return false;
       }
-      if (selectedFolderId !== null && n.folderId !== selectedFolderId) return false;
+      if (selectedFolderId !== null && (n.folderId || n.folder_id) !== selectedFolderId) return false;
       return true;
     });
-  }, [notes, searchQuery, selectedFolderId]);
+  }, [activeNotes, searchQuery, selectedFolderId]);
 
   // Criar Nova Nota
   const handleCreateNote = async (folderId?: string | null) => {
     try {
-      const d = db();
-      const now = nowIso();
-      const newNote: Note = {
-        id: newId(),
+      const newNote = await addNote({
         title: "Nova Nota de Estudo",
         content: "# Nova Nota\n\nComece a escrever seus estudos em Markdown aqui...",
         folderId: folderId || selectedFolderId || null,
         tags: ["estudos"],
-        createdAt: now,
-        updatedAt: now,
-      };
+      });
 
-      await d.notes.add(newNote);
-      toast.success("Nova nota criada!");
-      await loadData();
-      setSelectedNoteId(newNote.id);
+      if (newNote) {
+        toast.success("Nova nota criada!");
+        setSelectedNoteId(newNote.id);
+      }
     } catch (err) {
       console.error(err);
       toast.error("Erro ao criar nota.");
@@ -106,20 +87,8 @@ export function NotesModule() {
   const handleSaveNote = async (updated: Partial<Note>) => {
     if (!updated.id) return;
     try {
-      const d = db();
-      const now = nowIso();
-      await d.notes.update(updated.id, {
-        title: updated.title,
-        content: updated.content,
-        folderId: updated.folderId,
-        tags: updated.tags,
-        updatedAt: now,
-      });
-
-      setNotes((prev) =>
-        prev.map((n) => (n.id === updated.id ? ({ ...n, ...updated, updatedAt: now } as Note) : n))
-      );
-      toast.success("Nota salva com sucesso!");
+      const ok = await updateNote(updated.id, updated);
+      if (ok) toast.success("Nota salva com sucesso!");
     } catch (err) {
       console.error(err);
       toast.error("Erro ao salvar nota.");
@@ -130,11 +99,12 @@ export function NotesModule() {
   const confirmDeleteNote = async () => {
     if (!deleteConfig.id) return;
     try {
-      const d = db();
-      await d.notes.delete(deleteConfig.id);
-      toast.success("Nota excluída.");
-      setSelectedNoteId(null);
-      await loadData();
+      const ok = await removeNote(deleteConfig.id);
+      if (ok) {
+        toast.success("Nota excluída.");
+        setSelectedNoteId(null);
+      }
+      setDeleteConfig({ open: false, id: null });
     } catch (err) {
       console.error(err);
       toast.error("Erro ao excluir nota.");
@@ -144,20 +114,16 @@ export function NotesModule() {
   // Criar Nova Pasta
   const handleCreateFolder = async (folderName: string) => {
     try {
-      const d = db();
-      const now = nowIso();
-      const newFolder: Folder = {
-        id: newId(),
-        name: folderName,
-        createdAt: now,
-        updatedAt: now,
-      };
-
-      await d.folders.add(newFolder);
-      toast.success(`Pasta "${folderName}" criada!`);
-      setFolderModalOpen(false);
-      await loadData();
+      const newFolder = await addFolder({ name: folderName });
+      if (newFolder) {
+        toast.success(`Pasta "${folderName}" criada!`);
+        setFolderModalOpen(false);
+      }
     } catch (err) {
+      console.error(err);
+      toast.error("Erro ao criar pasta.");
+    }
+  };
       console.error(err);
       toast.error("Erro ao criar pasta.");
     }
@@ -169,7 +135,7 @@ export function NotesModule() {
       {/* ── 1. Top Header: Relógio de Foco Pomodoro ─────────────────────── */}
       <FocusTimer
         onSessionComplete={() => {
-          loadData();
+          refetchMetrics();
         }}
       />
 
