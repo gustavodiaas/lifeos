@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import type { Metric } from "@/db/schema";
+import type { Metric } from "@/lib/supabase";
 import { ChevronLeft, ChevronRight, Clock, Flame, BookOpen } from "lucide-react";
 
 interface StudyHeatmapProps {
