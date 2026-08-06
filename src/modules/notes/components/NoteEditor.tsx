@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import type { Note, Folder } from "@/db/schema";
+import type { Note, Folder } from "@/lib/supabase";
 import {
   Save,
   Trash2,
