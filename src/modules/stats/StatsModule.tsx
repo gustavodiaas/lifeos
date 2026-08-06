@@ -1,6 +1,11 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
-import { db, newId, nowIso } from "@/db";
-import type { Metric } from "@/db/schema";
+import { useState, useMemo } from "react";
+import { useAuthContext } from "@/context/AuthContext";
+import { useMetrics } from "@/hooks/useMetrics";
+import { useHabits } from "@/hooks/useHabits";
+import { useTasks } from "@/hooks/useTasks";
+import { useGoals } from "@/hooks/useGoals";
+import { useJournal } from "@/hooks/useJournal";
+import { useLancamentos } from "@/hooks/useLancamentos";
 import { todayIso, monthIso, formatBRL } from "@/lib/date";
 import { ActivityRing } from "./components/ActivityRing";
 import { MetricLoggerModal } from "./components/MetricLoggerModal";
@@ -20,127 +25,112 @@ import {
   Award,
   Sparkles,
   Calendar,
+  Activity,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export function StatsModule() {
-  const [metrics, setMetrics] = useState<Metric[]>([]);
-  const [loading, setLoading] = useState(true);
+const METRIC_LABELS: Record<string, { title: string; desc: string; iconColor: string; chartColor: string }> = {
+  weight: { title: "Acompanhamento de Peso", desc: "Histórico de peso corporal", iconColor: "text-rose-500 bg-rose-500/15", chartColor: "#FCA311" },
+  study_hours: { title: "Horas de Estudo", desc: "Tempo em foco e estudos", iconColor: "text-indigo-500 bg-indigo-500/15", chartColor: "#6366F1" },
+  sleep_hours: { title: "Horas de Sono", desc: "Qualidade do descanso", iconColor: "text-purple-500 bg-purple-500/15", chartColor: "#A855F7" },
+  water_liters: { title: "Consumo de Água", desc: "Hidratação diária", iconColor: "text-blue-500 bg-blue-500/15", chartColor: "#3B82F6" },
+  workout_mins: { title: "Tempo de Treino", desc: "Atividade física", iconColor: "text-emerald-500 bg-emerald-500/15", chartColor: "#10B981" },
+};
 
-  // Consolidação de estatísticas dos outros módulos
-  const [stats, setStats] = useState({
-    habitsTotal: 0,
-    habitsDoneToday: 0,
-    tasksTotal: 0,
-    tasksDone: 0,
-    goalsTotal: 0,
-    goalsDone: 0,
-    journalCount: 0,
-    income: 0,
-    expense: 0,
-  });
+export function StatsModule() {
+  const { user } = useAuthContext();
+  const { metrics, addMetric } = useMetrics(user?.id);
+  const { habits, logs } = useHabits(user?.id);
+  const { tasks } = useTasks(user?.id);
+  const { goals } = useGoals(user?.id);
+  const { entries: journalEntries } = useJournal(user?.id);
+  const { lancamentos } = useLancamentos(user?.id);
 
   const [loggerOpen, setLoggerOpen] = useState(false);
   const [defaultMetricKey, setDefaultMetricKey] = useState("weight");
 
-  // Carrega todas as métricas e dados
-  const loadData = useCallback(async () => {
-    try {
-      setLoading(true);
-      const d = db();
-      const today = todayIso();
-      const month = monthIso();
+  const today = todayIso();
+  const currentMonth = monthIso();
 
-      const [allMetrics, habits, habitLogsToday, tasks, goals, txs, journalEntries] =
-        await Promise.all([
-          d.metrics.orderBy("date").toArray(),
-          d.habits.filter((h) => !h.archivedAt).toArray(),
-          d.habit_logs.where("date").equals(today).filter((l) => l.done).toArray(),
-          d.tasks.toArray(),
-          d.goals.toArray(),
-          d.transactions.filter((t) => t.date.startsWith(month)).toArray(),
-          d.journal_entries.toArray(),
-        ]);
+  // Consolidação de estatísticas
+  const stats = useMemo(() => {
+    const activeHabits = habits.filter((h) => !h.archivedAt && !h.archived_at);
+    const habitLogsToday = logs.filter(
+      (l) => l.date === today && l.done
+    );
+    const tasksDone = tasks.filter((t) => t.status === "done").length;
+    const goalsDone = goals.filter((g) => (g.progress || 0) >= (g.target || 100)).length;
 
-      setMetrics(allMetrics);
+    const monthTxs = lancamentos.filter((l) => l.data?.startsWith(currentMonth));
+    const income = monthTxs.filter((l) => l.tipo === "entrada").reduce((s, l) => s + Number(l.valor), 0);
+    const expense = monthTxs.filter((l) => l.tipo === "saida").reduce((s, l) => s + Number(l.valor), 0);
 
-      const income = txs.filter((t) => t.type === "income").reduce((s, t) => s + t.amount, 0);
-      const expense = txs.filter((t) => t.type === "expense").reduce((s, t) => s + t.amount, 0);
-      const tasksDone = tasks.filter((t) => t.status === "done").length;
-      const goalsDone = goals.filter((g) => (g.progress || 0) >= (g.target || 100)).length;
+    return {
+      habitsTotal: activeHabits.length,
+      habitsDoneToday: habitLogsToday.length,
+      tasksTotal: tasks.length,
+      tasksDone,
+      goalsTotal: goals.length,
+      goalsDone,
+      journalCount: journalEntries.length,
+      income,
+      expense,
+    };
+  }, [habits, logs, tasks, goals, journalEntries, lancamentos, today, currentMonth]);
 
-      setStats({
-        habitsTotal: habits.length,
-        habitsDoneToday: habitLogsToday.length,
-        tasksTotal: tasks.length,
-        tasksDone,
-        goalsTotal: goals.length,
-        goalsDone,
-        journalCount: journalEntries.length,
-        income,
-        expense,
-      });
-    } catch (err) {
-      console.error("Erro ao carregar estatísticas:", err);
-      toast.error("Erro ao carregar métricas.");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    loadData();
-  }, [loadData]);
-
-  // Salvar nova medição de métrica (peso ou estudo)
+  // Salvar nova medição
   const handleSaveMetric = async (metricData: { key: string; value: number; unit: string; date: string }) => {
     try {
-      const d = db();
-      const now = nowIso();
-      const newMetric: Metric = {
-        id: newId(),
+      const ok = await addMetric({
         key: metricData.key,
         value: metricData.value,
         unit: metricData.unit,
         date: metricData.date,
-        createdAt: now,
-        updatedAt: now,
-      };
+      });
 
-      await d.metrics.add(newMetric);
-      toast.success("Medição registrada com sucesso!");
-      setLoggerOpen(false);
-      await loadData();
+      if (ok) {
+        toast.success("Medição registrada com sucesso!");
+        setLoggerOpen(false);
+      }
     } catch (err) {
       console.error(err);
       toast.error("Erro ao salvar medição.");
     }
   };
 
-  // Separação de registros de peso e horas de estudo
-  const weightLogs = useMemo(() => metrics.filter((m) => m.key === "weight"), [metrics]);
-  const studyLogs = useMemo(() => metrics.filter((m) => m.key === "study_hours"), [metrics]);
+  // Grupos de métricas dinâmicos por key
+  const metricGroups = useMemo(() => {
+    const map = new Map<string, { key: string; unit: string; logs: typeof metrics }>();
+    
+    // Garante peso e estudo como padrão se existirem
+    ["weight", "study_hours"].forEach((k) => {
+      map.set(k, { key: k, unit: k === "weight" ? "kg" : "h", logs: [] });
+    });
 
-  const latestWeight = weightLogs.at(-1)?.value ?? null;
-  const totalStudyHours = useMemo(() => studyLogs.reduce((sum, m) => sum + m.value, 0), [studyLogs]);
+    for (const m of metrics) {
+      const existing = map.get(m.key) || { key: m.key, unit: m.unit || "", logs: [] };
+      existing.logs.push(m);
+      if (m.unit) existing.unit = m.unit;
+      map.set(m.key, existing);
+    }
+
+    return Array.from(map.values());
+  }, [metrics]);
 
   // Cálculo do LifeOS Score (0 a 100)
   const overallScore = useMemo(() => {
     let score = 50; // base
 
-    // Hábitos (+0 a +25)
     if (stats.habitsTotal > 0) {
       score += Math.round((stats.habitsDoneToday / stats.habitsTotal) * 25);
     }
 
-    // Tarefas (+0 a +25)
     if (stats.tasksTotal > 0) {
       score += Math.round((stats.tasksDone / stats.tasksTotal) * 25);
     } else {
       score += 10;
     }
 
-    // Finanças (+0 a +25)
     if (stats.income > 0) {
       const savingsRate = (stats.income - stats.expense) / stats.income;
       if (savingsRate > 0) score += Math.min(25, Math.round(savingsRate * 25));
@@ -148,7 +138,6 @@ export function StatsModule() {
       score += 10;
     }
 
-    // Diário & Metas (+0 a +25)
     if (stats.journalCount > 0) score += 10;
     if (stats.goalsDone > 0) score += 15;
 
@@ -184,7 +173,7 @@ export function StatsModule() {
         </button>
       </div>
 
-      {/* ── 2. Anel de Pontuação de Desempenho Geral (Apple Watch Style) ── */}
+      {/* ── 2. Anel de Pontuação de Desempenho Geral ───────────────────────── */}
       <div className="glass-card p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-8 bg-gradient-to-r from-amber-500/10 via-transparent to-blue-500/10">
         <div className="flex flex-col items-center md:items-start text-center md:text-left space-y-3 max-w-md">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FCA311]/15 text-[#FCA311] text-xs font-bold">
@@ -201,7 +190,6 @@ export function StatsModule() {
           </p>
         </div>
 
-        {/* Anel SVG Anotado */}
         <div className="shrink-0">
           <ActivityRing
             score={overallScore}
@@ -213,136 +201,101 @@ export function StatsModule() {
         </div>
       </div>
 
-      {/* ── 3. Rastreadores de Métricas (Peso & Estudo) ─────────────────── */}
+      {/* ── 3. Rastreadores de Métricas Dinâmicos ───────────────────────── */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {metricGroups.map((group) => {
+          const info = METRIC_LABELS[group.key] || {
+            title: group.key.replace(/_/g, " ").toUpperCase(),
+            desc: "Registro de medições personalizadas",
+            iconColor: "text-amber-500 bg-amber-500/15",
+            chartColor: "#FCA311",
+          };
 
-        {/* Rastreador de Peso */}
-        <div className="glass-card p-6 flex flex-col justify-between space-y-4">
-          <div className="flex items-center justify-between border-b border-border/60 pb-3">
-            <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-xl bg-rose-500/15 text-rose-500 flex items-center justify-center">
-                <Scale size={18} />
-              </div>
-              <div>
-                <h3 className="text-base font-extrabold text-foreground">Acompanhamento de Peso</h3>
-                <p className="text-xs text-muted-foreground font-medium">Registro do histórico de peso corporal</p>
-              </div>
-            </div>
+          const latestValue = group.logs.at(-1)?.value ?? null;
+          const totalSum = group.logs.reduce((sum, m) => sum + m.value, 0);
 
-            <button
-              onClick={() => {
-                setDefaultMetricKey("weight");
-                setLoggerOpen(true);
-              }}
-              className="p-2 rounded-xl bg-muted/60 hover:bg-muted text-[#FCA311] font-bold text-xs flex items-center gap-1 transition-colors"
-            >
-              <Plus size={14} />
-              <span>Peso</span>
-            </button>
-          </div>
-
-          <div className="flex items-baseline justify-between py-2">
-            <div>
-              <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider block">Último Peso</span>
-              <span className="text-3xl font-black text-foreground">
-                {latestWeight != null ? `${latestWeight} kg` : "—"}
-              </span>
-            </div>
-            <span className="text-xs font-bold text-muted-foreground bg-muted px-2.5 py-1 rounded-xl">
-              {weightLogs.length} medições
-            </span>
-          </div>
-
-          {/* Histórico recente */}
-          <div className="space-y-1.5 pt-1">
-            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block">Últimos Registros</span>
-            {weightLogs.length === 0 ? (
-              <p className="text-xs text-muted-foreground italic">Nenhum peso registrado ainda.</p>
-            ) : (
-              <div className="flex items-center gap-2 overflow-x-auto pb-1">
-                {weightLogs.slice(-5).map((log) => (
-                  <div key={log.id} className="p-2.5 rounded-xl bg-muted/50 border border-border/50 text-center shrink-0 min-w-[70px]">
-                    <span className="text-[9px] font-bold text-muted-foreground block">{log.date.slice(5)}</span>
-                    <span className="text-xs font-black text-foreground">{log.value} kg</span>
+          return (
+            <div key={group.key} className="glass-card p-6 flex flex-col justify-between space-y-4">
+              <div className="flex items-center justify-between border-b border-border/60 pb-3">
+                <div className="flex items-center gap-2.5">
+                  <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${info.iconColor}`}>
+                    <Activity size={18} />
                   </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Rastreador de Horas de Estudo */}
-        <div className="glass-card p-6 flex flex-col justify-between space-y-4">
-          <div className="flex items-center justify-between border-b border-border/60 pb-3">
-            <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-xl bg-indigo-500/15 text-indigo-500 flex items-center justify-center">
-                <Clock size={18} />
-              </div>
-              <div>
-                <h3 className="text-base font-extrabold text-foreground">Horas de Estudo</h3>
-                <p className="text-xs text-muted-foreground font-medium">Tempo acumulado em foco e estudos</p>
-              </div>
-            </div>
-
-            <button
-              onClick={() => {
-                setDefaultMetricKey("study_hours");
-                setLoggerOpen(true);
-              }}
-              className="p-2 rounded-xl bg-muted/60 hover:bg-muted text-indigo-500 font-bold text-xs flex items-center gap-1 transition-colors"
-            >
-              <Plus size={14} />
-              <span>Estudo</span>
-            </button>
-          </div>
-
-          <div className="flex items-baseline justify-between py-2">
-            <div>
-              <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider block">Total Acumulado</span>
-              <span className="text-3xl font-black text-foreground">
-                {totalStudyHours.toFixed(1)} h
-              </span>
-            </div>
-            <span className="text-xs font-bold text-muted-foreground bg-muted px-2.5 py-1 rounded-xl">
-              {studyLogs.length} sessões
-            </span>
-          </div>
-
-          {/* Histórico recente */}
-          <div className="space-y-1.5 pt-1">
-            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block">Sessões Recentes</span>
-            {studyLogs.length === 0 ? (
-              <p className="text-xs text-muted-foreground italic">Nenhuma sessão registrada ainda.</p>
-            ) : (
-              <div className="flex items-center gap-2 overflow-x-auto pb-1">
-                {studyLogs.slice(-5).map((log) => (
-                  <div key={log.id} className="p-2.5 rounded-xl bg-muted/50 border border-border/50 text-center shrink-0 min-w-[70px]">
-                    <span className="text-[9px] font-bold text-muted-foreground block">{log.date.slice(5)}</span>
-                    <span className="text-xs font-black text-indigo-500">+{log.value} h</span>
+                  <div>
+                    <h3 className="text-base font-extrabold text-foreground">{info.title}</h3>
+                    <p className="text-xs text-muted-foreground font-medium">{info.desc}</p>
                   </div>
-                ))}
+                </div>
+
+                <button
+                  onClick={() => {
+                    setDefaultMetricKey(group.key);
+                    setLoggerOpen(true);
+                  }}
+                  className="p-2 rounded-xl bg-muted/60 hover:bg-muted text-[#FCA311] font-bold text-xs flex items-center gap-1 transition-colors"
+                >
+                  <Plus size={14} />
+                  <span>Log</span>
+                </button>
               </div>
-            )}
-          </div>
-        </div>
+
+              <div className="flex items-baseline justify-between py-2">
+                <div>
+                  <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider block">
+                    {group.key === "weight" ? "Último Valor" : "Total Acumulado"}
+                  </span>
+                  <span className="text-3xl font-black text-foreground">
+                    {group.key === "weight"
+                      ? latestValue != null ? `${latestValue} ${group.unit}` : "—"
+                      : `${totalSum.toFixed(1)} ${group.unit}`}
+                  </span>
+                </div>
+                <span className="text-xs font-bold text-muted-foreground bg-muted px-2.5 py-1 rounded-xl">
+                  {group.logs.length} medições
+                </span>
+              </div>
+
+              {/* Histórico recente */}
+              <div className="space-y-1.5 pt-1">
+                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block">
+                  Registros Recentes
+                </span>
+                {group.logs.length === 0 ? (
+                  <p className="text-xs text-muted-foreground italic">Nenhum registro nesta métrica ainda.</p>
+                ) : (
+                  <div className="flex items-center gap-2 overflow-x-auto pb-1">
+                    {group.logs.slice(-5).map((log) => (
+                      <div key={log.id} className="p-2.5 rounded-xl bg-muted/50 border border-border/50 text-center shrink-0 min-w-[70px]">
+                        <span className="text-[9px] font-bold text-muted-foreground block">{log.date.slice(5)}</span>
+                        <span className="text-xs font-black text-foreground">{log.value} {group.unit}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        })}
       </div>
 
-      {/* ── 3.5 Gráficos de Tendência (Recharts) ────────────────────────── */}
+      {/* ── 3.5 Gráficos de Tendência ────────────────────────────────────── */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <MetricTrendChart
-          metrics={metrics}
-          metricKey="weight"
-          title="Gráfico de Evolução de Peso"
-          unit="kg"
-          color="#FCA311"
-        />
-        <MetricTrendChart
-          metrics={metrics}
-          metricKey="study_hours"
-          title="Gráfico de Sessões de Estudo"
-          unit="h"
-          color="#6366F1"
-        />
+        {metricGroups.filter((g) => g.logs.length >= 2).map((group) => {
+          const info = METRIC_LABELS[group.key] || {
+            title: `Evolução: ${group.key}`,
+            chartColor: "#FCA311",
+          };
+          return (
+            <MetricTrendChart
+              key={group.key}
+              metrics={metrics}
+              metricKey={group.key}
+              title={info.title}
+              unit={group.unit}
+              color={info.chartColor}
+            />
+          );
+        })}
       </div>
 
       {/* ── 4. Quadro Comparativo dos Módulos ───────────────────────────── */}
