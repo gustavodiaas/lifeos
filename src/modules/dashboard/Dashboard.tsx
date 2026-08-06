@@ -1,8 +1,13 @@
-import { useEffect, useState } from "react";
-import { db } from "@/db";
+import { useMemo } from "react";
 import { todayIso, monthIso, formatBRL } from "@/lib/date";
 import { StatCard } from "@/components/layout/StatCard";
 import { useAuthContext } from "@/context/AuthContext";
+import { useHabits } from "@/hooks/useHabits";
+import { useTasks } from "@/hooks/useTasks";
+import { useGoals } from "@/hooks/useGoals";
+import { useNotes } from "@/hooks/useNotes";
+import { useLancamentos } from "@/hooks/useLancamentos";
+import { useMetrics } from "@/hooks/useMetrics";
 import { Link } from "@tanstack/react-router";
 import {
   Repeat,
@@ -22,68 +27,47 @@ import {
 
 export function Dashboard() {
   const { user } = useAuthContext();
-  const [stats, setStats] = useState({
-    habitsDue: 0,
-    habitsDone: 0,
-    tasksOpen: 0,
-    tasksDueToday: 0,
-    goalsActive: 0,
-    income: 0,
-    expense: 0,
-    studyHours: 0,
-    weight: null as number | null,
-    notes: 0,
-  });
+  const { habits, logs } = useHabits(user?.id);
+  const { tasks } = useTasks(user?.id);
+  const { goals } = useGoals(user?.id);
+  const { notes } = useNotes(user?.id);
+  const { lancamentos } = useLancamentos(user?.id);
+  const { metrics } = useMetrics(user?.id);
 
-  const [habitsList, setHabitsList] = useState<any[]>([]);
-  const [tasksList, setTasksList] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const today = todayIso();
+  const month = monthIso();
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const d = db();
-        const today = todayIso();
-        const month = monthIso();
+  const stats = useMemo(() => {
+    const activeHabits = habits.filter((h) => !h.archivedAt && !h.archived_at);
+    const logsToday = logs.filter((l) => l.date === today && l.done);
+    const openTasks = tasks.filter((t) => t.status !== "done");
+    const tasksDueToday = openTasks.filter((t) => (t.dueDate || t.due_date) === today);
 
-        const [habits, logsToday, tasks, goals, txs, studies, weights, notesCount] =
-          await Promise.all([
-            d.habits.filter((h) => !h.archivedAt).toArray(),
-            d.habit_logs.where("date").equals(today).toArray(),
-            d.tasks.filter((t) => t.status !== "done").toArray(),
-            d.goals.toArray(),
-            d.transactions.filter((t) => t.date.startsWith(month)).toArray(),
-            d.metrics.where("key").equals("study_hours").toArray(),
-            d.metrics.where("key").equals("weight").sortBy("date"),
-            d.notes.count(),
-          ]);
+    const monthTxs = lancamentos.filter((l) => l.data?.startsWith(month));
+    const income = monthTxs.filter((l) => l.tipo === "entrada").reduce((s, l) => s + Number(l.valor), 0);
+    const expense = monthTxs.filter((l) => l.tipo === "saida").reduce((s, l) => s + Number(l.valor), 0);
 
-        const income = txs.filter((t) => t.type === "income").reduce((s, t) => s + t.amount, 0);
-        const expense = txs.filter((t) => t.type === "expense").reduce((s, t) => s + t.amount, 0);
-        const studyHours = studies.reduce((s, m) => s + m.value, 0);
+    const studyLogs = metrics.filter((m) => m.key === "study_hours");
+    const studyHours = studyLogs.reduce((sum, m) => sum + m.value, 0);
 
-        setStats({
-          habitsDue: habits.length,
-          habitsDone: logsToday.filter((l) => l.done).length,
-          tasksOpen: tasks.length,
-          tasksDueToday: tasks.filter((t) => t.dueDate === today).length,
-          goalsActive: goals.length,
-          income,
-          expense,
-          studyHours,
-          weight: weights.at(-1)?.value ?? null,
-          notes: notesCount,
-        });
+    const weightLogs = metrics.filter((m) => m.key === "weight").sort((a, b) => a.date.localeCompare(b.date));
+    const latestWeight = weightLogs.at(-1)?.value ?? null;
 
-        setHabitsList(habits.slice(0, 4));
-        setTasksList(tasks.slice(0, 4));
-      } catch (err) {
-        console.error("Erro ao carregar dados do dashboard:", err);
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, []);
+    return {
+      habitsDue: activeHabits.length,
+      habitsDone: logsToday.length,
+      tasksOpen: openTasks.length,
+      tasksDueToday: tasksDueToday.length,
+      goalsActive: goals.length,
+      income,
+      expense,
+      studyHours,
+      weight: latestWeight,
+      notes: notes.length,
+      activeHabitsList: activeHabits.slice(0, 4),
+      openTasksList: openTasks.slice(0, 4),
+    };
+  }, [habits, logs, tasks, goals, notes, lancamentos, metrics, today, month]);
 
   const habitProgressPercent = stats.habitsDue > 0 ? Math.round((stats.habitsDone / stats.habitsDue) * 100) : 0;
   const netSavings = stats.income - stats.expense;
@@ -294,7 +278,7 @@ export function Dashboard() {
             </Link>
           </div>
 
-          {habitsList.length === 0 ? (
+          {stats.activeHabitsList.length === 0 ? (
             <div className="py-8 text-center space-y-2">
               <p className="text-xs font-medium text-muted-foreground">Nenhum hábito cadastrado ainda.</p>
               <Link to="/habits" className="inline-block text-xs font-bold text-[#FCA311]">
@@ -303,14 +287,14 @@ export function Dashboard() {
             </div>
           ) : (
             <div className="space-y-2.5">
-              {habitsList.map((h) => (
+              {stats.activeHabitsList.map((h) => (
                 <div
                   key={h.id}
                   className="p-3.5 rounded-xl bg-muted/40 border border-border/50 flex items-center justify-between hover:bg-muted/70 transition-colors"
                 >
-                  <span className="text-xs font-bold text-foreground">{h.title}</span>
+                  <span className="text-xs font-bold text-foreground">{h.name}</span>
                   <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/10 text-[#FCA311]">
-                    {h.frequency || "Diário"}
+                    {h.frequency === "weekly" ? `${h.targetPerWeek || h.target_per_week || 3}x/sem` : "Diário"}
                   </span>
                 </div>
               ))}
@@ -330,7 +314,7 @@ export function Dashboard() {
             </Link>
           </div>
 
-          {tasksList.length === 0 ? (
+          {stats.openTasksList.length === 0 ? (
             <div className="py-8 text-center space-y-2">
               <p className="text-xs font-medium text-muted-foreground">Nenhuma tarefa aberta no momento.</p>
               <Link to="/tasks" className="inline-block text-xs font-bold text-blue-500">
@@ -339,15 +323,15 @@ export function Dashboard() {
             </div>
           ) : (
             <div className="space-y-2.5">
-              {tasksList.map((t) => (
+              {stats.openTasksList.map((t) => (
                 <div
                   key={t.id}
                   className="p-3.5 rounded-xl bg-muted/40 border border-border/50 flex items-center justify-between hover:bg-muted/70 transition-colors"
                 >
                   <span className="text-xs font-bold text-foreground">{t.title}</span>
-                  {t.dueDate && (
+                  {(t.dueDate || t.due_date) && (
                     <span className="text-[10px] font-semibold text-muted-foreground">
-                      {t.dueDate}
+                      {t.dueDate || t.due_date}
                     </span>
                   )}
                 </div>
