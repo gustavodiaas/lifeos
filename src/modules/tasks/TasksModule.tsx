@@ -1,6 +1,7 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
-import { db, newId, nowIso } from "@/db";
-import type { Task, Project, TaskStatus, TaskPriority, ChecklistItem } from "@/db/schema";
+import { useState, useMemo } from "react";
+import { useAuthContext } from "@/context/AuthContext";
+import { useTasks } from "@/hooks/useTasks";
+import type { Task, Project, TaskStatus, TaskPriority, ChecklistItem } from "@/lib/supabase";
 import { TaskCard } from "./components/TaskCard";
 import { TaskModal } from "./components/TaskModal";
 import { ProjectModal } from "./components/ProjectModal";
@@ -24,9 +25,18 @@ import { cn } from "@/lib/utils";
 type ViewMode = "kanban" | "list";
 
 export function TasksModule() {
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { user } = useAuthContext();
+  const {
+    tasks,
+    projects,
+    loading,
+    addTask,
+    updateTask,
+    removeTask,
+    addProject,
+  } = useTasks(user?.id);
+
+  const activeProjects = useMemo(() => projects.filter((p) => !p.archivedAt && !p.archived_at), [projects]);
 
   const [viewMode, setViewMode] = useState<ViewMode>("kanban");
   const [searchQuery, setSearchQuery] = useState("");
@@ -42,43 +52,15 @@ export function TasksModule() {
     id: null,
   });
 
-  // Carrega tarefas e projetos do IndexedDB
-  const loadData = useCallback(async () => {
-    try {
-      setLoading(true);
-      const d = db();
-      const [allTasks, allProjects] = await Promise.all([
-        d.tasks.toArray(),
-        d.projects.filter((p) => !p.archivedAt).toArray(),
-      ]);
-      setTasks(allTasks);
-      setProjects(allProjects);
-    } catch (err) {
-      console.error("Erro ao carregar tarefas:", err);
-      toast.error("Erro ao carregar tarefas.");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    loadData();
-  }, [loadData]);
-
   // Alternar checkbox de status da tarefa
   const handleToggleStatus = async (taskId: string) => {
     try {
-      const d = db();
       const target = tasks.find((t) => t.id === taskId);
       if (!target) return;
 
       const newStatus: TaskStatus = target.status === "done" ? "todo" : "done";
-      await d.tasks.update(taskId, { status: newStatus, updatedAt: nowIso() });
-      setTasks((prev) =>
-        prev.map((t) => (t.id === taskId ? { ...t, status: newStatus, updatedAt: nowIso() } : t))
-      );
-
-      if (newStatus === "done") toast.success("Tarefa concluída!");
+      const ok = await updateTask(taskId, { status: newStatus });
+      if (ok && newStatus === "done") toast.success("Tarefa concluída!");
     } catch (err) {
       console.error(err);
       toast.error("Erro ao atualizar status.");
@@ -88,11 +70,7 @@ export function TasksModule() {
   // Mover status de coluna (todo <-> doing <-> done)
   const handleStatusChange = async (taskId: string, newStatus: TaskStatus) => {
     try {
-      const d = db();
-      await d.tasks.update(taskId, { status: newStatus, updatedAt: nowIso() });
-      setTasks((prev) =>
-        prev.map((t) => (t.id === taskId ? { ...t, status: newStatus, updatedAt: nowIso() } : t))
-      );
+      await updateTask(taskId, { status: newStatus });
     } catch (err) {
       console.error(err);
       toast.error("Erro ao mover tarefa.");
@@ -102,7 +80,6 @@ export function TasksModule() {
   // Alternar marcação de sub-checklist item
   const handleToggleChecklist = async (taskId: string, checklistId: string) => {
     try {
-      const d = db();
       const target = tasks.find((t) => t.id === taskId);
       if (!target || !target.checklist) return;
 
@@ -110,10 +87,7 @@ export function TasksModule() {
         c.id === checklistId ? { ...c, done: !c.done } : c
       );
 
-      await d.tasks.update(taskId, { checklist: updatedChecklist, updatedAt: nowIso() });
-      setTasks((prev) =>
-        prev.map((t) => (t.id === taskId ? { ...t, checklist: updatedChecklist, updatedAt: nowIso() } : t))
-      );
+      await updateTask(taskId, { checklist: updatedChecklist });
     } catch (err) {
       console.error(err);
     }
@@ -131,11 +105,8 @@ export function TasksModule() {
     checklist: ChecklistItem[];
   }) => {
     try {
-      const d = db();
-      const now = nowIso();
-
       if (taskData.id) {
-        await d.tasks.update(taskData.id, {
+        const ok = await updateTask(taskData.id, {
           title: taskData.title,
           notes: taskData.notes,
           priority: taskData.priority,
@@ -143,12 +114,10 @@ export function TasksModule() {
           projectId: taskData.projectId,
           status: taskData.status,
           checklist: taskData.checklist,
-          updatedAt: now,
         });
-        toast.success("Tarefa atualizada!");
+        if (ok) toast.success("Tarefa atualizada!");
       } else {
-        const newTask: Task = {
-          id: newId(),
+        const ok = await addTask({
           title: taskData.title,
           notes: taskData.notes,
           priority: taskData.priority,
@@ -156,16 +125,12 @@ export function TasksModule() {
           projectId: taskData.projectId,
           status: taskData.status,
           checklist: taskData.checklist,
-          createdAt: now,
-          updatedAt: now,
-        };
-        await d.tasks.add(newTask);
-        toast.success("Nova tarefa criada!");
+        });
+        if (ok) toast.success("Nova tarefa criada!");
       }
 
       setTaskModalOpen(false);
       setEditingTask(null);
-      await loadData();
     } catch (err) {
       console.error(err);
       toast.error("Erro ao salvar tarefa.");
@@ -176,10 +141,9 @@ export function TasksModule() {
   const confirmDeleteTask = async () => {
     if (!deleteConfig.id) return;
     try {
-      const d = db();
-      await d.tasks.delete(deleteConfig.id);
-      toast.success("Tarefa excluída.");
-      await loadData();
+      const ok = await removeTask(deleteConfig.id);
+      if (ok) toast.success("Tarefa excluída.");
+      setDeleteConfig({ open: false, id: null });
     } catch (err) {
       console.error(err);
       toast.error("Erro ao excluir tarefa.");
@@ -189,19 +153,14 @@ export function TasksModule() {
   // Salvar Projeto
   const handleSaveProject = async (projectData: { name: string; color: string }) => {
     try {
-      const d = db();
-      const now = nowIso();
-      const newProj: Project = {
-        id: newId(),
+      const ok = await addProject({
         name: projectData.name,
         color: projectData.color,
-        createdAt: now,
-        updatedAt: now,
-      };
-      await d.projects.add(newProj);
-      toast.success(`Projeto "${projectData.name}" criado!`);
-      setProjectModalOpen(false);
-      await loadData();
+      });
+      if (ok) {
+        toast.success(`Projeto "${projectData.name}" criado!`);
+        setProjectModalOpen(false);
+      }
     } catch (err) {
       console.error(err);
       toast.error("Erro ao criar projeto.");
@@ -361,7 +320,7 @@ export function TasksModule() {
             Todos os Projetos
           </button>
 
-          {projects.map((p) => (
+          {activeProjects.map((p) => (
             <button
               key={p.id}
               onClick={() => setSelectedProjectId(selectedProjectId === p.id ? null : p.id)}
