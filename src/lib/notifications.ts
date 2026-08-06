@@ -1,5 +1,5 @@
 import { toast } from "sonner";
-import { db } from "@/db";
+import { supabase } from "@/lib/supabase";
 import { todayIso } from "@/lib/date";
 
 export interface NotificationSettings {
@@ -82,6 +82,10 @@ export async function checkDailyReminders() {
   const settings = getNotificationSettings();
   if (!settings.enabled || Notification.permission !== "granted") return;
 
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session?.user?.id) return;
+  const userId = session.user.id;
+
   const now = new Date();
   const currentHours = String(now.getHours()).padStart(2, "0");
   const currentMinutes = String(now.getMinutes()).padStart(2, "0");
@@ -94,9 +98,13 @@ export async function checkDailyReminders() {
     const lastSentHabits = localStorage.getItem("lifeos_last_notif_habits");
     if (lastSentHabits !== today) {
       try {
-        const d = db();
-        const habits = await d.habits.filter((h) => !h.archivedAt).toArray();
-        const logsToday = await d.habit_logs.where("date").equals(today).filter((l) => l.done).toArray();
+        const [habitsRes, logsRes] = await Promise.all([
+          supabase.from("habits").select("id").eq("user_id", userId).is("archived_at", null),
+          supabase.from("habit_logs").select("id").eq("user_id", userId).eq("date", today).eq("done", true),
+        ]);
+
+        const habits = habitsRes.data || [];
+        const logsToday = logsRes.data || [];
 
         const pendingCount = habits.length - logsToday.length;
         if (pendingCount > 0) {
@@ -116,10 +124,13 @@ export async function checkDailyReminders() {
     const lastSentJournal = localStorage.getItem("lifeos_last_notif_journal");
     if (lastSentJournal !== today) {
       try {
-        const d = db();
-        const existingEntry = await d.journal_entries.where("date").equals(today).first();
+        const { data: existingEntries } = await supabase
+          .from("journal_entries")
+          .select("id")
+          .eq("user_id", userId)
+          .eq("date", today);
 
-        if (!existingEntry) {
+        if (!existingEntries || existingEntries.length === 0) {
           sendBrowserNotification("LifeOS — Diário Pessoal 📖", {
             body: "Como foi o seu dia? Guarde os seus pensamentos, reflexão e humor do dia.",
           });
