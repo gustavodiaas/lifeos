@@ -43,7 +43,7 @@ export function HorizonView({ lancamentos, currentMonth, currentYear }: Props) {
   }, [lancamentos, currentMonth, currentYear]);
 
   return (
-    <div className="flex w-full overflow-x-auto snap-x snap-mandatory pb-24">
+    <div className="flex w-full overflow-x-auto snap-x snap-mandatory glass-card rounded-3xl border border-border/60 overflow-hidden shadow-sm fade-in max-h-[580px] overflow-y-auto custom-scrollbar">
       {mesesProjetados.map((m, idx) => (
         <div
           key={idx}
