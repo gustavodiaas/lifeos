@@ -47,7 +47,7 @@ export function SpreadsheetTable({ rows, today, onDelete, onEdit }: Props) {
   };
 
   return (
-    <div className="w-full text-sm flex flex-col pb-24 select-none">
+    <div className="w-full text-sm flex flex-col select-none glass-card rounded-3xl border border-border/60 overflow-hidden shadow-sm fade-in max-h-[580px] overflow-y-auto custom-scrollbar">
       {/* Header */}
       <div className="grid grid-cols-[44px_1fr_90px] border-b border-border bg-background sticky top-0 z-10 shadow-sm">
         <div className="py-3 flex items-center justify-center text-[10px] font-black text-muted-foreground border-r border-border uppercase tracking-tighter">
