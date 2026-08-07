@@ -12,364 +12,506 @@ import { MetricLoggerModal } from "./components/MetricLoggerModal";
 import { MetricTrendChart } from "./components/WeightTrendChart";
 import { toast } from "sonner";
 import {
-  BarChart3,
-  Scale,
-  Clock,
   Repeat,
   CheckSquare,
   Wallet,
-  Smile,
+  Target,
+  BookOpen,
+  NotebookPen,
   Plus,
+  Award,
+  Activity,
   TrendingUp,
   TrendingDown,
-  Award,
+  Scale,
+  Clock,
+  Moon,
+  Droplets,
+  Dumbbell,
   Sparkles,
-  Calendar,
-  Activity,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const METRIC_LABELS: Record<string, { title: string; desc: string; iconColor: string; chartColor: string }> = {
-  weight: { title: "Acompanhamento de Peso", desc: "Histórico de peso corporal", iconColor: "text-rose-500 bg-rose-500/15", chartColor: "#FCA311" },
-  study_hours: { title: "Horas de Estudo", desc: "Tempo em foco e estudos", iconColor: "text-indigo-500 bg-indigo-500/15", chartColor: "#6366F1" },
-  sleep_hours: { title: "Horas de Sono", desc: "Qualidade do descanso", iconColor: "text-purple-500 bg-purple-500/15", chartColor: "#A855F7" },
-  water_liters: { title: "Consumo de Água", desc: "Hidratação diária", iconColor: "text-blue-500 bg-blue-500/15", chartColor: "#3B82F6" },
-  workout_mins: { title: "Tempo de Treino", desc: "Atividade física", iconColor: "text-emerald-500 bg-emerald-500/15", chartColor: "#10B981" },
+// Métricas manuais configuráveis
+const METRIC_META: Record<string, {
+  label: string;
+  unit: string;
+  icon: React.FC<any>;
+  color: string;
+  chartColor: string;
+}> = {
+  weight:       { label: "Peso",   unit: "kg",  icon: Scale,    color: "text-[#FCA311] bg-[#FCA311]/15",    chartColor: "#FCA311" },
+  study_hours:  { label: "Estudo", unit: "h",   icon: Clock,    color: "text-indigo-500 bg-indigo-500/15",  chartColor: "#6366F1" },
+  sleep_hours:  { label: "Sono",   unit: "h",   icon: Moon,     color: "text-purple-500 bg-purple-500/15",  chartColor: "#A855F7" },
+  water_liters: { label: "Água",   unit: "L",   icon: Droplets, color: "text-blue-500 bg-blue-500/15",     chartColor: "#3B82F6" },
+  workout_mins: { label: "Treino", unit: "min", icon: Dumbbell, color: "text-emerald-500 bg-emerald-500/15",chartColor: "#10B981" },
 };
+
+const ALL_MANUAL_KEYS = Object.keys(METRIC_META);
 
 export function StatsModule() {
   const { user } = useAuthContext();
-  const { metrics, addMetric } = useMetrics(user?.id);
-  const { habits, logs } = useHabits(user?.id);
-  const { tasks } = useTasks(user?.id);
-  const { goals } = useGoals(user?.id);
-  const { entries: journalEntries } = useJournal(user?.id);
-  const { lancamentos } = useLancamentos(user?.id);
+  const { metrics, addMetric }           = useMetrics(user?.id);
+  const { habits, logs }                 = useHabits(user?.id);
+  const { tasks }                        = useTasks(user?.id);
+  const { goals }                        = useGoals(user?.id);
+  const { entries: journalEntries }      = useJournal(user?.id);
+  const { lancamentos }                  = useLancamentos(user?.id);
 
-  const [loggerOpen, setLoggerOpen] = useState(false);
+  const [loggerOpen, setLoggerOpen]         = useState(false);
   const [defaultMetricKey, setDefaultMetricKey] = useState("weight");
 
-  const today = todayIso();
+  const today        = todayIso();
   const currentMonth = monthIso();
 
-  // Consolidação de estatísticas
-  const stats = useMemo(() => {
-    const activeHabits = habits.filter((h) => !h.archivedAt && !h.archived_at);
-    const habitLogsToday = logs.filter(
-      (l) => l.date === today && l.done
-    );
-    const tasksDone = tasks.filter((t) => t.status === "done").length;
-    const goalsDone = goals.filter((g) => (g.progress || 0) >= (g.target || 100)).length;
+  // ── Dados automáticos por módulo ──────────────────────────────────────
+  const moduleStats = useMemo(() => {
+    const activeHabits   = habits.filter((h) => !h.archivedAt && !h.archived_at);
+    const habitsDoneToday = logs.filter((l) => l.date === today && l.done).length;
+
+    // streak de hábitos (dias consecutivos com pelo menos 1 hábito feito)
+    const logDates = [...new Set(logs.filter((l) => l.done).map((l) => l.date))].sort().reverse();
+    let streak = 0;
+    const cursor = new Date(today);
+    for (const d of logDates) {
+      const cur = cursor.toISOString().slice(0, 10);
+      if (d === cur) { streak++; cursor.setDate(cursor.getDate() - 1); }
+      else break;
+    }
+
+    const tasksDone    = tasks.filter((t) => t.status === "done").length;
+    const tasksPending = tasks.filter((t) => t.status !== "done").length;
 
     const monthTxs = lancamentos.filter((l) => l.data?.startsWith(currentMonth));
-    const income = monthTxs.filter((l) => l.tipo === "entrada").reduce((s, l) => s + Number(l.valor), 0);
-    const expense = monthTxs.filter((l) => l.tipo === "saida").reduce((s, l) => s + Number(l.valor), 0);
+    const income   = monthTxs.filter((l) => l.tipo === "entrada").reduce((s, l) => s + Number(l.valor), 0);
+    const expense  = monthTxs.filter((l) => l.tipo === "saida").reduce((s, l) => s + Number(l.valor), 0);
+    const balance  = income - expense;
+    const savingRate = income > 0 ? Math.round(((income - expense) / income) * 100) : null;
+
+    const goalsActive   = goals.filter((g) => (g.progress || 0) < (g.target || 100));
+    const goalsDone     = goals.filter((g) => (g.progress || 0) >= (g.target || 100)).length;
+    const avgGoalPct    = goals.length > 0
+      ? Math.round(goals.reduce((s, g) => s + ((g.progress || 0) / (g.target || 100)) * 100, 0) / goals.length)
+      : null;
+
+    const journalThisMonth = journalEntries.filter((e) =>
+      (e.date || e.created_at || "").startsWith(currentMonth)
+    ).length;
+
+    // notas únicas (se existir campo de tema/tag)
+    const journalTotal = journalEntries.length;
 
     return {
       habitsTotal: activeHabits.length,
-      habitsDoneToday: habitLogsToday.length,
-      tasksTotal: tasks.length,
+      habitsDoneToday,
+      streak,
       tasksDone,
-      goalsTotal: goals.length,
-      goalsDone,
-      journalCount: journalEntries.length,
+      tasksPending,
+      tasksTotal: tasks.length,
       income,
       expense,
+      balance,
+      savingRate,
+      goalsDone,
+      goalsTotal: goals.length,
+      goalsActive: goalsActive.length,
+      avgGoalPct,
+      journalThisMonth,
+      journalTotal,
     };
   }, [habits, logs, tasks, goals, journalEntries, lancamentos, today, currentMonth]);
 
-  // Salvar nova medição
-  const handleSaveMetric = async (metricData: { key: string; value: number; unit: string; date: string }) => {
-    try {
-      const ok = await addMetric({
-        key: metricData.key,
-        value: metricData.value,
-        unit: metricData.unit,
-        date: metricData.date,
-      });
+  // ── Score geral ───────────────────────────────────────────────────────
+  const overallScore = useMemo(() => {
+    let s = 40;
+    if (moduleStats.habitsTotal > 0)
+      s += Math.round((moduleStats.habitsDoneToday / moduleStats.habitsTotal) * 20);
+    if (moduleStats.tasksTotal > 0)
+      s += Math.round((moduleStats.tasksDone / moduleStats.tasksTotal) * 20);
+    if (moduleStats.income > 0 && moduleStats.savingRate !== null && moduleStats.savingRate > 0)
+      s += Math.min(15, Math.round(moduleStats.savingRate * 0.15));
+    if (moduleStats.journalThisMonth > 0) s += 5;
+    if (moduleStats.goalsDone > 0) s += 10;
+    if (moduleStats.streak >= 3) s += 5;
+    return Math.min(100, Math.max(10, s));
+  }, [moduleStats]);
 
-      if (ok) {
-        toast.success("Medição registrada com sucesso!");
-        setLoggerOpen(false);
-      }
-    } catch (err) {
-      console.error(err);
+  // ── Métricas manuais — só as que têm ao menos 1 registro ─────────────
+  const metricGroups = useMemo(() => {
+    const map = new Map<string, { key: string; unit: string; logs: typeof metrics }>();
+    for (const m of metrics) {
+      const ex = map.get(m.key) || { key: m.key, unit: m.unit || "", logs: [] };
+      ex.logs.push(m);
+      if (m.unit) ex.unit = m.unit;
+      map.set(m.key, ex);
+    }
+    return Array.from(map.values()).filter((g) => g.logs.length > 0);
+  }, [metrics]);
+
+  // Quais métricas manuais ainda não têm dados
+  const unloggedKeys = ALL_MANUAL_KEYS.filter(
+    (k) => !metricGroups.some((g) => g.key === k)
+  );
+
+  const handleSaveMetric = async (data: { key: string; value: number; unit: string; date: string }) => {
+    try {
+      const ok = await addMetric(data);
+      if (ok) { toast.success("Medição registrada!"); setLoggerOpen(false); }
+    } catch {
       toast.error("Erro ao salvar medição.");
     }
   };
 
-  // Grupos de métricas dinâmicos por key
-  const metricGroups = useMemo(() => {
-    const map = new Map<string, { key: string; unit: string; logs: typeof metrics }>();
-    
-    // Garante peso e estudo como padrão se existirem
-    ["weight", "study_hours"].forEach((k) => {
-      map.set(k, { key: k, unit: k === "weight" ? "kg" : "h", logs: [] });
-    });
-
-    for (const m of metrics) {
-      const existing = map.get(m.key) || { key: m.key, unit: m.unit || "", logs: [] };
-      existing.logs.push(m);
-      if (m.unit) existing.unit = m.unit;
-      map.set(m.key, existing);
-    }
-
-    return Array.from(map.values());
-  }, [metrics]);
-
-  // Cálculo do LifeOS Score (0 a 100)
-  const overallScore = useMemo(() => {
-    let score = 50; // base
-
-    if (stats.habitsTotal > 0) {
-      score += Math.round((stats.habitsDoneToday / stats.habitsTotal) * 25);
-    }
-
-    if (stats.tasksTotal > 0) {
-      score += Math.round((stats.tasksDone / stats.tasksTotal) * 25);
-    } else {
-      score += 10;
-    }
-
-    if (stats.income > 0) {
-      const savingsRate = (stats.income - stats.expense) / stats.income;
-      if (savingsRate > 0) score += Math.min(25, Math.round(savingsRate * 25));
-    } else {
-      score += 10;
-    }
-
-    if (stats.journalCount > 0) score += 10;
-    if (stats.goalsDone > 0) score += 15;
-
-    return Math.min(100, Math.max(10, score));
-  }, [stats]);
+  const openLogger = (key: string) => {
+    setDefaultMetricKey(key);
+    setLoggerOpen(true);
+  };
 
   return (
-    <div className="space-y-6 fade-in pb-12">
+    <div className="space-y-5 fade-in px-4 md:px-6 py-4 pb-12">
 
-      {/* ── 1. Top Header & Ações ────────────────────────────────────────── */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      {/* ── Cabeçalho ──────────────────────────────────────────────── */}
+      <div className="flex items-center justify-between">
         <div>
-          <div className="flex items-center gap-2">
-            <span className="badge-ios">Relatório Inteligente</span>
-            <span className="text-xs font-bold text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-full">
-              Tempo Real
-            </span>
-          </div>
-          <h2 className="text-2xl md:text-3xl font-extrabold text-foreground tracking-tight mt-1">
-            Estatísticas & Análise
+          <span className="badge-ios text-[10px]">Tempo Real</span>
+          <h2 className="text-xl font-extrabold text-foreground tracking-tight mt-1">
+            Estatísticas
           </h2>
         </div>
-
         <button
-          onClick={() => {
-            setDefaultMetricKey("weight");
-            setLoggerOpen(true);
-          }}
-          className="btn-ios text-xs py-3 px-5 self-start md:self-auto"
+          onClick={() => openLogger("weight")}
+          className="btn-ios text-xs py-2 px-4"
         >
-          <Plus size={16} strokeWidth={2.5} />
-          <span>Registrar Medição</span>
+          <Plus size={14} strokeWidth={2.5} />
+          <span>Registrar</span>
         </button>
       </div>
 
-      {/* ── 2. Anel de Pontuação de Desempenho Geral ───────────────────────── */}
-      <div className="glass-card p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-8 bg-gradient-to-r from-amber-500/10 via-transparent to-blue-500/10">
-        <div className="flex flex-col items-center md:items-start text-center md:text-left space-y-3 max-w-md">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FCA311]/15 text-[#FCA311] text-xs font-bold">
-            <Award size={14} />
-            <span>Produtividade Geral</span>
+      {/* ── Score Geral ─────────────────────────────────────────────── */}
+      <div className="glass-card p-4 flex items-center gap-5 bg-gradient-to-r from-amber-500/10 via-transparent to-blue-500/10">
+        <ActivityRing
+          score={overallScore}
+          size={90}
+          strokeWidth={10}
+          label="Score"
+          sublabel="LifeOS"
+        />
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-1.5 mb-1">
+            <Award size={13} className="text-[#FCA311] shrink-0" />
+            <span className="text-[10px] font-extrabold text-[#FCA311] uppercase tracking-wider">
+              Performance Geral
+            </span>
           </div>
-
-          <h3 className="text-2xl md:text-3xl font-extrabold text-foreground tracking-tight">
-            LifeOS Performance Score
-          </h3>
-
-          <p className="text-xs md:text-sm text-muted-foreground font-medium leading-relaxed">
-            O teu indicador consolidado avalia o hábito do dia, taxa de tarefas concluídas, saúde financeira e presença no diário.
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            Baseado nos seus hábitos de hoje, tarefas concluídas, saúde financeira e presença no diário.
           </p>
-        </div>
-
-        <div className="shrink-0">
-          <ActivityRing
-            score={overallScore}
-            size={150}
-            strokeWidth={14}
-            label="Índice Global"
-            sublabel="Métricas Ativas"
-          />
+          {moduleStats.streak >= 2 && (
+            <span className="inline-flex items-center gap-1 mt-2 text-[10px] font-bold text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-full">
+              🔥 {moduleStats.streak} dias em sequência
+            </span>
+          )}
         </div>
       </div>
 
-      {/* ── 3. Rastreadores de Métricas Dinâmicos ───────────────────────── */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {metricGroups.map((group) => {
-          const info = METRIC_LABELS[group.key] || {
-            title: group.key.replace(/_/g, " ").toUpperCase(),
-            desc: "Registro de medições personalizadas",
-            iconColor: "text-amber-500 bg-amber-500/15",
-            chartColor: "#FCA311",
-          };
+      {/* ── Cards dos módulos — dados automáticos ────────────────────── */}
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
 
-          const latestValue = group.logs.at(-1)?.value ?? null;
-          const totalSum = group.logs.reduce((sum, m) => sum + m.value, 0);
+        {/* Hábitos */}
+        <ModuleCard
+          icon={<Repeat size={16} />}
+          iconClass="text-[#FCA311] bg-[#FCA311]/15"
+          title="Hábitos"
+          primary={`${moduleStats.habitsDoneToday} / ${moduleStats.habitsTotal}`}
+          primaryLabel="feitos hoje"
+          secondary={moduleStats.streak > 0 ? `${moduleStats.streak}d streak` : null}
+          secondaryColor="text-emerald-500"
+          emptyMsg={moduleStats.habitsTotal === 0 ? "Nenhum hábito ativo" : null}
+          progress={moduleStats.habitsTotal > 0
+            ? Math.round((moduleStats.habitsDoneToday / moduleStats.habitsTotal) * 100)
+            : null}
+        />
 
-          return (
-            <div key={group.key} className="glass-card p-6 flex flex-col justify-between space-y-4">
-              <div className="flex items-center justify-between border-b border-border/60 pb-3">
-                <div className="flex items-center gap-2.5">
-                  <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${info.iconColor}`}>
-                    <Activity size={18} />
+        {/* Tarefas */}
+        <ModuleCard
+          icon={<CheckSquare size={16} />}
+          iconClass="text-blue-500 bg-blue-500/15"
+          title="Tarefas"
+          primary={String(moduleStats.tasksDone)}
+          primaryLabel="concluídas"
+          secondary={moduleStats.tasksPending > 0 ? `${moduleStats.tasksPending} pendentes` : "Tudo em dia!"}
+          secondaryColor={moduleStats.tasksPending > 0 ? "text-amber-500" : "text-emerald-500"}
+          emptyMsg={moduleStats.tasksTotal === 0 ? "Nenhuma tarefa" : null}
+          progress={moduleStats.tasksTotal > 0
+            ? Math.round((moduleStats.tasksDone / moduleStats.tasksTotal) * 100)
+            : null}
+        />
+
+        {/* Finanças */}
+        <ModuleCard
+          icon={<Wallet size={16} />}
+          iconClass="text-emerald-500 bg-emerald-500/15"
+          title="Finanças"
+          primary={formatBRL(moduleStats.balance)}
+          primaryLabel="saldo do mês"
+          secondary={moduleStats.savingRate !== null
+            ? `${moduleStats.savingRate}% poupado`
+            : moduleStats.income === 0 ? "Sem lançamentos" : null}
+          secondaryColor={
+            moduleStats.savingRate !== null && moduleStats.savingRate > 0
+              ? "text-emerald-500"
+              : "text-red-500"
+          }
+          emptyMsg={moduleStats.income === 0 && moduleStats.expense === 0 ? "Sem lançamentos" : null}
+          progress={null}
+          accentColor={moduleStats.balance >= 0 ? "border-emerald-500/30" : "border-red-500/30"}
+        />
+
+        {/* Metas */}
+        <ModuleCard
+          icon={<Target size={16} />}
+          iconClass="text-purple-500 bg-purple-500/15"
+          title="Metas"
+          primary={`${moduleStats.goalsDone} / ${moduleStats.goalsTotal}`}
+          primaryLabel="concluídas"
+          secondary={moduleStats.avgGoalPct !== null
+            ? `${moduleStats.avgGoalPct}% média geral`
+            : null}
+          secondaryColor="text-purple-500"
+          emptyMsg={moduleStats.goalsTotal === 0 ? "Nenhuma meta" : null}
+          progress={moduleStats.avgGoalPct}
+        />
+
+        {/* Diário */}
+        <ModuleCard
+          icon={<NotebookPen size={16} />}
+          iconClass="text-rose-500 bg-rose-500/15"
+          title="Diário"
+          primary={String(moduleStats.journalThisMonth)}
+          primaryLabel="entradas este mês"
+          secondary={moduleStats.journalTotal > 0
+            ? `${moduleStats.journalTotal} no total`
+            : null}
+          secondaryColor="text-muted-foreground"
+          emptyMsg={moduleStats.journalTotal === 0 ? "Nenhuma entrada" : null}
+          progress={null}
+        />
+
+        {/* Finanças: receita vs despesa */}
+        <div className="glass-card p-3 rounded-2xl border border-border/60 space-y-2">
+          <div className="flex items-center gap-1.5">
+            <div className="w-7 h-7 rounded-xl flex items-center justify-center text-indigo-500 bg-indigo-500/15 shrink-0">
+              <TrendingUp size={14} />
+            </div>
+            <span className="text-xs font-extrabold text-foreground">Fluxo</span>
+          </div>
+          <div className="space-y-1">
+            <div className="flex justify-between text-[11px]">
+              <span className="text-muted-foreground">Receita</span>
+              <span className="font-extrabold text-emerald-500">{formatBRL(moduleStats.income)}</span>
+            </div>
+            <div className="flex justify-between text-[11px]">
+              <span className="text-muted-foreground">Despesa</span>
+              <span className="font-extrabold text-red-500">{formatBRL(moduleStats.expense)}</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      {/* ── Métricas manuais com dados ────────────────────────────────── */}
+      {metricGroups.length > 0 && (
+        <section className="space-y-3">
+          <h3 className="text-xs font-extrabold text-muted-foreground uppercase tracking-widest">
+            Métricas Pessoais
+          </h3>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {metricGroups.map((group) => {
+              const meta = METRIC_META[group.key] || {
+                label: group.key.replace(/_/g, " "),
+                unit: group.unit,
+                icon: Activity,
+                color: "text-amber-500 bg-amber-500/15",
+                chartColor: "#FCA311",
+              };
+              const Icon = meta.icon;
+              const latest = group.logs.at(-1);
+              const prev   = group.logs.at(-2);
+              const trend  = latest && prev
+                ? latest.value > prev.value ? "up" : latest.value < prev.value ? "down" : "flat"
+                : null;
+
+              return (
+                <div key={group.key} className="glass-card p-4 rounded-2xl border border-border/60 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className={cn("w-8 h-8 rounded-xl flex items-center justify-center shrink-0", meta.color)}>
+                        <Icon size={15} />
+                      </div>
+                      <div>
+                        <p className="text-xs font-extrabold text-foreground">{meta.label}</p>
+                        <p className="text-[10px] text-muted-foreground">{group.logs.length} medições</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {trend === "up" && <TrendingUp size={14} className="text-emerald-500" />}
+                      {trend === "down" && <TrendingDown size={14} className="text-red-500" />}
+                      <button
+                        onClick={() => openLogger(group.key)}
+                        className="p-1.5 rounded-lg bg-muted/60 hover:bg-muted text-[#FCA311] transition-colors"
+                      >
+                        <Plus size={13} />
+                      </button>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="text-base font-extrabold text-foreground">{info.title}</h3>
-                    <p className="text-xs text-muted-foreground font-medium">{info.desc}</p>
+
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-2xl font-black text-foreground">
+                      {latest?.value ?? "—"}
+                    </span>
+                    <span className="text-xs font-bold text-muted-foreground">{meta.unit}</span>
+                    {prev && (
+                      <span className={cn(
+                        "ml-auto text-[10px] font-bold",
+                        trend === "up" ? "text-emerald-500" : trend === "down" ? "text-red-500" : "text-muted-foreground"
+                      )}>
+                        anterior: {prev.value} {meta.unit}
+                      </span>
+                    )}
                   </div>
-                </div>
 
-                <button
-                  onClick={() => {
-                    setDefaultMetricKey(group.key);
-                    setLoggerOpen(true);
-                  }}
-                  className="p-2 rounded-xl bg-muted/60 hover:bg-muted text-[#FCA311] font-bold text-xs flex items-center gap-1 transition-colors"
-                >
-                  <Plus size={14} />
-                  <span>Log</span>
-                </button>
-              </div>
-
-              <div className="flex items-baseline justify-between py-2">
-                <div>
-                  <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider block">
-                    {group.key === "weight" ? "Último Valor" : "Total Acumulado"}
-                  </span>
-                  <span className="text-3xl font-black text-foreground">
-                    {group.key === "weight"
-                      ? latestValue != null ? `${latestValue} ${group.unit}` : "—"
-                      : `${totalSum.toFixed(1)} ${group.unit}`}
-                  </span>
-                </div>
-                <span className="text-xs font-bold text-muted-foreground bg-muted px-2.5 py-1 rounded-xl">
-                  {group.logs.length} medições
-                </span>
-              </div>
-
-              {/* Histórico recente */}
-              <div className="space-y-1.5 pt-1">
-                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block">
-                  Registros Recentes
-                </span>
-                {group.logs.length === 0 ? (
-                  <p className="text-xs text-muted-foreground italic">Nenhum registro nesta métrica ainda.</p>
-                ) : (
-                  <div className="flex items-center gap-2 overflow-x-auto pb-1">
-                    {group.logs.slice(-5).map((log) => (
-                      <div key={log.id} className="p-2.5 rounded-xl bg-muted/50 border border-border/50 text-center shrink-0 min-w-[70px]">
+                  {/* Últimas medições */}
+                  <div className="flex gap-1.5 overflow-x-auto scrollbar-none">
+                    {group.logs.slice(-6).map((log) => (
+                      <div key={log.id} className="shrink-0 text-center p-1.5 rounded-xl bg-muted/50 border border-border/40 min-w-[52px]">
                         <span className="text-[9px] font-bold text-muted-foreground block">{log.date.slice(5)}</span>
-                        <span className="text-xs font-black text-foreground">{log.value} {group.unit}</span>
+                        <span className="text-[11px] font-black text-foreground">{log.value}</span>
                       </div>
                     ))}
                   </div>
-                )}
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* ── 3.5 Gráficos de Tendência ────────────────────────────────────── */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {metricGroups.filter((g) => g.logs.length >= 2).map((group) => {
-          const info = METRIC_LABELS[group.key] || {
-            title: `Evolução: ${group.key}`,
-            chartColor: "#FCA311",
-          };
-          return (
-            <MetricTrendChart
-              key={group.key}
-              metrics={metrics}
-              metricKey={group.key}
-              title={info.title}
-              unit={group.unit}
-              color={info.chartColor}
-            />
-          );
-        })}
-      </div>
-
-      {/* ── 4. Quadro Comparativo dos Módulos ───────────────────────────── */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-
-        {/* Hábitos & Tarefas */}
-        <div className="glass-card p-6 space-y-4">
-          <div className="flex items-center gap-2.5 border-b border-border/60 pb-3">
-            <Repeat size={18} className="text-[#FCA311]" />
-            <h3 className="text-sm font-extrabold text-foreground">Hábitos & Tarefas</h3>
+                </div>
+              );
+            })}
           </div>
 
-          <div className="space-y-3">
-            <div className="flex justify-between items-center text-xs">
-              <span className="text-muted-foreground font-semibold">Hábitos Concluídos Hoje</span>
-              <span className="font-extrabold text-foreground">{stats.habitsDoneToday}/{stats.habitsTotal}</span>
+          {/* Gráficos — só se tiver >= 2 pontos */}
+          {metricGroups.filter((g) => g.logs.length >= 2).length > 0 && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
+              {metricGroups.filter((g) => g.logs.length >= 2).map((group) => {
+                const meta = METRIC_META[group.key];
+                if (!meta) return null;
+                return (
+                  <MetricTrendChart
+                    key={group.key}
+                    metrics={metrics}
+                    metricKey={group.key}
+                    title={meta.label}
+                    unit={meta.unit}
+                    color={meta.chartColor}
+                  />
+                );
+              })}
             </div>
+          )}
+        </section>
+      )}
 
-            <div className="flex justify-between items-center text-xs">
-              <span className="text-muted-foreground font-semibold">Tarefas Concluídas</span>
-              <span className="font-extrabold text-emerald-500">{stats.tasksDone}/{stats.tasksTotal}</span>
-            </div>
+      {/* ── CTAs para métricas ainda sem dados ───────────────────────── */}
+      {unloggedKeys.length > 0 && (
+        <section className="space-y-2">
+          <h3 className="text-xs font-extrabold text-muted-foreground uppercase tracking-widest">
+            Rastrear Também
+          </h3>
+          <div className="flex flex-wrap gap-2">
+            {unloggedKeys.map((k) => {
+              const meta = METRIC_META[k];
+              const Icon = meta.icon;
+              return (
+                <button
+                  key={k}
+                  onClick={() => openLogger(k)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-border/60 bg-muted/30 hover:bg-muted text-xs font-bold text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <Icon size={12} />
+                  <span>{meta.label}</span>
+                  <Plus size={11} className="opacity-60" />
+                </button>
+              );
+            })}
           </div>
-        </div>
+        </section>
+      )}
 
-        {/* Saúde Financeira */}
-        <div className="glass-card p-6 space-y-4">
-          <div className="flex items-center gap-2.5 border-b border-border/60 pb-3">
-            <Wallet size={18} className="text-emerald-500" />
-            <h3 className="text-sm font-extrabold text-foreground">Saúde Financeira</h3>
-          </div>
-
-          <div className="space-y-3">
-            <div className="flex justify-between items-center text-xs">
-              <span className="text-muted-foreground font-semibold">Receita no Mês</span>
-              <span className="font-extrabold text-emerald-500">{formatBRL(stats.income)}</span>
-            </div>
-
-            <div className="flex justify-between items-center text-xs">
-              <span className="text-muted-foreground font-semibold">Despesa no Mês</span>
-              <span className="font-extrabold text-red-500">{formatBRL(stats.expense)}</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Diário & Metas */}
-        <div className="glass-card p-6 space-y-4">
-          <div className="flex items-center gap-2.5 border-b border-border/60 pb-3">
-            <Smile size={18} className="text-purple-500" />
-            <h3 className="text-sm font-extrabold text-foreground">Diário & Metas</h3>
-          </div>
-
-          <div className="space-y-3">
-            <div className="flex justify-between items-center text-xs">
-              <span className="text-muted-foreground font-semibold">Metas Atingidas</span>
-              <span className="font-extrabold text-purple-500">{stats.goalsDone}/{stats.goalsTotal}</span>
-            </div>
-
-            <div className="flex justify-between items-center text-xs">
-              <span className="text-muted-foreground font-semibold">Páginas no Diário</span>
-              <span className="font-extrabold text-foreground">{stats.journalCount} salvos</span>
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-      {/* Modal de Registro de Métrica */}
       <MetricLoggerModal
         open={loggerOpen}
         onClose={() => setLoggerOpen(false)}
         onSave={handleSaveMetric}
         defaultKey={defaultMetricKey}
       />
+    </div>
+  );
+}
+
+// ── Componente auxiliar: card de módulo ──────────────────────────────────
+function ModuleCard({
+  icon,
+  iconClass,
+  title,
+  primary,
+  primaryLabel,
+  secondary,
+  secondaryColor = "text-muted-foreground",
+  emptyMsg,
+  progress,
+  accentColor,
+}: {
+  icon: React.ReactNode;
+  iconClass: string;
+  title: string;
+  primary: string;
+  primaryLabel: string;
+  secondary: string | null;
+  secondaryColor?: string;
+  emptyMsg: string | null;
+  progress: number | null;
+  accentColor?: string;
+}) {
+  return (
+    <div className={cn(
+      "glass-card p-3 rounded-2xl border border-border/60 space-y-2.5",
+      accentColor
+    )}>
+      <div className="flex items-center gap-1.5">
+        <div className={cn("w-7 h-7 rounded-xl flex items-center justify-center shrink-0", iconClass)}>
+          {icon}
+        </div>
+        <span className="text-xs font-extrabold text-foreground">{title}</span>
+      </div>
+
+      {emptyMsg ? (
+        <p className="text-[11px] text-muted-foreground italic">{emptyMsg}</p>
+      ) : (
+        <>
+          <div>
+            <span className="text-xl font-black text-foreground leading-none">{primary}</span>
+            <span className="text-[10px] text-muted-foreground font-semibold block mt-0.5">{primaryLabel}</span>
+          </div>
+
+          {secondary && (
+            <span className={cn("text-[11px] font-bold", secondaryColor)}>{secondary}</span>
+          )}
+
+          {progress !== null && (
+            <div className="h-1 bg-muted rounded-full overflow-hidden">
+              <div
+                className="h-full bg-[#FCA311] rounded-full transition-all"
+                style={{ width: `${Math.min(100, progress)}%` }}
+              />
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 }
