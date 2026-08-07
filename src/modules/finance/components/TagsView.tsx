@@ -43,7 +43,7 @@ export function TagsView({ rows }: Props) {
   };
 
   return (
-    <div className="flex flex-col p-6 space-y-4 pb-24">
+    <div className="glass-card p-6 rounded-3xl space-y-4 border border-border/60 shadow-sm fade-in">
       <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">
         Visão por Categoria
       </p>
