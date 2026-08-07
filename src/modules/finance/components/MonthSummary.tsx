@@ -25,7 +25,7 @@ export function MonthSummary({ summary, selectedMonth, selectedYear }: Props) {
   const custoVidaOK = summary.custoVida <= summary.rendaReal * 0.6;
 
   return (
-    <div className="flex flex-col p-6 space-y-8 pb-24">
+    <div className="glass-card p-6 rounded-3xl space-y-6 border border-border/60 shadow-sm fade-in">
       <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">
         Cálculos do mês
       </p>
