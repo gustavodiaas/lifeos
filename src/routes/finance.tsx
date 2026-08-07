@@ -15,9 +15,7 @@ export const Route = createFileRoute('/finance')({
 function FinancePage() {
   return (
     <AppShell>
-      <div className="flex flex-col h-[calc(100vh-0px)] overflow-hidden">
-        <FinanceModule />
-      </div>
+      <FinanceModule />
     </AppShell>
   );
 }
