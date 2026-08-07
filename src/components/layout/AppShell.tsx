@@ -165,18 +165,6 @@ export function AppShell({ children }: { children?: ReactNode }) {
           </Link>
         </div>
 
-        {/* Quick Search Trigger */}
-        <div className="px-4 pb-3">
-          <button
-            onClick={() => setPaletteOpen(true)}
-            className="w-full flex items-center gap-2.5 rounded-xl bg-muted/60 hover:bg-muted px-3.5 py-2.5 text-xs text-muted-foreground hover:text-foreground transition-all border border-border/50 group shadow-sm"
-          >
-            <Search className="h-4 w-4 shrink-0 text-muted-foreground group-hover:text-[#FCA311] transition-colors" />
-            <span className="flex-1 text-left font-medium text-[12px]">Pesquisar no LifeOS...</span>
-            <kbd className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-background border border-border text-muted-foreground">⌘K</kbd>
-          </button>
-        </div>
-
         {/* Navigation Categories */}
         <nav className="flex-1 px-3 space-y-5 overflow-y-auto pt-2">
           <div className="space-y-1">
@@ -296,7 +284,7 @@ export function AppShell({ children }: { children?: ReactNode }) {
         </header>
 
         {/* Page body content */}
-        <div className="flex-1 min-h-0 overflow-y-auto pb-28 md:pb-0">
+        <div className="flex-1 min-w-0 overflow-y-auto pb-28 md:pb-0">
           {children ?? <Outlet />}
         </div>
       </main>
