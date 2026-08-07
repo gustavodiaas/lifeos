@@ -178,23 +178,24 @@ export function FinanceModule() {
   const netBalance = totalIncome - totalExpense;
 
   return (
-    <div className="flex flex-col h-full relative space-y-3 pb-10">
+  return (
+    <div className="w-full max-w-6xl mx-auto px-4 md:px-6 py-4 flex flex-col space-y-4 relative">
       {toastMessage && (
         <ErrorToast message={toastMessage} onClose={() => setToastMessage(null)} />
       )}
 
       {/* Header Compacto do módulo de Finanças */}
-      <div className="glass-card p-3 flex flex-col sm:flex-row items-center justify-between gap-2.5 sticky top-0 z-10">
+      <div className="glass-card p-3 flex flex-col sm:flex-row items-center justify-between gap-2.5 sticky top-0 z-20 backdrop-blur-xl border border-white/10 shadow-sm">
         {/* Navegação de Mês Compacta */}
         <div className="flex items-center justify-between w-full sm:w-auto gap-2">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 bg-muted/40 p-1 rounded-xl border border-border/40">
             <button
               onClick={prevMonth}
               className="p-1 rounded-lg bg-muted/60 hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
             >
               <ChevronLeft size={16} strokeWidth={2.5} />
             </button>
-            <span className="text-sm font-black tracking-tight text-foreground min-w-[65px] text-center capitalize">
+            <span className="text-xs font-black tracking-tight text-foreground min-w-[70px] text-center capitalize">
               {formatMonthLabel(year, month)}
             </span>
             <button
@@ -219,12 +220,12 @@ export function FinanceModule() {
         </div>
 
         {/* Pílulas de Sub-telas Compactas (Extrato, Totais, Tags, Previsão, Planilha) */}
-        <div className="flex items-center gap-1 overflow-x-auto w-full sm:w-auto pb-0.5 sm:pb-0">
+        <div className="flex items-center gap-1 overflow-x-auto w-full sm:w-auto pb-0.5 sm:pb-0 scrollbar-none">
           <button
             onClick={() => setActiveTab('extrato')}
-            className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all flex items-center gap-1 shrink-0 ${
+            className={`px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all flex items-center gap-1.5 shrink-0 ${
               activeTab === 'extrato'
-                ? 'bg-[#FCA311] text-black shadow-sm font-extrabold'
+                ? 'bg-[#FCA311] text-black shadow-md font-extrabold scale-[1.02]'
                 : 'bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground'
             }`}
           >
@@ -234,9 +235,9 @@ export function FinanceModule() {
 
           <button
             onClick={() => setActiveTab('totais')}
-            className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all flex items-center gap-1 shrink-0 ${
+            className={`px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all flex items-center gap-1.5 shrink-0 ${
               activeTab === 'totais'
-                ? 'bg-[#FCA311] text-black shadow-sm font-extrabold'
+                ? 'bg-[#FCA311] text-black shadow-md font-extrabold scale-[1.02]'
                 : 'bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground'
             }`}
           >
@@ -246,9 +247,9 @@ export function FinanceModule() {
 
           <button
             onClick={() => setActiveTab('tags')}
-            className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all flex items-center gap-1 shrink-0 ${
+            className={`px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all flex items-center gap-1.5 shrink-0 ${
               activeTab === 'tags'
-                ? 'bg-[#FCA311] text-black shadow-sm font-extrabold'
+                ? 'bg-[#FCA311] text-black shadow-md font-extrabold scale-[1.02]'
                 : 'bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground'
             }`}
           >
@@ -258,9 +259,9 @@ export function FinanceModule() {
 
           <button
             onClick={() => setActiveTab('horizon')}
-            className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all flex items-center gap-1 shrink-0 ${
+            className={`px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all flex items-center gap-1.5 shrink-0 ${
               activeTab === 'horizon'
-                ? 'bg-[#FCA311] text-black shadow-sm font-extrabold'
+                ? 'bg-[#FCA311] text-black shadow-md font-extrabold scale-[1.02]'
                 : 'bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground'
             }`}
           >
@@ -270,9 +271,9 @@ export function FinanceModule() {
 
           <button
             onClick={() => setActiveTab('planilha')}
-            className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all flex items-center gap-1 shrink-0 ${
+            className={`px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all flex items-center gap-1.5 shrink-0 ${
               activeTab === 'planilha'
-                ? 'bg-[#FCA311] text-black shadow-sm font-extrabold'
+                ? 'bg-[#FCA311] text-black shadow-md font-extrabold scale-[1.02]'
                 : 'bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground'
             }`}
           >
@@ -286,24 +287,24 @@ export function FinanceModule() {
               setModalError(null);
               setModalOpen(true);
             }}
-            className="hidden sm:flex btn-ios text-xs py-1 px-3 ml-2 shrink-0"
+            className="hidden sm:flex btn-ios text-xs py-1.5 px-3.5 ml-2 shrink-0 shadow-sm active:scale-95"
           >
-            <Plus size={14} />
+            <Plus size={14} strokeWidth={2.5} />
             <span>Novo</span>
           </button>
         </div>
       </div>
 
       {/* Conteúdo Principal */}
-      <div className="flex-1 overflow-y-auto space-y-4">
+      <div className="space-y-4">
         {!loading && rawForMonth.length > 0 && activeTab !== 'extrato' && (
           <FinanceChart transactions={rawForMonth} />
         )}
 
         {loading ? (
           <div className="py-16 text-center">
-            <div className="w-5 h-5 border-2 border-[#FCA311] border-t-transparent rounded-full animate-spin mx-auto mb-2" />
-            <p className="text-xs text-muted-foreground">Sincronizando...</p>
+            <div className="w-6 h-6 border-2 border-[#FCA311] border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+            <p className="text-xs text-muted-foreground font-semibold">Sincronizando finanças...</p>
           </div>
         ) : (
           <>
