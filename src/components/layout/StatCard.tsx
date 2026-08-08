@@ -19,15 +19,15 @@ export function StatCard({
   hint,
   tone = "default",
   icon: Icon,
-  iconBg = "bg-amber-500/10 dark:bg-amber-500/20",
-  iconColor = "text-[#FCA311]",
+  iconBg = "bg-muted dark:bg-muted",
+  iconColor = "text-foreground",
   progress,
   trend,
 }: StatCardProps) {
   return (
     <div className="glass-card p-4 flex flex-col justify-between relative overflow-hidden group">
       {/* Background glow sutil no hover */}
-      <div className="absolute -right-10 -bottom-10 w-24 h-24 rounded-full bg-amber-500/5 group-hover:scale-150 transition-transform duration-500 pointer-events-none" />
+      <div className="absolute -right-10 -bottom-10 w-24 h-24 rounded-full bg-muted/50 group-hover:scale-150 transition-transform duration-500 pointer-events-none" />
 
       <div>
         <div className="flex items-center justify-between mb-3">
@@ -55,7 +55,7 @@ export function StatCard({
               "text-2xl md:text-3xl font-extrabold tracking-tight text-foreground",
               tone === "positive" && "text-emerald-600 dark:text-emerald-400",
               tone === "negative" && "text-red-500 dark:text-red-400",
-              tone === "warning" && "text-amber-500 dark:text-amber-400",
+              tone === "warning" && "text-foreground dark:text-foreground",
             )}
           >
             {value}
@@ -70,7 +70,7 @@ export function StatCard({
             <div
               className={cn(
                 "h-full rounded-full transition-all duration-500",
-                tone === "positive" ? "bg-emerald-500" : tone === "negative" ? "bg-red-500" : "bg-[#FCA311]"
+                tone === "positive" ? "bg-emerald-500" : tone === "negative" ? "bg-red-500" : "bg-foreground"
               )}
               style={{ width: `${Math.min(100, Math.max(0, progress))}%` }}
             />

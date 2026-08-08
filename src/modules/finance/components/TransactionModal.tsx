@@ -104,13 +104,13 @@ export function TransactionModal({ open, onClose, onSave, defaultDate, editingTr
             </p>
             <button
               onClick={() => { onSave(pendingData, 'one'); }}
-              className="w-full py-4 bg-muted rounded-2xl font-bold text-sm text-foreground border border-border hover:border-[#FCA311] transition-all"
+              className="w-full py-4 bg-muted rounded-2xl font-bold text-sm text-foreground border border-border hover:border-foreground transition-all"
             >
               Só este mês
             </button>
             <button
               onClick={() => { onSave(pendingData, 'all'); }}
-              className="w-full py-4 bg-[#FCA311] text-black rounded-2xl font-black text-sm active:scale-95 transition-all shadow-md shadow-[#FCA311]/30"
+              className="w-full py-4 bg-foreground text-background rounded-2xl font-black text-sm active:scale-95 transition-all shadow-md shadow-black/20
             >
               Todos os futuros
             </button>
@@ -180,7 +180,7 @@ export function TransactionModal({ open, onClose, onSave, defaultDate, editingTr
                 onClick={() => setIsRecorrente(!isRecorrente)}
                 className={`w-full p-3.5 rounded-2xl flex items-center justify-between border-2 transition-all ${
                   isRecorrente
-                    ? 'bg-amber-500/15 border-[#FCA311] text-[#FCA311]'
+                    ? 'bg-muted border-foreground text-foreground'
                     : 'bg-muted/40 border-border/50 text-muted-foreground'
                 }`}
               >
@@ -190,7 +190,7 @@ export function TransactionModal({ open, onClose, onSave, defaultDate, editingTr
                 </div>
                 <div
                   className={`w-4 h-4 rounded-full border-2 ${
-                    isRecorrente ? 'bg-[#FCA311] border-[#FCA311]' : 'border-border'
+                    isRecorrente ? 'bg-foreground border-foreground' : 'border-border'
                   }`}
                 />
               </button>

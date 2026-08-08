@@ -69,7 +69,7 @@ export function GoalCard({
               "w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 shadow-sm transition-transform group-hover:scale-105",
               isCompleted
                 ? "bg-emerald-500 text-white shadow-emerald-500/30"
-                : "bg-purple-500/15 text-purple-500"
+                : "bg-muted text-muted-foreground"
             )}
           >
             {isCompleted ? <Trophy size={20} /> : <Target size={20} />}
@@ -113,7 +113,7 @@ export function GoalCard({
                 onClick={() => { onEdit(goal); setShowMenu(false); }}
                 className="w-full px-3 py-2 rounded-lg text-xs font-semibold text-foreground hover:bg-muted flex items-center gap-2 transition-colors"
               >
-                <Edit3 size={14} className="text-[#FCA311]" />
+                <Edit3 size={14} className="text-foreground" />
                 <span>Editar</span>
               </button>
 
@@ -132,7 +132,7 @@ export function GoalCard({
       {/* ── Hábito Vinculado (Se houver) ─────────────────────────── */}
       {linkedHabit && (
         <div className="p-2.5 rounded-xl bg-muted/50 border border-border/50 flex items-center gap-2 text-xs font-semibold text-muted-foreground">
-          <Repeat size={14} className="text-[#FCA311] shrink-0" />
+          <Repeat size={14} className="text-foreground shrink-0" />
           <span className="truncate">Vinculado a: <strong className="text-foreground">{linkedHabit.name}</strong></span>
         </div>
       )}
@@ -143,7 +143,7 @@ export function GoalCard({
           <span className="text-muted-foreground">
             {current} / {target} {goal.unit || ""}
           </span>
-          <span className={isCompleted ? "text-emerald-500" : "text-[#FCA311]"}>
+          <span className={isCompleted ? "text-emerald-500" : "text-foreground"}>
             {percent}% Concluído
           </span>
         </div>
@@ -153,8 +153,8 @@ export function GoalCard({
             className={cn(
               "h-full rounded-full transition-all duration-500 shadow-sm",
               isCompleted
-                ? "bg-gradient-to-r from-emerald-500 to-teal-400"
-                : "bg-gradient-to-r from-amber-500 to-[#FCA311]"
+                ? "bg-foreground"
+                : "bg-muted-foreground"
             )}
             style={{ width: `${percent}%` }}
           />
@@ -181,7 +181,7 @@ export function GoalCard({
             type="button"
             onClick={() => handleIncrement(1)}
             disabled={isCompleted}
-            className="w-8 h-8 rounded-xl bg-[#FCA311]/15 hover:bg-[#FCA311]/25 text-[#FCA311] font-bold flex items-center justify-center transition-colors disabled:opacity-40"
+            className="w-8 h-8 rounded-xl bg-foreground/15 hover:bg-foreground/25 text-foreground font-bold flex items-center justify-center transition-colors disabled:opacity-40"
           >
             <Plus size={14} />
           </button>

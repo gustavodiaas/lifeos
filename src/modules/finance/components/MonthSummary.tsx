@@ -42,7 +42,7 @@ export function MonthSummary({ summary, selectedMonth, selectedYear }: Props) {
                 <div
                   key={i}
                   className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black text-white ${
-                    i === 4 ? monthBg : 'bg-yellow-400 dark:bg-yellow-600'
+                    i === 4 ? monthBg : 'bg-muted-foreground dark:bg-muted-foreground'
                   }`}
                 >
                   {letra}
@@ -79,7 +79,7 @@ export function MonthSummary({ summary, selectedMonth, selectedYear }: Props) {
         <p className="text-sm font-bold text-foreground">Custo de vida</p>
         <div className="text-right">
           <p className="text-sm font-black text-foreground">{formatCurrency(summary.custoVida)}</p>
-          <p className={`text-[10px] font-bold mt-1 ${custoVidaOK ? 'text-violet-500' : 'text-orange-500'}`}>
+          <p className={`text-[10px] font-bold mt-1 ${custoVidaOK ? 'text-muted-foreground' : 'text-muted-foreground'}`}>
             {custoVidaOK ? 'Dentro da renda' : 'Custo elevado'}
           </p>
         </div>

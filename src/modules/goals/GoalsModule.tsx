@@ -161,7 +161,7 @@ export function GoalsModule() {
       {/* ── 2. Cards de Métricas de Progresso ───────────────────────────── */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="glass-card p-5 flex items-center gap-4">
-          <div className="w-11 h-11 rounded-2xl bg-purple-500/15 text-purple-500 flex items-center justify-center shrink-0">
+          <div className="w-11 h-11 rounded-2xl bg-muted text-muted-foreground flex items-center justify-center shrink-0">
             <Target size={22} />
           </div>
           <div>
@@ -181,7 +181,7 @@ export function GoalsModule() {
         </div>
 
         <div className="glass-card p-5 flex items-center gap-4">
-          <div className="w-11 h-11 rounded-2xl bg-amber-500/15 text-[#FCA311] flex items-center justify-center shrink-0">
+          <div className="w-11 h-11 rounded-2xl bg-muted text-foreground flex items-center justify-center shrink-0">
             <TrendingUp size={22} />
           </div>
           <div>
@@ -211,7 +211,7 @@ export function GoalsModule() {
             className={cn(
               "px-3.5 py-2 rounded-xl text-xs font-bold transition-all shrink-0",
               selectedScope === "all"
-                ? "bg-[#FCA311] text-black shadow-sm"
+                ? "bg-foreground text-background shadow-sm"
                 : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground"
             )}
           >
@@ -223,7 +223,7 @@ export function GoalsModule() {
             className={cn(
               "px-3.5 py-2 rounded-xl text-xs font-bold transition-all shrink-0",
               selectedScope === "year"
-                ? "bg-[#FCA311] text-black shadow-sm"
+                ? "bg-foreground text-background shadow-sm"
                 : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground"
             )}
           >
@@ -235,7 +235,7 @@ export function GoalsModule() {
             className={cn(
               "px-3.5 py-2 rounded-xl text-xs font-bold transition-all shrink-0",
               selectedScope === "quarter"
-                ? "bg-[#FCA311] text-black shadow-sm"
+                ? "bg-foreground text-background shadow-sm"
                 : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground"
             )}
           >
@@ -247,7 +247,7 @@ export function GoalsModule() {
             className={cn(
               "px-3.5 py-2 rounded-xl text-xs font-bold transition-all shrink-0",
               selectedScope === "month"
-                ? "bg-[#FCA311] text-black shadow-sm"
+                ? "bg-foreground text-background shadow-sm"
                 : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground"
             )}
           >
@@ -259,12 +259,12 @@ export function GoalsModule() {
       {/* ── 4. Lista de Metas (Grid de Cards) ───────────────────────────── */}
       {loading ? (
         <div className="py-20 text-center">
-          <div className="w-8 h-8 border-3 border-[#FCA311] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+          <div className="w-8 h-8 border-3 border-foreground border-t-transparent rounded-full animate-spin mx-auto mb-3" />
           <p className="text-xs text-muted-foreground font-semibold">Carregando metas...</p>
         </div>
       ) : filteredGoals.length === 0 ? (
         <div className="glass-card p-12 text-center space-y-4">
-          <div className="w-16 h-16 rounded-3xl bg-purple-500/15 text-purple-500 flex items-center justify-center mx-auto">
+          <div className="w-16 h-16 rounded-3xl bg-muted text-muted-foreground flex items-center justify-center mx-auto">
             <Target size={32} />
           </div>
           <div>

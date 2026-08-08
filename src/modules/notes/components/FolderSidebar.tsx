@@ -52,7 +52,7 @@ export function FolderSidebar({
       {/* ── Header da Sidebar ────────────────────────────────────────── */}
       <div className="flex items-center justify-between pb-2 border-b border-border/50">
         <div className="flex items-center gap-2">
-          <FileText size={18} className="text-[#FCA311]" />
+          <FileText size={18} className="text-foreground" />
           <h3 className="text-sm font-extrabold text-foreground tracking-tight">Conhecimento</h3>
         </div>
 
@@ -66,7 +66,7 @@ export function FolderSidebar({
           </button>
           <button
             onClick={() => onCreateNote(selectedFolderId)}
-            className="p-1.5 rounded-lg bg-[#FCA311] hover:bg-[#e8920a] text-black transition-colors"
+            className="p-1.5 rounded-lg bg-foreground hover:bg-[currentColor] text-black transition-colors"
             title="Nova Nota"
           >
             <Plus size={15} strokeWidth={3} />
@@ -95,7 +95,7 @@ export function FolderSidebar({
           className={cn(
             "w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all",
             selectedFolderId === null && !selectedNoteId
-              ? "bg-[#FCA311]/15 text-[#FCA311]"
+              ? "bg-foreground/15 text-foreground"
               : "text-muted-foreground hover:bg-muted hover:text-foreground"
           )}
         >
@@ -133,7 +133,7 @@ export function FolderSidebar({
                     >
                       {isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
                     </button>
-                    <FolderIcon size={15} className="text-[#FCA311] shrink-0" />
+                    <FolderIcon size={15} className="text-foreground shrink-0" />
                     <span className="truncate">{folder.name}</span>
                   </div>
 
@@ -154,7 +154,7 @@ export function FolderSidebar({
                           className={cn(
                             "w-full text-left flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all truncate",
                             isSelectedNote
-                              ? "bg-[#FCA311] text-black font-bold shadow-sm"
+                              ? "bg-foreground text-background font-bold shadow-sm"
                               : "text-muted-foreground hover:bg-muted hover:text-foreground"
                           )}
                         >
@@ -186,7 +186,7 @@ export function FolderSidebar({
                   className={cn(
                     "w-full text-left flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium transition-all truncate",
                     isSelectedNote
-                      ? "bg-[#FCA311] text-black font-bold shadow-sm"
+                      ? "bg-foreground text-background font-bold shadow-sm"
                       : "text-muted-foreground hover:bg-muted hover:text-foreground"
                   )}
                 >

@@ -178,7 +178,7 @@ export function HabitsModule() {
       {/* ── 2. Strip de Seleção de Data (Mini Calendário 7 dias) ───────── */}
       <div className="glass-card p-4 flex items-center justify-between gap-2 overflow-x-auto select-none">
         <div className="flex items-center gap-1.5 min-w-max">
-          <CalendarIcon size={18} className="text-[#FCA311] mr-2 shrink-0" />
+          <CalendarIcon size={18} className="text-foreground mr-2 shrink-0" />
           <span className="text-xs font-bold text-foreground mr-3 shrink-0">Data:</span>
         </div>
 
@@ -191,7 +191,7 @@ export function HabitsModule() {
                 onClick={() => setSelectedDate(item.dStr)}
                 className={`flex flex-col items-center justify-center w-12 h-14 rounded-2xl transition-all ios-spring border ${
                   isSelected
-                    ? "bg-[#FCA311] text-black font-extrabold border-[#FCA311] shadow-md shadow-[#FCA311]/30 scale-105"
+                    ? "bg-foreground text-background font-extrabold border-foreground shadow-md shadow-black/20 scale-105"
                     : "bg-muted/40 border-border/50 text-muted-foreground hover:bg-muted hover:text-foreground"
                 }`}
               >
@@ -202,7 +202,7 @@ export function HabitsModule() {
                   {item.dayNum}
                 </span>
                 {item.doneCount > 0 && !isSelected && (
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#FCA311] mt-1" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-foreground mt-1" />
                 )}
               </button>
             );
@@ -237,7 +237,7 @@ export function HabitsModule() {
             onClick={() => setSelectedHabitId(null)}
             className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 ${
               selectedHabitId === null
-                ? "bg-[#FCA311] text-black shadow-sm"
+                ? "bg-foreground text-background shadow-sm"
                 : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground"
             }`}
           >
@@ -250,7 +250,7 @@ export function HabitsModule() {
               onClick={() => setSelectedHabitId(selectedHabitId === h.id ? null : h.id)}
               className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 ${
                 selectedHabitId === h.id
-                  ? "bg-[#FCA311] text-black shadow-sm"
+                  ? "bg-foreground text-background shadow-sm"
                   : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground"
               }`}
             >
@@ -263,12 +263,12 @@ export function HabitsModule() {
       {/* ── 5. Lista de Hábitos (Cards Diários) ─────────────────────────── */}
       {loading ? (
         <div className="py-16 text-center">
-          <div className="w-8 h-8 border-3 border-[#FCA311] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+          <div className="w-8 h-8 border-3 border-foreground border-t-transparent rounded-full animate-spin mx-auto mb-3" />
           <p className="text-xs text-muted-foreground font-semibold">Carregando hábitos...</p>
         </div>
       ) : filteredHabits.length === 0 ? (
         <div className="glass-card p-12 text-center space-y-4">
-          <div className="w-16 h-16 rounded-3xl bg-[#FCA311]/15 text-[#FCA311] flex items-center justify-center mx-auto">
+          <div className="w-16 h-16 rounded-3xl bg-foreground/15 text-foreground flex items-center justify-center mx-auto">
             <Repeat size={32} />
           </div>
           <div>

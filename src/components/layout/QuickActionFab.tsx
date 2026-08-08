@@ -28,7 +28,7 @@ export function QuickActionFab({ open, onClose }: QuickActionFabProps) {
           className="w-full flex items-center justify-between p-3.5 rounded-2xl bg-card border border-border shadow-2xl text-xs font-bold text-foreground active:scale-95 transition-all"
         >
           <span className="font-extrabold text-sm">Nova Tarefa</span>
-          <div className="w-9 h-9 rounded-xl bg-indigo-500/15 text-indigo-500 flex items-center justify-center">
+          <div className="w-9 h-9 rounded-xl bg-muted text-muted-foreground flex items-center justify-center">
             <CheckSquare size={18} />
           </div>
         </button>
@@ -48,7 +48,7 @@ export function QuickActionFab({ open, onClose }: QuickActionFabProps) {
           className="w-full flex items-center justify-between p-3.5 rounded-2xl bg-card border border-border shadow-2xl text-xs font-bold text-foreground active:scale-95 transition-all"
         >
           <span className="font-extrabold text-sm">Marcar Hábito</span>
-          <div className="w-9 h-9 rounded-xl bg-amber-500/15 text-[#FCA311] flex items-center justify-center">
+          <div className="w-9 h-9 rounded-xl bg-muted text-foreground flex items-center justify-center">
             <Repeat size={18} />
           </div>
         </button>
@@ -58,7 +58,7 @@ export function QuickActionFab({ open, onClose }: QuickActionFabProps) {
           className="w-full flex items-center justify-between p-3.5 rounded-2xl bg-card border border-border shadow-2xl text-xs font-bold text-foreground active:scale-95 transition-all"
         >
           <span className="font-extrabold text-sm">Nova Nota de Estudo</span>
-          <div className="w-9 h-9 rounded-xl bg-orange-500/15 text-orange-500 flex items-center justify-center">
+          <div className="w-9 h-9 rounded-xl bg-muted text-muted-foreground flex items-center justify-center">
             <BookOpen size={18} />
           </div>
         </button>
@@ -68,7 +68,7 @@ export function QuickActionFab({ open, onClose }: QuickActionFabProps) {
           className="w-full flex items-center justify-between p-3.5 rounded-2xl bg-card border border-border shadow-2xl text-xs font-bold text-foreground active:scale-95 transition-all"
         >
           <span className="font-extrabold text-sm">Escrever Diário</span>
-          <div className="w-9 h-9 rounded-xl bg-rose-500/15 text-rose-500 flex items-center justify-center">
+          <div className="w-9 h-9 rounded-xl bg-muted text-muted-foreground flex items-center justify-center">
             <NotebookPen size={18} />
           </div>
         </button>

@@ -9,10 +9,10 @@ interface JournalEntryCardProps {
 
 const MOOD_CONFIG = {
   1: { emoji: "😭", label: "Péssimo", color: "bg-red-500/15 text-red-500 border-red-500/30" },
-  2: { emoji: "🙁", label: "Difícil", color: "bg-orange-500/15 text-orange-500 border-orange-500/30" },
-  3: { emoji: "😐", label: "Neutro", color: "bg-blue-500/15 text-blue-500 border-blue-500/30" },
+  2: { emoji: "🙁", label: "Difícil", color: "bg-muted text-muted-foreground border-border" },
+  3: { emoji: "😐", label: "Neutro", color: "bg-muted text-muted-foreground border-border" },
   4: { emoji: "🙂", label: "Bom", color: "bg-emerald-500/15 text-emerald-500 border-emerald-500/30" },
-  5: { emoji: "🤩", label: "Excelente", color: "bg-amber-500/15 text-[#FCA311] border-amber-500/30" },
+  5: { emoji: "🤩", label: "Excelente", color: "bg-muted text-foreground border-border" },
 };
 
 export function JournalEntryCard({ entry, onEdit, onDelete }: JournalEntryCardProps) {
@@ -47,7 +47,7 @@ export function JournalEntryCard({ entry, onEdit, onDelete }: JournalEntryCardPr
               </span>
             </div>
             <p className="text-xs font-bold text-foreground capitalize mt-0.5 flex items-center gap-1.5">
-              <Calendar size={13} className="text-[#FCA311]" />
+              <Calendar size={13} className="text-foreground" />
               <span>{dateFormatted}</span>
             </p>
           </div>
@@ -60,7 +60,7 @@ export function JournalEntryCard({ entry, onEdit, onDelete }: JournalEntryCardPr
             className="p-2 rounded-xl bg-muted/60 hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
             title="Editar registro"
           >
-            <Edit3 size={15} className="text-[#FCA311]" />
+            <Edit3 size={15} className="text-foreground" />
           </button>
           <button
             onClick={() => onDelete(entry.id)}
@@ -75,7 +75,7 @@ export function JournalEntryCard({ entry, onEdit, onDelete }: JournalEntryCardPr
       {/* ── Conteúdo da Reflexão ──────────────────────────────────── */}
       {entry.content ? (
         <div className="relative">
-          <Quote size={16} className="text-[#FCA311]/30 absolute -top-1 -left-1 pointer-events-none" />
+          <Quote size={16} className="text-foreground/30 absolute -top-1 -left-1 pointer-events-none" />
           <p className="text-xs md:text-sm text-foreground/90 font-medium leading-relaxed pl-5 whitespace-pre-wrap">
             {entry.content}
           </p>
@@ -88,14 +88,14 @@ export function JournalEntryCard({ entry, onEdit, onDelete }: JournalEntryCardPr
       {entry.highlights && entry.highlights.length > 0 && (
         <div className="pt-2 border-t border-border/40 space-y-1.5">
           <span className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider flex items-center gap-1">
-            <Sparkles size={11} className="text-[#FCA311]" />
+            <Sparkles size={11} className="text-foreground" />
             Destaques do Dia
           </span>
           <div className="flex flex-wrap gap-1.5">
             {entry.highlights.map((item, idx) => (
               <span
                 key={idx}
-                className="text-xs font-semibold px-2.5 py-1 rounded-xl bg-amber-500/10 text-[#FCA311] border border-amber-500/20"
+                className="text-xs font-semibold px-2.5 py-1 rounded-xl bg-muted text-foreground border border-border"
               >
                 ✨ {item}
               </span>

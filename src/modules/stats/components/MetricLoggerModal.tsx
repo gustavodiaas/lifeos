@@ -12,12 +12,12 @@ interface MetricLoggerModalProps {
 }
 
 const PRESETS = [
-  { key: "weight", label: "Peso", unit: "kg", icon: Scale, color: "text-[#FCA311] border-[#FCA311] bg-[#FCA311]/15" },
-  { key: "study_hours", label: "Estudo", unit: "h", icon: Clock, color: "text-indigo-500 border-indigo-500 bg-indigo-500/15" },
-  { key: "sleep_hours", label: "Sono", unit: "h", icon: Moon, color: "text-purple-500 border-purple-500 bg-purple-500/15" },
-  { key: "water_liters", label: "Água", unit: "L", icon: Droplets, color: "text-blue-500 border-blue-500 bg-blue-500/15" },
-  { key: "workout_mins", label: "Treino", unit: "min", icon: Dumbbell, color: "text-emerald-500 border-emerald-500 bg-emerald-500/15" },
-  { key: "custom", label: "Outro", unit: "un", icon: Sparkles, color: "text-rose-500 border-rose-500 bg-rose-500/15" },
+  { key: "weight", label: "Peso", unit: "kg", icon: Scale, color: "text-foreground border-border bg-muted" },
+  { key: "study_hours", label: "Estudo", unit: "h", icon: Clock, color: "text-muted-foreground border-border bg-muted" },
+  { key: "sleep_hours", label: "Sono", unit: "h", icon: Moon, color: "text-muted-foreground border-border bg-muted" },
+  { key: "water_liters", label: "Água", unit: "L", icon: Droplets, color: "text-muted-foreground border-blue-500 bg-muted" },
+  { key: "workout_mins", label: "Treino", unit: "min", icon: Dumbbell, color: "text-muted-foreground border-border bg-muted" },
+  { key: "custom", label: "Outro", unit: "un", icon: Sparkles, color: "text-muted-foreground border-rose-500 bg-muted" },
 ];
 
 export function MetricLoggerModal({
@@ -67,7 +67,7 @@ export function MetricLoggerModal({
         {/* Header */}
         <div className="px-6 py-4 border-b border-border/60 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-amber-500/15 text-[#FCA311] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-muted text-foreground flex items-center justify-center">
               <Plus size={18} />
             </div>
             <h2 className="text-base font-extrabold text-foreground tracking-tight">Registrar Métrica</h2>

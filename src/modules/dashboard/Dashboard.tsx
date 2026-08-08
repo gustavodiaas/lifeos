@@ -78,10 +78,10 @@ export function Dashboard() {
   return (
     <div className="space-y-6 fade-in">
       {/* ── Banner de Boas-vindas Apple Style ────────────────────────────── */}
-      <div className="glass-card p-6 md:p-8 relative overflow-hidden bg-gradient-to-r from-amber-500/10 via-transparent to-blue-500/10 border-border">
+      <div className="glass-card p-6 md:p-8 relative overflow-hidden bg-gradient-to-r from-muted/40 via-transparent to-muted/20 border-border">
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FCA311]/15 text-[#FCA311] text-xs font-bold tracking-wide">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-foreground/15 text-foreground text-xs font-bold tracking-wide">
               <Sparkles size={14} />
               <span>LifeOS Dashboard</span>
             </div>
@@ -100,7 +100,7 @@ export function Dashboard() {
               <span>Nova Tarefa</span>
             </Link>
             <Link to="/finance" className="px-3.5 py-2.5 rounded-xl bg-card border border-border text-xs font-bold text-foreground hover:bg-muted transition-colors flex items-center gap-1.5 shadow-sm">
-              <Wallet size={15} className="text-[#FCA311]" />
+              <Wallet size={15} className="text-foreground" />
               <span>Finanças</span>
             </Link>
           </div>
@@ -114,8 +114,8 @@ export function Dashboard() {
           value={`${stats.habitsDone}/${stats.habitsDue}`}
           hint={stats.habitsDue > 0 ? `${habitProgressPercent}% concluído hoje` : "Nenhum hábito pendente"}
           icon={Repeat}
-          iconBg="bg-amber-500/15"
-          iconColor="text-amber-500"
+          iconBg="bg-muted"
+          iconColor="text-foreground"
           progress={habitProgressPercent}
         />
         <StatCard
@@ -123,8 +123,8 @@ export function Dashboard() {
           value={stats.tasksOpen}
           hint={stats.tasksDueToday > 0 ? `${stats.tasksDueToday} agendadas para hoje` : "Todas em dia"}
           icon={CheckSquare}
-          iconBg="bg-blue-500/15"
-          iconColor="text-blue-500"
+          iconBg="bg-muted"
+          iconColor="text-muted-foreground"
           tone={stats.tasksDueToday > 0 ? "warning" : "default"}
         />
         <StatCard
@@ -132,8 +132,8 @@ export function Dashboard() {
           value={stats.goalsActive}
           hint="Objetivos em andamento"
           icon={Target}
-          iconBg="bg-purple-500/15"
-          iconColor="text-purple-500"
+          iconBg="bg-muted"
+          iconColor="text-muted-foreground"
         />
         <StatCard
           label="Notas & Base"
@@ -160,7 +160,7 @@ export function Dashboard() {
                 <p className="text-xs text-muted-foreground font-medium">Movimentações financeiras recentes</p>
               </div>
             </div>
-            <Link to="/finance" className="text-xs font-bold text-[#FCA311] hover:underline flex items-center gap-1">
+            <Link to="/finance" className="text-xs font-bold text-foreground hover:underline flex items-center gap-1">
               Ver Detalhes
               <ArrowUpRight size={14} />
             </Link>
@@ -190,7 +190,7 @@ export function Dashboard() {
 
             <div className="p-4 rounded-2xl bg-muted/40 border border-border/60">
               <div className="flex items-center gap-2 mb-1.5">
-                <Sparkles size={16} className="text-[#FCA311]" />
+                <Sparkles size={16} className="text-foreground" />
                 <span className="text-xs font-semibold text-muted-foreground">Taxa de Poupança</span>
               </div>
               <p className="text-lg md:text-xl font-extrabold text-foreground">
@@ -228,7 +228,7 @@ export function Dashboard() {
           <div className="space-y-4">
             <div className="p-4 rounded-2xl bg-muted/40 border border-border/60 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-indigo-500/15 text-indigo-500 flex items-center justify-center">
+                <div className="w-9 h-9 rounded-xl bg-muted text-muted-foreground flex items-center justify-center">
                   <Clock size={18} />
                 </div>
                 <div>
@@ -240,7 +240,7 @@ export function Dashboard() {
 
             <div className="p-4 rounded-2xl bg-muted/40 border border-border/60 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-rose-500/15 text-rose-500 flex items-center justify-center">
+                <div className="w-9 h-9 rounded-xl bg-muted text-muted-foreground flex items-center justify-center">
                   <Flame size={18} />
                 </div>
                 <div>
@@ -270,10 +270,10 @@ export function Dashboard() {
         <div className="glass-card p-6 space-y-4">
           <div className="flex items-center justify-between border-b border-border/60 pb-3">
             <div className="flex items-center gap-2.5">
-              <Repeat size={18} className="text-[#FCA311]" />
+              <Repeat size={18} className="text-foreground" />
               <h3 className="text-base font-bold text-foreground">Hábitos Cadastrados</h3>
             </div>
-            <Link to="/habits" className="text-xs font-bold text-[#FCA311] hover:underline flex items-center gap-1">
+            <Link to="/habits" className="text-xs font-bold text-foreground hover:underline flex items-center gap-1">
               Gerenciar <ChevronRight size={14} />
             </Link>
           </div>
@@ -281,7 +281,7 @@ export function Dashboard() {
           {stats.activeHabitsList.length === 0 ? (
             <div className="py-8 text-center space-y-2">
               <p className="text-xs font-medium text-muted-foreground">Nenhum hábito cadastrado ainda.</p>
-              <Link to="/habits" className="inline-block text-xs font-bold text-[#FCA311]">
+              <Link to="/habits" className="inline-block text-xs font-bold text-foreground">
                 + Criar Primeiro Hábito
               </Link>
             </div>
@@ -293,7 +293,7 @@ export function Dashboard() {
                   className="p-3.5 rounded-xl bg-muted/40 border border-border/50 flex items-center justify-between hover:bg-muted/70 transition-colors"
                 >
                   <span className="text-xs font-bold text-foreground">{h.name}</span>
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/10 text-[#FCA311]">
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-muted text-foreground">
                     {h.frequency === "weekly" ? `${h.targetPerWeek || h.target_per_week || 3}x/sem` : "Diário"}
                   </span>
                 </div>
@@ -306,10 +306,10 @@ export function Dashboard() {
         <div className="glass-card p-6 space-y-4">
           <div className="flex items-center justify-between border-b border-border/60 pb-3">
             <div className="flex items-center gap-2.5">
-              <CheckSquare size={18} className="text-blue-500" />
+              <CheckSquare size={18} className="text-muted-foreground" />
               <h3 className="text-base font-bold text-foreground">Próximas Tarefas</h3>
             </div>
-            <Link to="/tasks" className="text-xs font-bold text-blue-500 hover:underline flex items-center gap-1">
+            <Link to="/tasks" className="text-xs font-bold text-muted-foreground hover:underline flex items-center gap-1">
               Ver Todas <ChevronRight size={14} />
             </Link>
           </div>
@@ -317,7 +317,7 @@ export function Dashboard() {
           {stats.openTasksList.length === 0 ? (
             <div className="py-8 text-center space-y-2">
               <p className="text-xs font-medium text-muted-foreground">Nenhuma tarefa aberta no momento.</p>
-              <Link to="/tasks" className="inline-block text-xs font-bold text-blue-500">
+              <Link to="/tasks" className="inline-block text-xs font-bold text-muted-foreground">
                 + Criar Nova Tarefa
               </Link>
             </div>

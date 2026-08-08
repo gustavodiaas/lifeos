@@ -86,15 +86,15 @@ export function HabitHeatmap({
   const getIntensityClass = (dateStr: string, isCurrentYear: boolean) => {
     if (!isCurrentYear) return "bg-transparent opacity-0";
     const data = heatmapData.get(dateStr);
-    if (!data || data.doneCount === 0) return "bg-muted/60 border border-border/30 hover:border-amber-500/50";
+    if (!data || data.doneCount === 0) return "bg-muted/60 border border-border/30 hover:border-border";
 
     const targetTotal = selectedHabitId ? 1 : Math.max(1, totalHabitsCount);
     const ratio = data.doneCount / targetTotal;
 
-    if (ratio >= 0.8) return "bg-[#FCA311] shadow-[0_0_8px_rgba(252,163,17,0.6)]";
-    if (ratio >= 0.5) return "bg-[#FCA311]/80";
-    if (ratio >= 0.25) return "bg-[#FCA311]/50";
-    return "bg-[#FCA311]/25";
+    if (ratio >= 0.8) return "bg-foreground shadow-none";
+    if (ratio >= 0.5) return "bg-foreground/80";
+    if (ratio >= 0.25) return "bg-foreground/50";
+    return "bg-foreground/25";
   };
 
   // Métricas do ano
@@ -119,7 +119,7 @@ export function HabitHeatmap({
       {/* Header do Heatmap */}
       <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border/50 pb-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-[#FCA311]/15 text-[#FCA311] flex items-center justify-center shrink-0">
+          <div className="w-10 h-10 rounded-2xl bg-foreground/15 text-foreground flex items-center justify-center shrink-0">
             <Flame size={20} />
           </div>
           <div>
@@ -214,7 +214,7 @@ export function HabitHeatmap({
         <div className="min-h-[24px] flex items-center gap-2">
           {hoveredDay ? (
             <span className="text-xs font-semibold text-foreground flex items-center gap-1.5 bg-muted/60 px-3 py-1 rounded-xl border border-border/60">
-              <Calendar size={13} className="text-[#FCA311]" />
+              <Calendar size={13} className="text-foreground" />
               <span className="font-bold">{hoveredDay.date}:</span> {hoveredDay.count} de {hoveredDay.total} hábitos ({hoveredDay.percent}%)
             </span>
           ) : (
@@ -229,10 +229,10 @@ export function HabitHeatmap({
           <span>Menos</span>
           <div className="flex items-center gap-1">
             <div className="w-3 h-3 rounded-[3px] bg-muted/60 border border-border/30" />
-            <div className="w-3 h-3 rounded-[3px] bg-[#FCA311]/25" />
-            <div className="w-3 h-3 rounded-[3px] bg-[#FCA311]/50" />
-            <div className="w-3 h-3 rounded-[3px] bg-[#FCA311]/80" />
-            <div className="w-3 h-3 rounded-[3px] bg-[#FCA311] shadow-[0_0_6px_rgba(252,163,17,0.6)]" />
+            <div className="w-3 h-3 rounded-[3px] bg-foreground/25" />
+            <div className="w-3 h-3 rounded-[3px] bg-foreground/50" />
+            <div className="w-3 h-3 rounded-[3px] bg-foreground/80" />
+            <div className="w-3 h-3 rounded-[3px] bg-foreground shadow-none" />
           </div>
           <span>Mais</span>
         </div>

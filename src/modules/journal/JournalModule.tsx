@@ -111,7 +111,7 @@ export function JournalModule() {
                 <Smile size={12} /> Hoje Registrado
               </span>
             ) : (
-              <span className="text-xs font-bold text-[#FCA311] bg-amber-500/10 px-2 py-0.5 rounded-full">
+              <span className="text-xs font-bold text-foreground bg-muted px-2 py-0.5 rounded-full">
                 Pendente Hoje
               </span>
             )}
@@ -136,7 +136,7 @@ export function JournalModule() {
       {/* ── 2. Cards de Métricas do Diário ──────────────────────────────── */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="glass-card p-5 flex items-center gap-4">
-          <div className="w-11 h-11 rounded-2xl bg-amber-500/15 text-[#FCA311] flex items-center justify-center shrink-0">
+          <div className="w-11 h-11 rounded-2xl bg-muted text-foreground flex items-center justify-center shrink-0">
             <NotebookPen size={22} />
           </div>
           <div>
@@ -158,7 +158,7 @@ export function JournalModule() {
         </div>
 
         <div className="glass-card p-5 flex items-center gap-4">
-          <div className="w-11 h-11 rounded-2xl bg-purple-500/15 text-purple-500 flex items-center justify-center shrink-0">
+          <div className="w-11 h-11 rounded-2xl bg-muted text-muted-foreground flex items-center justify-center shrink-0">
             <Sparkles size={22} />
           </div>
           <div>
@@ -188,7 +188,7 @@ export function JournalModule() {
             className={cn(
               "px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0",
               selectedMoodFilter === "all"
-                ? "bg-[#FCA311] text-black shadow-sm"
+                ? "bg-foreground text-background shadow-sm"
                 : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground"
             )}
           >
@@ -208,7 +208,7 @@ export function JournalModule() {
               className={cn(
                 "px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 flex items-center gap-1",
                 selectedMoodFilter === m.value
-                  ? "bg-[#FCA311] text-black shadow-sm"
+                  ? "bg-foreground text-background shadow-sm"
                   : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground"
               )}
             >
@@ -221,12 +221,12 @@ export function JournalModule() {
       {/* ── 4. Feed Timeline do Diário ──────────────────────────────────── */}
       {loading ? (
         <div className="py-20 text-center">
-          <div className="w-8 h-8 border-3 border-[#FCA311] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+          <div className="w-8 h-8 border-3 border-foreground border-t-transparent rounded-full animate-spin mx-auto mb-3" />
           <p className="text-xs text-muted-foreground font-semibold">Carregando diário...</p>
         </div>
       ) : filteredEntries.length === 0 ? (
         <div className="glass-card p-12 text-center space-y-4">
-          <div className="w-16 h-16 rounded-3xl bg-amber-500/15 text-[#FCA311] flex items-center justify-center mx-auto">
+          <div className="w-16 h-16 rounded-3xl bg-muted text-foreground flex items-center justify-center mx-auto">
             <NotebookPen size={32} />
           </div>
           <div>

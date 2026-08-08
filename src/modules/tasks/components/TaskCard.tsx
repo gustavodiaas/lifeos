@@ -52,7 +52,7 @@ export function TaskCard({
   // Visual da Prioridade
   const priorityConfig = {
     high: { label: "Alta", color: "bg-red-500/15 text-red-500 border-red-500/30" },
-    med: { label: "Média", color: "bg-amber-500/15 text-amber-500 border-amber-500/30" },
+    med: { label: "Média", color: "bg-muted text-foreground border-border" },
     low: { label: "Baixa", color: "bg-emerald-500/15 text-emerald-500 border-emerald-500/30" },
   }[task.priority || "med"];
 
@@ -73,8 +73,8 @@ export function TaskCard({
             className={cn(
               "w-6 h-6 rounded-lg flex items-center justify-center shrink-0 transition-all ios-spring mt-0.5 border-2",
               task.status === "done"
-                ? "bg-[#FCA311] border-[#FCA311] text-black shadow-sm"
-                : "border-border/80 hover:border-[#FCA311] bg-muted/40 text-transparent"
+                ? "bg-foreground border-foreground text-black shadow-sm"
+                : "border-border/80 hover:border-foreground bg-muted/40 text-transparent"
             )}
           >
             <Check size={14} strokeWidth={3} className={task.status === "done" ? "opacity-100" : "opacity-0"} />
@@ -95,7 +95,7 @@ export function TaskCard({
             <div className="flex flex-wrap items-center gap-2 mt-1.5">
               {project && (
                 <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md bg-muted text-muted-foreground border border-border/50">
-                  <Folder size={11} style={{ color: project.color || "#FCA311" }} />
+                  <Folder size={11} style={{ color: project.color || "currentColor" }} />
                   <span>{project.name}</span>
                 </span>
               )}
@@ -112,7 +112,7 @@ export function TaskCard({
                     isOverdue
                       ? "bg-red-500/15 text-red-500 border-red-500/30 font-black animate-pulse"
                       : isDueToday
-                      ? "bg-amber-500/15 text-[#FCA311] border-amber-500/30"
+                      ? "bg-muted text-foreground border-border"
                       : "bg-muted text-muted-foreground border-border/50"
                   )}
                 >
@@ -142,7 +142,7 @@ export function TaskCard({
                 onClick={() => { onEdit(task); setShowMenu(false); }}
                 className="w-full px-3 py-1.5 rounded-lg text-xs font-semibold text-foreground hover:bg-muted flex items-center gap-2 transition-colors"
               >
-                <Edit3 size={14} className="text-[#FCA311]" />
+                <Edit3 size={14} className="text-foreground" />
                 <span>Editar</span>
               </button>
 
@@ -173,7 +173,7 @@ export function TaskCard({
               onClick={() => setExpandedChecklist(!expandedChecklist)}
               className="flex items-center gap-1.5 text-[11px] font-bold text-muted-foreground hover:text-foreground transition-colors"
             >
-              <ListTodo size={13} className="text-[#FCA311]" />
+              <ListTodo size={13} className="text-foreground" />
               <span>Sub-tarefas ({doneChecklist}/{totalChecklist})</span>
             </button>
             <span className="text-[10px] font-black text-muted-foreground">{checklistPercent}%</span>
@@ -181,7 +181,7 @@ export function TaskCard({
 
           <div className="w-full bg-muted/60 h-1.5 rounded-full overflow-hidden">
             <div
-              className="h-full bg-[#FCA311] rounded-full transition-all duration-300"
+              className="h-full bg-foreground rounded-full transition-all duration-300"
               style={{ width: `${checklistPercent}%` }}
             />
           </div>
@@ -198,7 +198,7 @@ export function TaskCard({
                     className={cn(
                       "w-4 h-4 rounded flex items-center justify-center border transition-all shrink-0",
                       item.done
-                        ? "bg-[#FCA311] border-[#FCA311] text-black"
+                        ? "bg-foreground border-foreground text-black"
                         : "border-border text-transparent"
                     )}
                   >

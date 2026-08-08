@@ -29,7 +29,7 @@ export function BacklinksPanel({ currentNote, allNotes, onSelectNote }: Backlink
   return (
     <div className="glass-card p-5 space-y-4 border-border select-none">
       <div className="flex items-center gap-2 border-b border-border/50 pb-2">
-        <Link2 size={16} className="text-[#FCA311]" />
+        <Link2 size={16} className="text-foreground" />
         <h4 className="text-xs font-extrabold text-foreground tracking-tight uppercase">Conexões & Backlinks</h4>
       </div>
 
@@ -50,7 +50,7 @@ export function BacklinksPanel({ currentNote, allNotes, onSelectNote }: Backlink
                 className="w-full text-left p-2 rounded-xl bg-muted/40 hover:bg-muted border border-border/50 text-xs font-semibold text-foreground flex items-center justify-between transition-colors"
               >
                 <div className="flex items-center gap-2 min-w-0">
-                  <FileText size={13} className="text-[#FCA311] shrink-0" />
+                  <FileText size={13} className="text-foreground shrink-0" />
                   <span className="truncate">{note.title}</span>
                 </div>
                 <ArrowRight size={13} className="text-muted-foreground shrink-0" />
@@ -77,7 +77,7 @@ export function BacklinksPanel({ currentNote, allNotes, onSelectNote }: Backlink
                 className="w-full text-left p-2 rounded-xl bg-muted/40 hover:bg-muted border border-border/50 text-xs font-semibold text-foreground flex items-center justify-between transition-colors"
               >
                 <div className="flex items-center gap-2 min-w-0">
-                  <FileText size={13} className="text-purple-500 shrink-0" />
+                  <FileText size={13} className="text-muted-foreground shrink-0" />
                   <span className="truncate">{note.title}</span>
                 </div>
                 <ArrowRight size={13} className="text-muted-foreground shrink-0" />

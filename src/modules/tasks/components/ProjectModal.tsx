@@ -9,7 +9,7 @@ interface ProjectModalProps {
 }
 
 const COLOR_OPTIONS = [
-  "#FCA311", // Amber
+  "currentColor", // Amber
   "#3B82F6", // Blue
   "#10B981", // Emerald
   "#8B5CF6", // Purple
@@ -39,7 +39,7 @@ export function ProjectModal({ open, onClose, onSave }: ProjectModalProps) {
         {/* Header */}
         <div className="px-6 py-4 border-b border-border/60 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-[#FCA311]/15 text-[#FCA311] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-foreground/15 text-foreground flex items-center justify-center">
               <FolderPlus size={18} />
             </div>
             <h2 className="text-base font-extrabold text-foreground tracking-tight">Novo Projeto</h2>

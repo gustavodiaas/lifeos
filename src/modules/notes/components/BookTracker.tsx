@@ -100,7 +100,7 @@ export function BookTracker() {
       {/* Header */}
       <div className="flex items-center justify-between border-b border-border/60 pb-3">
         <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-xl bg-orange-500/15 text-orange-500 flex items-center justify-center">
+          <div className="w-9 h-9 rounded-xl bg-muted text-muted-foreground flex items-center justify-center">
             <BookOpen size={18} />
           </div>
           <div>
@@ -146,12 +146,12 @@ export function BookTracker() {
                 <div className="space-y-1">
                   <div className="flex justify-between text-[11px] font-bold">
                     <span className="text-muted-foreground">Progresso</span>
-                    <span className="text-orange-500">{book.currentPage} / {book.totalPages} pág ({percent}%)</span>
+                    <span className="text-muted-foreground">{book.currentPage} / {book.totalPages} pág ({percent}%)</span>
                   </div>
 
                   <div className="w-full h-2 rounded-full bg-muted overflow-hidden">
                     <div
-                      className="h-full bg-orange-500 rounded-full transition-all duration-500"
+                      className="h-full bg-foreground rounded-full transition-all duration-500"
                       style={{ width: `${percent}%` }}
                     />
                   </div>
@@ -169,7 +169,7 @@ export function BookTracker() {
                     </button>
                     <button
                       onClick={() => handleUpdateProgress(book.id, 10)}
-                      className="px-2 py-1 rounded-lg bg-orange-500/15 text-orange-500 hover:bg-orange-500/25 text-xs font-black border border-orange-500/30"
+                      className="px-2 py-1 rounded-lg bg-muted text-muted-foreground hover:bg-muted text-xs font-black border border-border"
                     >
                       +10 pág
                     </button>

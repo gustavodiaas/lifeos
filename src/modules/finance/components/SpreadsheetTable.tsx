@@ -29,7 +29,7 @@ const getSaldoColor = (v: number) => {
   if (v > 2000) return 'bg-emerald-500/20 text-emerald-500 font-extrabold';
   if (v >= 1000) return 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-bold';
   if (v >= 0) return 'bg-muted/80 text-foreground font-semibold';
-  if (v >= -499.99) return 'bg-amber-500/15 text-[#FCA311] font-bold';
+  if (v >= -499.99) return 'bg-muted text-foreground font-bold';
   return 'bg-red-500/20 text-red-500 font-extrabold';
 };
 

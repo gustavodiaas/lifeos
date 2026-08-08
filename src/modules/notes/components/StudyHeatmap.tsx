@@ -72,12 +72,12 @@ export function StudyHeatmap({ metrics }: StudyHeatmapProps) {
   const getIntensityClass = (dateStr: string, isCurrentYear: boolean) => {
     if (!isCurrentYear) return "bg-transparent opacity-0";
     const hours = heatmapData.get(dateStr) || 0;
-    if (hours === 0) return "bg-muted/60 border border-border/30 hover:border-indigo-500/50";
+    if (hours === 0) return "bg-muted/60 border border-border/30 hover:border-border";
 
-    if (hours >= 4) return "bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.6)]";
-    if (hours >= 2) return "bg-indigo-500/80";
-    if (hours >= 1) return "bg-indigo-500/50";
-    return "bg-indigo-500/30";
+    if (hours >= 4) return "bg-foreground shadow-none";
+    if (hours >= 2) return "bg-muted-foreground/60";
+    if (hours >= 1) return "bg-muted-foreground/30";
+    return "bg-muted";
   };
 
   // Totais do Ano
@@ -102,7 +102,7 @@ export function StudyHeatmap({ metrics }: StudyHeatmapProps) {
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border/50 pb-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-indigo-500/15 text-indigo-500 flex items-center justify-center shrink-0">
+          <div className="w-10 h-10 rounded-2xl bg-muted text-muted-foreground flex items-center justify-center shrink-0">
             <Clock size={20} />
           </div>
           <div>
@@ -191,7 +191,7 @@ export function StudyHeatmap({ metrics }: StudyHeatmapProps) {
       <div className="flex flex-wrap items-center justify-between gap-4 pt-2 border-t border-border/50 text-xs">
         <div className="min-h-[24px] flex items-center gap-2">
           {hoveredDay ? (
-            <span className="text-xs font-semibold text-foreground flex items-center gap-1.5 bg-indigo-500/10 text-indigo-500 px-3 py-1 rounded-xl border border-indigo-500/20">
+            <span className="text-xs font-semibold text-foreground flex items-center gap-1.5 bg-muted text-muted-foreground px-3 py-1 rounded-xl border border-border">
               <Clock size={13} />
               <span className="font-bold">{hoveredDay.date}:</span> {hoveredDay.hours} horas de foco estudadas
             </span>
@@ -207,10 +207,10 @@ export function StudyHeatmap({ metrics }: StudyHeatmapProps) {
           <span>0h</span>
           <div className="flex items-center gap-1">
             <div className="w-3 h-3 rounded-[3px] bg-muted/60 border border-border/30" />
-            <div className="w-3 h-3 rounded-[3px] bg-indigo-500/30" />
-            <div className="w-3 h-3 rounded-[3px] bg-indigo-500/50" />
-            <div className="w-3 h-3 rounded-[3px] bg-indigo-500/80" />
-            <div className="w-3 h-3 rounded-[3px] bg-indigo-500 shadow-[0_0_6px_rgba(99,102,241,0.6)]" />
+            <div className="w-3 h-3 rounded-[3px] bg-muted" />
+            <div className="w-3 h-3 rounded-[3px] bg-muted-foreground/30" />
+            <div className="w-3 h-3 rounded-[3px] bg-muted-foreground/60" />
+            <div className="w-3 h-3 rounded-[3px] bg-foreground shadow-none" />
           </div>
           <span>4h+</span>
         </div>

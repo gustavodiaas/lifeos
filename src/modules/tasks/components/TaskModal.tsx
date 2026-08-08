@@ -110,7 +110,7 @@ export function TaskModal({
         {/* Header */}
         <div className="px-6 py-4 border-b border-border/60 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-blue-500/15 text-blue-500 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-muted text-muted-foreground flex items-center justify-center">
               <CheckSquare size={18} />
             </div>
             <h2 className="text-lg font-extrabold text-foreground tracking-tight">
@@ -166,7 +166,7 @@ export function TaskModal({
                 onClick={() => setPriority("med")}
                 className={`py-2.5 px-3 rounded-xl border-2 font-bold text-xs transition-all ${
                   priority === "med"
-                    ? "border-amber-500 bg-amber-500/15 text-amber-500 font-extrabold"
+                    ? "border-foreground bg-muted text-foreground font-extrabold"
                     : "border-border/60 bg-muted/30 text-muted-foreground hover:bg-muted"
                 }`}
               >
@@ -191,7 +191,7 @@ export function TaskModal({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5 flex items-center gap-1 ml-1">
-                <Folder size={13} className="text-[#FCA311]" />
+                <Folder size={13} className="text-foreground" />
                 Projeto
               </label>
               <CustomSelect

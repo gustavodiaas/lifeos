@@ -43,7 +43,7 @@ export function NoteEditor({ note, folders, onSave, onDelete }: NoteEditorProps)
   if (!note) {
     return (
       <div className="glass-card p-12 text-center h-full flex flex-col items-center justify-center space-y-3">
-        <div className="w-16 h-16 rounded-3xl bg-[#FCA311]/15 text-[#FCA311] flex items-center justify-center">
+        <div className="w-16 h-16 rounded-3xl bg-foreground/15 text-foreground flex items-center justify-center">
           <Sparkles size={32} />
         </div>
         <h3 className="text-lg font-bold text-foreground">Nenhuma nota selecionada</h3>
@@ -105,7 +105,7 @@ export function NoteEditor({ note, folders, onSave, onDelete }: NoteEditorProps)
             if (part.startsWith("[[") && part.endsWith("]]")) {
               const linkText = part.slice(2, -2);
               return (
-                <span key={pIdx} className="text-[#FCA311] font-bold bg-[#FCA311]/10 px-1.5 py-0.5 rounded cursor-pointer hover:underline">
+                <span key={pIdx} className="text-foreground font-bold bg-foreground/10 px-1.5 py-0.5 rounded cursor-pointer hover:underline">
                   [[{linkText}]]
                 </span>
               );
@@ -139,7 +139,7 @@ export function NoteEditor({ note, folders, onSave, onDelete }: NoteEditorProps)
               onClick={() => setPreviewMode(false)}
               className={cn(
                 "flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold transition-all",
-                !previewMode ? "bg-card text-[#FCA311] shadow-sm" : "text-muted-foreground hover:text-foreground"
+                !previewMode ? "bg-foreground text-background shadow-sm" : "text-muted-foreground hover:text-foreground"
               )}
             >
               <Edit2 size={13} />
@@ -149,7 +149,7 @@ export function NoteEditor({ note, folders, onSave, onDelete }: NoteEditorProps)
               onClick={() => setPreviewMode(true)}
               className={cn(
                 "flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold transition-all",
-                previewMode ? "bg-card text-[#FCA311] shadow-sm" : "text-muted-foreground hover:text-foreground"
+                previewMode ? "bg-foreground text-background shadow-sm" : "text-muted-foreground hover:text-foreground"
               )}
             >
               <Eye size={13} />

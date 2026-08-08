@@ -71,12 +71,12 @@ export function AuthScreen() {
   return (
     <div
       className="min-h-[100dvh] flex flex-col items-center justify-center relative overflow-hidden select-none"
-      style={{ background: '#14213D' }}
+      style={{ background: '#212121' }}
     >
       {/* Blobs de luz ambiente */}
       <div
         className="absolute -top-40 -left-40 w-[500px] h-[500px] rounded-full pointer-events-none"
-        style={{ background: 'radial-gradient(circle, rgba(252,163,17,0.18) 0%, transparent 70%)' }}
+        style={{ background: 'radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 70%)' }}
       />
       <div
         className="absolute -bottom-40 -right-40 w-[400px] h-[400px] rounded-full pointer-events-none"
@@ -84,7 +84,7 @@ export function AuthScreen() {
       />
       <div
         className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full pointer-events-none"
-        style={{ background: 'radial-gradient(circle, rgba(252,163,17,0.04) 0%, transparent 60%)' }}
+        style={{ background: 'radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 60%)' }}
       />
 
       {/* Card principal glass */}
@@ -97,8 +97,8 @@ export function AuthScreen() {
           <div
             className="w-20 h-20 rounded-[28px] flex items-center justify-center mb-5 shadow-2xl"
             style={{
-              background: 'linear-gradient(145deg, #FCA311 0%, #e8920a 100%)',
-              boxShadow: '0 16px 48px rgba(252,163,17,0.35), 0 4px 16px rgba(0,0,0,0.3)',
+              background: '#FFFFFF',
+              boxShadow: '0 16px 48px rgba(255,255,255,0.12), 0 4px 16px rgba(0,0,0,0.3)',
             }}
           >
             <span className="text-3xl font-black text-black tracking-tighter">L</span>
@@ -181,7 +181,7 @@ export function AuthScreen() {
                     border: '1px solid rgba(255,255,255,0.1)',
                     color: '#FFFFFF',
                   }}
-                  onFocus={e => { e.currentTarget.style.borderColor = '#FCA311'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(252,163,17,0.15)'; }}
+                  onFocus={e => { e.currentTarget.style.borderColor = 'currentColor'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(255,255,255,0.12)'; }}
                   onBlur={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'; e.currentTarget.style.boxShadow = 'none'; }}
                   autoComplete="name"
                 />
@@ -202,7 +202,7 @@ export function AuthScreen() {
                   border: '1px solid rgba(255,255,255,0.1)',
                   color: '#FFFFFF',
                 }}
-                onFocus={e => { e.currentTarget.style.borderColor = '#FCA311'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(252,163,17,0.15)'; }}
+                onFocus={e => { e.currentTarget.style.borderColor = 'currentColor'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(255,255,255,0.12)'; }}
                 onBlur={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'; e.currentTarget.style.boxShadow = 'none'; }}
                 required
               />
@@ -222,7 +222,7 @@ export function AuthScreen() {
                   border: '1px solid rgba(255,255,255,0.1)',
                   color: '#FFFFFF',
                 }}
-                onFocus={e => { e.currentTarget.style.borderColor = '#FCA311'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(252,163,17,0.15)'; }}
+                onFocus={e => { e.currentTarget.style.borderColor = 'currentColor'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(255,255,255,0.12)'; }}
                 onBlur={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'; e.currentTarget.style.boxShadow = 'none'; }}
                 required
               />
@@ -242,9 +242,9 @@ export function AuthScreen() {
               disabled={loading}
               className="w-full py-4 rounded-[14px] font-bold text-[15px] flex items-center justify-center gap-2 transition-all ios-spring disabled:opacity-60 mt-1"
               style={{
-                background: 'linear-gradient(135deg, #FCA311 0%, #e8920a 100%)',
+                background: 'linear-gradient(135deg, currentColor 0%, currentColor 100%)',
                 color: '#000000',
-                boxShadow: '0 4px 20px rgba(252,163,17,0.4)',
+                boxShadow: '0 4px 20px rgba(255,255,255,0.12)',
               }}
             >
               {loading ? (

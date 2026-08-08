@@ -37,7 +37,7 @@ export function ActivityRing({
             cx={size / 2}
             cy={size / 2}
             r={radius}
-            className="text-[#FCA311] stroke-current transition-all duration-1000 ease-out"
+            className="text-foreground stroke-current transition-all duration-1000 ease-out"
             strokeWidth={strokeWidth}
             strokeDasharray={circumference}
             strokeDashoffset={offset}
@@ -51,7 +51,7 @@ export function ActivityRing({
           <span className="text-3xl font-black text-foreground tracking-tighter">
             {normalizedScore}
           </span>
-          <span className="text-[10px] font-extrabold text-[#FCA311] uppercase tracking-wider">
+          <span className="text-[10px] font-extrabold text-foreground uppercase tracking-wider">
             / 100
           </span>
         </div>

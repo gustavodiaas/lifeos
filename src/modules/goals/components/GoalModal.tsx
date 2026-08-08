@@ -87,7 +87,7 @@ export function GoalModal({
         {/* Header */}
         <div className="px-6 py-4 border-b border-border/60 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-purple-500/15 text-purple-500 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-muted text-muted-foreground flex items-center justify-center">
               <Target size={18} />
             </div>
             <h2 className="text-lg font-extrabold text-foreground tracking-tight">
@@ -131,7 +131,7 @@ export function GoalModal({
                 onClick={() => { setScope("year"); setPeriod(`${currentYear}`); }}
                 className={`py-2.5 px-3 rounded-xl border-2 font-bold text-xs transition-all ${
                   scope === "year"
-                    ? "border-[#FCA311] bg-[#FCA311]/15 text-[#FCA311] font-extrabold"
+                    ? "border-foreground bg-foreground/15 text-foreground font-extrabold"
                     : "border-border/60 bg-muted/30 text-muted-foreground hover:bg-muted"
                 }`}
               >
@@ -143,7 +143,7 @@ export function GoalModal({
                 onClick={() => { setScope("quarter"); setPeriod(`${currentYear}-Q1`); }}
                 className={`py-2.5 px-3 rounded-xl border-2 font-bold text-xs transition-all ${
                   scope === "quarter"
-                    ? "border-[#FCA311] bg-[#FCA311]/15 text-[#FCA311] font-extrabold"
+                    ? "border-foreground bg-foreground/15 text-foreground font-extrabold"
                     : "border-border/60 bg-muted/30 text-muted-foreground hover:bg-muted"
                 }`}
               >
@@ -155,7 +155,7 @@ export function GoalModal({
                 onClick={() => { setScope("month"); setPeriod(`${currentYear}-08`); }}
                 className={`py-2.5 px-3 rounded-xl border-2 font-bold text-xs transition-all ${
                   scope === "month"
-                    ? "border-[#FCA311] bg-[#FCA311]/15 text-[#FCA311] font-extrabold"
+                    ? "border-foreground bg-foreground/15 text-foreground font-extrabold"
                     : "border-border/60 bg-muted/30 text-muted-foreground hover:bg-muted"
                 }`}
               >
@@ -167,7 +167,7 @@ export function GoalModal({
           {/* Período Texto */}
           <div>
             <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5 flex items-center gap-1 ml-1">
-              <Calendar size={13} className="text-blue-500" />
+              <Calendar size={13} className="text-muted-foreground" />
               Identificador do Período
             </label>
             <input
@@ -229,7 +229,7 @@ export function GoalModal({
           {habits.length > 0 && (
             <div>
               <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5 flex items-center gap-1 ml-1">
-                <Repeat size={13} className="text-[#FCA311]" />
+                <Repeat size={13} className="text-foreground" />
                 Vincular a um Hábito (Opcional)
               </label>
               <CustomSelect

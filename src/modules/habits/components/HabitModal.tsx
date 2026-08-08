@@ -46,7 +46,7 @@ export function HabitModal({ open, onClose, onSave, editingHabit }: HabitModalPr
         {/* Header */}
         <div className="px-6 py-4 border-b border-border/60 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-[#FCA311]/15 text-[#FCA311] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-foreground/15 text-foreground flex items-center justify-center">
               <Repeat size={18} />
             </div>
             <h2 className="text-lg font-extrabold text-foreground tracking-tight">
@@ -88,7 +88,7 @@ export function HabitModal({ open, onClose, onSave, editingHabit }: HabitModalPr
                 onClick={() => { setFrequency("daily"); setTargetPerWeek(7); }}
                 className={`p-3.5 rounded-xl border-2 font-bold text-xs flex items-center justify-center gap-2 transition-all ${
                   frequency === "daily"
-                    ? "border-[#FCA311] bg-[#FCA311]/10 text-foreground"
+                    ? "border-foreground bg-foreground/10 text-foreground"
                     : "border-border/60 bg-muted/30 text-muted-foreground hover:bg-muted"
                 }`}
               >
@@ -101,7 +101,7 @@ export function HabitModal({ open, onClose, onSave, editingHabit }: HabitModalPr
                 onClick={() => { setFrequency("weekly"); setTargetPerWeek(3); }}
                 className={`p-3.5 rounded-xl border-2 font-bold text-xs flex items-center justify-center gap-2 transition-all ${
                   frequency === "weekly"
-                    ? "border-[#FCA311] bg-[#FCA311]/10 text-foreground"
+                    ? "border-foreground bg-foreground/10 text-foreground"
                     : "border-border/60 bg-muted/30 text-muted-foreground hover:bg-muted"
                 }`}
               >
@@ -124,7 +124,7 @@ export function HabitModal({ open, onClose, onSave, editingHabit }: HabitModalPr
                     onClick={() => setTargetPerWeek(num)}
                     className={`flex-1 py-3 rounded-xl border-2 font-black text-sm transition-all ${
                       targetPerWeek === num
-                        ? "border-[#FCA311] bg-[#FCA311] text-black shadow-md shadow-[#FCA311]/30"
+                        ? "border-foreground bg-foreground text-background shadow-md shadow-black/20
                         : "border-border/60 bg-muted/30 text-muted-foreground hover:bg-muted"
                     }`}
                   >

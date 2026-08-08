@@ -85,7 +85,7 @@ export function JournalModal({
         {/* Header */}
         <div className="px-6 py-4 border-b border-border/60 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-amber-500/15 text-[#FCA311] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-muted text-foreground flex items-center justify-center">
               <NotebookPen size={18} />
             </div>
             <h2 className="text-lg font-extrabold text-foreground tracking-tight">
@@ -124,12 +124,12 @@ export function JournalModal({
                     onClick={() => setMood(item.value as any)}
                     className={`flex flex-col items-center justify-center p-2.5 rounded-2xl border-2 transition-all ios-spring ${
                       isSelected
-                        ? "border-[#FCA311] bg-[#FCA311]/15 scale-105 shadow-sm"
+                        ? "border-foreground bg-foreground/15 scale-105 shadow-sm"
                         : "border-border/50 bg-muted/30 hover:bg-muted opacity-70 hover:opacity-100"
                     }`}
                   >
                     <span className="text-2xl">{item.emoji}</span>
-                    <span className={`text-[10px] font-bold mt-1 ${isSelected ? "text-[#FCA311]" : "text-muted-foreground"}`}>
+                    <span className={`text-[10px] font-bold mt-1 ${isSelected ? "text-foreground" : "text-muted-foreground"}`}>
                       {item.label}
                     </span>
                   </button>
@@ -155,7 +155,7 @@ export function JournalModal({
           {/* Destaques / Highlights do Dia */}
           <div className="space-y-2 pt-1">
             <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider block ml-1 flex items-center gap-1">
-              <Sparkles size={13} className="text-[#FCA311]" />
+              <Sparkles size={13} className="text-foreground" />
               Destaques & Conquistas (Highlights)
             </label>
 
@@ -187,7 +187,7 @@ export function JournalModal({
                 {highlights.map((item, idx) => (
                   <span
                     key={idx}
-                    className="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-xl bg-amber-500/10 text-[#FCA311] border border-amber-500/20"
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-xl bg-muted text-foreground border border-border"
                   >
                     <span>✨ {item}</span>
                     <button

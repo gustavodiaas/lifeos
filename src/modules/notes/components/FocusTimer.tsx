@@ -12,9 +12,9 @@ interface FocusTimerProps {
 type Mode = "focus" | "shortBreak" | "longBreak";
 
 const MODE_CONFIG = {
-  focus: { label: "Foco Total", duration: 25 * 60, color: "text-[#FCA311]", bg: "bg-[#FCA311]/15" },
+  focus: { label: "Foco Total", duration: 25 * 60, color: "text-foreground", bg: "bg-muted" },
   shortBreak: { label: "Pausa Curta", duration: 5 * 60, color: "text-emerald-500", bg: "bg-emerald-500/15" },
-  longBreak: { label: "Pausa Longa", duration: 15 * 60, color: "text-blue-500", bg: "bg-blue-500/15" },
+  longBreak: { label: "Pausa Longa", duration: 15 * 60, color: "text-muted-foreground", bg: "bg-muted" },
 };
 
 export function FocusTimer({ onSessionComplete }: FocusTimerProps) {
@@ -100,7 +100,7 @@ export function FocusTimer({ onSessionComplete }: FocusTimerProps) {
   const progressPercent = Math.round(((totalDuration - timeLeft) / totalDuration) * 100);
 
   return (
-    <div className="glass-card p-5 flex flex-col md:flex-row items-center justify-between gap-6 border-border relative overflow-hidden bg-gradient-to-r from-amber-500/10 via-transparent to-[#14213D]/20">
+    <div className="glass-card p-5 flex flex-col md:flex-row items-center justify-between gap-6 border-border relative overflow-hidden bg-gradient-to-r from-muted/50 via-transparent to-transparent">
       
       {/* Informações da Sessão */}
       <div className="flex items-center gap-4">
@@ -150,7 +150,7 @@ export function FocusTimer({ onSessionComplete }: FocusTimerProps) {
           <button
             type="button"
             onClick={() => setIsRunning(!isRunning)}
-            className="w-12 h-12 rounded-2xl bg-[#FCA311] hover:bg-[#e8920a] text-black shadow-md shadow-[#FCA311]/30 flex items-center justify-center transition-all active:scale-95"
+            className="w-12 h-12 rounded-2xl bg-foreground hover:bg-[currentColor] text-black shadow-md shadow-black/20 flex items-center justify-center transition-all active:scale-95"
             title={isRunning ? "Pausar" : "Iniciar Foco"}
           >
             {isRunning ? <Pause size={22} fill="black" /> : <Play size={22} fill="black" className="ml-0.5" />}

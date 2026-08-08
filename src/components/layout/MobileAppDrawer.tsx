@@ -20,14 +20,14 @@ interface MobileAppDrawerProps {
 }
 
 const ALL_MODULES = [
-  { to: "/", label: "Painel", icon: LayoutDashboard, color: "bg-blue-500/15 text-blue-500" },
-  { to: "/habits", label: "Hábitos", icon: Repeat, color: "bg-amber-500/15 text-amber-500" },
+  { to: "/", label: "Painel", icon: LayoutDashboard, color: "bg-muted text-muted-foreground" },
+  { to: "/habits", label: "Hábitos", icon: Repeat, color: "bg-muted text-foreground" },
   { to: "/finance", label: "Finanças", icon: Wallet, color: "bg-emerald-500/15 text-emerald-500" },
-  { to: "/tasks", label: "Tarefas", icon: CheckSquare, color: "bg-indigo-500/15 text-indigo-500" },
-  { to: "/goals", label: "Metas", icon: Target, color: "bg-purple-500/15 text-purple-500" },
-  { to: "/notes", label: "Conhecimento", icon: BookOpen, color: "bg-orange-500/15 text-orange-500" },
-  { to: "/journal", label: "Diário", icon: NotebookPen, color: "bg-rose-500/15 text-rose-500" },
-  { to: "/stats", label: "Estatísticas", icon: BarChart3, color: "bg-teal-500/15 text-teal-500" },
+  { to: "/tasks", label: "Tarefas", icon: CheckSquare, color: "bg-muted text-muted-foreground" },
+  { to: "/goals", label: "Metas", icon: Target, color: "bg-muted text-muted-foreground" },
+  { to: "/notes", label: "Conhecimento", icon: BookOpen, color: "bg-muted text-muted-foreground" },
+  { to: "/journal", label: "Diário", icon: NotebookPen, color: "bg-muted text-muted-foreground" },
+  { to: "/stats", label: "Estatísticas", icon: BarChart3, color: "bg-muted text-muted-foreground" },
   { to: "/settings", label: "Ajustes", icon: Settings, color: "bg-slate-500/15 text-slate-500" },
 ] as const;
 
@@ -43,7 +43,7 @@ export function MobileAppDrawer({ open, onClose }: MobileAppDrawerProps) {
         {/* Header da Folha iOS */}
         <div className="flex items-center justify-between border-b border-border/50 pb-3">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-[#FCA311] flex items-center justify-center text-black font-black">
+            <div className="w-8 h-8 rounded-xl bg-foreground flex items-center justify-center text-black font-black">
               {(user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email || "L")[0].toUpperCase()}
             </div>
             <div>
@@ -85,11 +85,11 @@ export function MobileAppDrawer({ open, onClose }: MobileAppDrawerProps) {
         {user && (
           <div className="p-3.5 rounded-2xl bg-muted/50 border border-border/60 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-full bg-[#FCA311]/20 ring-2 ring-[#FCA311]/40 flex items-center justify-center overflow-hidden">
+              <div className="w-9 h-9 rounded-full bg-foreground/20 ring-2 ring-foreground/40 flex items-center justify-center overflow-hidden">
                 {user.user_metadata?.avatar_url ? (
                   <img src={user.user_metadata.avatar_url} className="w-full h-full object-cover" alt="" />
                 ) : (
-                  <span className="text-xs font-extrabold text-[#FCA311]">
+                  <span className="text-xs font-extrabold text-foreground">
                     {(user.email?.[0] ?? "U").toUpperCase()}
                   </span>
                 )}
@@ -104,7 +104,7 @@ export function MobileAppDrawer({ open, onClose }: MobileAppDrawerProps) {
             <Link
               to="/settings"
               onClick={onClose}
-              className="text-xs font-bold text-[#FCA311] hover:underline"
+              className="text-xs font-bold text-foreground hover:underline"
             >
               Ajustes
             </Link>

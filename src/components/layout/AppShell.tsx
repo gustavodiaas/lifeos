@@ -51,18 +51,18 @@ type WeatherInfo = { icon: React.ReactNode; label: string } | null;
 
 /** WMO weather code -> icon + label */
 function wmoToInfo(code: number): WeatherInfo {
-  if (code === 0) return { icon: <Sun size={14} className="text-yellow-400" />, label: "Sol" };
+  if (code === 0) return { icon: <Sun size={14} className="text-muted-foreground" />, label: "Sol" };
   if (code <= 2) return { icon: <Cloud size={14} className="text-slate-400" />, label: "Nublado" };
-  if (code <= 9) return { icon: <Wind size={14} className="text-blue-300" />, label: "Ventoso" };
-  if (code <= 29) return { icon: <CloudDrizzle size={14} className="text-blue-400" />, label: "Garoa" };
-  if (code <= 39) return { icon: <CloudRain size={14} className="text-blue-500" />, label: "Chuva" };
-  if (code <= 49) return { icon: <CloudSnow size={14} className="text-blue-200" />, label: "Neve" };
-  if (code <= 59) return { icon: <CloudDrizzle size={14} className="text-blue-400" />, label: "Garoa" };
-  if (code <= 69) return { icon: <CloudRain size={14} className="text-blue-500" />, label: "Chuva" };
-  if (code <= 79) return { icon: <CloudSnow size={14} className="text-blue-200" />, label: "Neve" };
-  if (code <= 84) return { icon: <CloudRain size={14} className="text-blue-600" />, label: "Pancadas" };
-  if (code <= 89) return { icon: <CloudLightning size={14} className="text-yellow-500" />, label: "Temporal" };
-  return { icon: <CloudLightning size={14} className="text-yellow-500" />, label: "Temporal" };
+  if (code <= 9) return { icon: <Wind size={14} className="text-muted-foreground" />, label: "Ventoso" };
+  if (code <= 29) return { icon: <CloudDrizzle size={14} className="text-muted-foreground" />, label: "Garoa" };
+  if (code <= 39) return { icon: <CloudRain size={14} className="text-muted-foreground" />, label: "Chuva" };
+  if (code <= 49) return { icon: <CloudSnow size={14} className="text-muted-foreground" />, label: "Neve" };
+  if (code <= 59) return { icon: <CloudDrizzle size={14} className="text-muted-foreground" />, label: "Garoa" };
+  if (code <= 69) return { icon: <CloudRain size={14} className="text-muted-foreground" />, label: "Chuva" };
+  if (code <= 79) return { icon: <CloudSnow size={14} className="text-muted-foreground" />, label: "Neve" };
+  if (code <= 84) return { icon: <CloudRain size={14} className="text-muted-foreground" />, label: "Pancadas" };
+  if (code <= 89) return { icon: <CloudLightning size={14} className="text-muted-foreground" />, label: "Temporal" };
+  return { icon: <CloudLightning size={14} className="text-muted-foreground" />, label: "Temporal" };
 }
 
 function useWeather(): WeatherInfo {
@@ -147,7 +147,7 @@ export function AppShell({ children }: { children?: ReactNode }) {
         {/* Header / Brand */}
         <div className="px-5 pt-6 pb-4">
           <Link to="/" className="flex items-center gap-3 group">
-            <div className="h-10 w-10 rounded-2xl bg-foreground flex items-center justify-center shadow-lg shadow-black/10 transition-transform group-hover:scale-105">
+            <div className="h-10 w-10 rounded-2xl bg-[#212121] dark:bg-foreground flex items-center justify-center shadow-lg shadow-black/10 dark:shadow-black/20 transition-transform group-hover:scale-105">
               <span className="text-white dark:text-black text-base font-extrabold tracking-tight">
                 {firstName[0]?.toUpperCase() ?? "L"}
               </span>
@@ -182,7 +182,7 @@ export function AppShell({ children }: { children?: ReactNode }) {
                     active ? "nav-pill-active shadow-sm" : "nav-pill-inactive"
                   )}
                 >
-                  <Icon className={cn("h-4.5 w-4.5 shrink-0 transition-colors", active ? "text-foreground font-extrabold" : "")} />
+                  <Icon className={cn("h-4.5 w-4.5 shrink-0 transition-colors", active ? "text-foreground" : "")} />
                   <span>{label}</span>
                   {active && (
                     <div className="ml-auto w-1.5 h-1.5 rounded-full bg-foreground" />
@@ -207,7 +207,7 @@ export function AppShell({ children }: { children?: ReactNode }) {
                     active ? "nav-pill-active shadow-sm" : "nav-pill-inactive"
                   )}
                 >
-                  <Icon className={cn("h-4.5 w-4.5 shrink-0 transition-colors", active ? "text-foreground font-extrabold" : "")} />
+                  <Icon className={cn("h-4.5 w-4.5 shrink-0 transition-colors", active ? "text-foreground" : "")} />
                   <span>{label}</span>
                   {active && (
                     <div className="ml-auto w-1.5 h-1.5 rounded-full bg-foreground" />
@@ -233,7 +233,7 @@ export function AppShell({ children }: { children?: ReactNode }) {
 
           {user && (
             <div className="mt-1 flex items-center gap-3 p-2.5 rounded-xl bg-card/60 border border-border/50">
-              <div className="w-8 h-8 rounded-full bg-muted ring-2 ring-border flex items-center justify-center overflow-hidden shrink-0">
+              <div className="w-8 h-8 rounded-full bg-foreground/20 ring-2 ring-foreground/40 flex items-center justify-center overflow-hidden shrink-0">
                 {user.user_metadata?.avatar_url ? (
                   <img src={user.user_metadata.avatar_url} className="w-full h-full object-cover" alt="" />
                 ) : (
@@ -270,7 +270,7 @@ export function AppShell({ children }: { children?: ReactNode }) {
               <Search className="h-4.5 w-4.5" />
             </button>
             {user && (
-              <div className="w-9 h-9 rounded-full bg-muted ring-2 ring-border flex items-center justify-center overflow-hidden">
+              <div className="w-9 h-9 rounded-full bg-foreground/20 ring-2 ring-foreground/40 flex items-center justify-center overflow-hidden">
                 {user.user_metadata?.avatar_url ? (
                   <img src={user.user_metadata.avatar_url} className="w-full h-full object-cover" alt="" />
                 ) : (
@@ -284,14 +284,14 @@ export function AppShell({ children }: { children?: ReactNode }) {
         </header>
 
         {/* Page body content */}
-        <div className="flex-1 min-h-0 overflow-y-auto pb-28 md:pb-0">
+        <div className="flex-1 min-w-0 overflow-y-auto pb-28 md:pb-0">
           {children ?? <Outlet />}
         </div>
       </main>
 
       {/* ── iOS 26 Floating Glass Pill Bar no Mobile ────────────────── */}
       <div className="md:hidden fixed bottom-3 inset-x-0 z-[100] px-4 pointer-events-none flex justify-center">
-        <nav className="pointer-events-auto w-full max-w-md bg-card/85 dark:bg-card/90 backdrop-blur-2xl border border-white/20 dark:border-white/10 shadow-2xl rounded-full px-3 py-1.5 flex items-center justify-between">
+        <nav className="pointer-events-auto w-full max-w-md bg-card/85 dark:bg-[#212121]/90 backdrop-blur-2xl border border-white/20 dark:border-white/10 shadow-2xl rounded-full px-3 py-1.5 flex items-center justify-between">
           
           {/* Painel */}
           <Link

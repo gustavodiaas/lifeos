@@ -210,7 +210,7 @@ export function TasksModule() {
               onClick={() => setViewMode("kanban")}
               className={cn(
                 "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all",
-                viewMode === "kanban" ? "bg-card text-[#FCA311] shadow-sm" : "text-muted-foreground hover:text-foreground"
+                viewMode === "kanban" ? "bg-foreground text-background shadow-sm" : "text-muted-foreground hover:text-foreground"
               )}
             >
               <LayoutGrid size={15} />
@@ -220,7 +220,7 @@ export function TasksModule() {
               onClick={() => setViewMode("list")}
               className={cn(
                 "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all",
-                viewMode === "list" ? "bg-card text-[#FCA311] shadow-sm" : "text-muted-foreground hover:text-foreground"
+                viewMode === "list" ? "bg-foreground text-background shadow-sm" : "text-muted-foreground hover:text-foreground"
               )}
             >
               <List size={15} />
@@ -232,7 +232,7 @@ export function TasksModule() {
             onClick={() => setProjectModalOpen(true)}
             className="px-3.5 py-2.5 rounded-xl bg-card border border-border text-xs font-bold text-foreground hover:bg-muted transition-colors flex items-center gap-1.5 shadow-sm"
           >
-            <FolderPlus size={15} className="text-[#FCA311]" />
+            <FolderPlus size={15} className="text-foreground" />
             <span>Novo Projeto</span>
           </button>
 
@@ -253,7 +253,7 @@ export function TasksModule() {
       {/* ── 2. Cards de Métricas de Produtividade ─────────────────────────── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <div className="glass-card p-4 flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-blue-500/15 text-blue-500 flex items-center justify-center shrink-0 font-bold text-sm">
+          <div className="w-9 h-9 rounded-xl bg-muted text-muted-foreground flex items-center justify-center shrink-0 font-bold text-sm">
             {openCount}
           </div>
           <div>
@@ -263,7 +263,7 @@ export function TasksModule() {
         </div>
 
         <div className="glass-card p-4 flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-amber-500/15 text-[#FCA311] flex items-center justify-center shrink-0 font-bold text-sm">
+          <div className="w-9 h-9 rounded-xl bg-muted text-foreground flex items-center justify-center shrink-0 font-bold text-sm">
             {dueTodayCount}
           </div>
           <div>
@@ -283,7 +283,7 @@ export function TasksModule() {
         </div>
 
         <div className="glass-card p-4 flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-purple-500/15 text-purple-500 flex items-center justify-center shrink-0 font-bold text-sm">
+          <div className="w-9 h-9 rounded-xl bg-muted text-muted-foreground flex items-center justify-center shrink-0 font-bold text-sm">
             {highPriorityCount}
           </div>
           <div>
@@ -313,7 +313,7 @@ export function TasksModule() {
             className={cn(
               "px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0",
               selectedProjectId === null
-                ? "bg-[#FCA311] text-black shadow-sm"
+                ? "bg-foreground text-background shadow-sm"
                 : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground"
             )}
           >
@@ -327,11 +327,11 @@ export function TasksModule() {
               className={cn(
                 "px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 flex items-center gap-1.5",
                 selectedProjectId === p.id
-                  ? "bg-[#FCA311] text-black shadow-sm"
+                  ? "bg-foreground text-background shadow-sm"
                   : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground"
               )}
             >
-              <span className="w-2 h-2 rounded-full" style={{ backgroundColor: p.color || "#FCA311" }} />
+              <span className="w-2 h-2 rounded-full" style={{ backgroundColor: p.color || "currentColor" }} />
               <span>{p.name}</span>
             </button>
           ))}
@@ -341,7 +341,7 @@ export function TasksModule() {
       {/* ── 4. CONTEÚDO: Visão Quadro KANBAN ─────────────────────────────── */}
       {loading ? (
         <div className="py-20 text-center">
-          <div className="w-8 h-8 border-3 border-[#FCA311] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+          <div className="w-8 h-8 border-3 border-foreground border-t-transparent rounded-full animate-spin mx-auto mb-3" />
           <p className="text-xs text-muted-foreground font-semibold">Carregando quadro de tarefas...</p>
         </div>
       ) : viewMode === "kanban" ? (
@@ -351,7 +351,7 @@ export function TasksModule() {
           <div className="space-y-3">
             <div className="flex items-center justify-between px-1 py-1">
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-blue-500" />
+                <div className="w-3 h-3 rounded-full bg-foreground" />
                 <h3 className="text-sm font-extrabold text-foreground uppercase tracking-wider">A Fazer</h3>
                 <span className="text-xs font-extrabold text-muted-foreground px-2 py-0.5 rounded-full bg-muted">
                   {todoTasks.length}
@@ -400,7 +400,7 @@ export function TasksModule() {
           <div className="space-y-3">
             <div className="flex items-center justify-between px-1 py-1">
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-[#FCA311]" />
+                <div className="w-3 h-3 rounded-full bg-foreground" />
                 <h3 className="text-sm font-extrabold text-foreground uppercase tracking-wider">Em Andamento</h3>
                 <span className="text-xs font-extrabold text-muted-foreground px-2 py-0.5 rounded-full bg-muted">
                   {doingTasks.length}
@@ -488,7 +488,7 @@ export function TasksModule() {
         <div className="space-y-4">
           {filteredTasks.length === 0 ? (
             <div className="glass-card p-12 text-center space-y-4">
-              <div className="w-16 h-16 rounded-3xl bg-blue-500/15 text-blue-500 flex items-center justify-center mx-auto">
+              <div className="w-16 h-16 rounded-3xl bg-muted text-muted-foreground flex items-center justify-center mx-auto">
                 <CheckSquare size={32} />
               </div>
               <div>
