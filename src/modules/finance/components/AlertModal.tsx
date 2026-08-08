@@ -45,7 +45,7 @@ export function AlertModal({ open, onClose, onConfirm, title, message, type = 'i
                 className={`w-full py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all ios-spring ${
                   type === 'danger'
                     ? 'bg-red-500 text-white shadow-md shadow-red-500/20'
-                    : 'bg-foreground text-background shadow-md shadow-black/20
+                    : 'bg-foreground text-background shadow-md shadow-black/20'
                 }`}
               >
                 {confirmText || 'Confirmar'}
