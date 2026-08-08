@@ -110,7 +110,7 @@ export function TransactionModal({ open, onClose, onSave, defaultDate, editingTr
             </button>
             <button
               onClick={() => { onSave(pendingData, 'all'); }}
-              className="w-full py-4 bg-foreground text-background rounded-2xl font-black text-sm active:scale-95 transition-all shadow-md shadow-black/20
+              className="w-full py-4 bg-foreground text-background rounded-2xl font-black text-sm active:scale-95 transition-all shadow-md shadow-black/20"
             >
               Todos os futuros
             </button>
