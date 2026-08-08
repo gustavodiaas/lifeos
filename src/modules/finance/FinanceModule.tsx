@@ -178,7 +178,6 @@ export function FinanceModule() {
   const netBalance = totalIncome - totalExpense;
 
   return (
-  return (
     <div className="w-full max-w-6xl mx-auto px-4 md:px-6 py-4 flex flex-col space-y-4 relative">
       {toastMessage && (
         <ErrorToast message={toastMessage} onClose={() => setToastMessage(null)} />
