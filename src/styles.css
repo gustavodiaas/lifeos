@@ -4,7 +4,7 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* ─── Google Fonts & Apple SF Font Fallbacks ────────────────────────────── */
+/* ─── Google Fonts ──────────────────────────────────────────────────────── */
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 @theme inline {
@@ -46,129 +46,127 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
-/* ─── Light Mode (Apple iOS Soft Off-White Background + Crisp Elevated Cards) ─── */
+/* ─── Light Mode — Monochrome Essence ───────────────────────────────────── */
 :root {
   --radius: 1rem;
 
-  /* Paleta base iOS */
-  --ios-white:   #FFFFFF;
-  --ios-gray:    #E5E5EA;
-  --ios-amber:   #FCA311;
-  --ios-navy:    #14213D;
-  --ios-black:   #0F172A;
-  --ios-surface: #F4F5F8;
-  --ios-muted:   #64748B;
+  /* Paleta base */
+  --mono-white:   #FFFFFF;
+  --mono-light:   #E0E0E0;
+  --mono-mid:     #616161;
+  --mono-dark:    #212121;
+  --mono-surface: #F5F5F5;
 
   /* Tokens Tailwind */
-  --background:             #F4F5F8;
-  --foreground:             #0F172A;
+  --background:             #F5F5F5;
+  --foreground:             #212121;
   --card:                   #FFFFFF;
-  --card-foreground:        #0F172A;
+  --card-foreground:        #212121;
   --popover:                #FFFFFF;
-  --popover-foreground:     #0F172A;
-  --primary:                #14213D;
+  --popover-foreground:     #212121;
+  --primary:                #212121;
   --primary-foreground:     #FFFFFF;
-  --secondary:              #E2E8F0;
-  --secondary-foreground:   #14213D;
-  --muted:                  #F1F5F9;
-  --muted-foreground:       #64748B;
-  --accent:                 #FCA311;
-  --accent-foreground:      #000000;
-  --destructive:            #FF3B30;
+  --secondary:              #E0E0E0;
+  --secondary-foreground:   #212121;
+  --muted:                  #EEEEEE;
+  --muted-foreground:       #616161;
+  --accent:                 #212121;
+  --accent-foreground:      #FFFFFF;
+  --destructive:            #D32F2F;
   --destructive-foreground: #FFFFFF;
-  --border:                 #E2E8F0;
-  --input:                  #F8FAFC;
-  --ring:                   #FCA311;
+  --border:                 #E0E0E0;
+  --input:                  #F5F5F5;
+  --ring:                   #212121;
 
   /* Sidebar light */
-  --sidebar:                      rgba(255, 255, 255, 0.88);
-  --sidebar-foreground:           #0F172A;
-  --sidebar-primary:              #14213D;
-  --sidebar-primary-foreground:   #FFFFFF;
-  --sidebar-accent:               rgba(252, 163, 17, 0.12);
-  --sidebar-accent-foreground:    #14213D;
-  --sidebar-border:               rgba(226, 232, 240, 0.8);
-  --sidebar-ring:                 #FCA311;
+  --sidebar:                    rgba(255, 255, 255, 0.92);
+  --sidebar-foreground:         #212121;
+  --sidebar-primary:            #212121;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent:             rgba(33, 33, 33, 0.07);
+  --sidebar-accent-foreground:  #212121;
+  --sidebar-border:             rgba(224, 224, 224, 0.9);
+  --sidebar-ring:               #212121;
 
-  /* Glass Light */
-  --glass-bg:     rgba(255, 255, 255, 0.82);
-  --glass-border: rgba(0, 0, 0, 0.05);
-  --glass-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.05), 0 4px 12px -2px rgba(15, 23, 42, 0.03);
+  /* Glass light */
+  --glass-bg:     rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(0, 0, 0, 0.06);
+  --glass-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.06), 0 2px 8px -2px rgba(0, 0, 0, 0.03);
 
   color-scheme: light;
 }
 
-/* ─── Dark Mode (Deep Premium Navy Canvas + Elevated Navy Glass Cards) ─── */
+/* ─── Dark Mode — Monochrome #212121 ────────────────────────────────────── */
 .dark {
-  --background:             #14213D;
-  --foreground:             #F8FAFC;
-  --card:                   #1C2E4A;
-  --card-foreground:        #F8FAFC;
-  --popover:                #1C2E4A;
-  --popover-foreground:     #F8FAFC;
+  --background:             #212121;
+  --foreground:             #FFFFFF;
+  --card:                   #2C2C2C;
+  --card-foreground:        #FFFFFF;
+  --popover:                #2C2C2C;
+  --popover-foreground:     #FFFFFF;
   --primary:                #FFFFFF;
-  --primary-foreground:     #14213D;
-  --secondary:              #243352;
-  --secondary-foreground:   #F8FAFC;
-  --muted:                  #1C2E4A;
-  --muted-foreground:       #94A3B8;
-  --accent:                 #FCA311;
-  --accent-foreground:      #000000;
-  --destructive:            #FF453A;
+  --primary-foreground:     #212121;
+  --secondary:              #383838;
+  --secondary-foreground:   #FFFFFF;
+  --muted:                  #2C2C2C;
+  --muted-foreground:       #9E9E9E;
+  --accent:                 #FFFFFF;
+  --accent-foreground:      #212121;
+  --destructive:            #EF5350;
   --destructive-foreground: #FFFFFF;
-  --border:                 rgba(255, 255, 255, 0.08);
+  --border:                 rgba(255, 255, 255, 0.09);
   --input:                  rgba(255, 255, 255, 0.06);
-  --ring:                   #FCA311;
+  --ring:                   rgba(255, 255, 255, 0.4);
 
   /* Sidebar dark */
-  --sidebar:                      rgba(20, 33, 61, 0.88);
-  --sidebar-foreground:           #F8FAFC;
-  --sidebar-primary:              #FFFFFF;
-  --sidebar-primary-foreground:   #14213D;
-  --sidebar-accent:               rgba(252, 163, 17, 0.15);
-  --sidebar-accent-foreground:    #FCA311;
-  --sidebar-border:               rgba(255, 255, 255, 0.08);
-  --sidebar-ring:                 #FCA311;
+  --sidebar:                    rgba(33, 33, 33, 0.95);
+  --sidebar-foreground:         #FFFFFF;
+  --sidebar-primary:            #FFFFFF;
+  --sidebar-primary-foreground: #212121;
+  --sidebar-accent:             rgba(255, 255, 255, 0.08);
+  --sidebar-accent-foreground:  #FFFFFF;
+  --sidebar-border:             rgba(255, 255, 255, 0.08);
+  --sidebar-ring:               rgba(255, 255, 255, 0.3);
 
   /* Glass dark */
-  --glass-bg:     rgba(28, 46, 74, 0.78);
+  --glass-bg:     rgba(44, 44, 44, 0.80);
   --glass-border: rgba(255, 255, 255, 0.08);
-  --glass-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.35);
+  --glass-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.50);
 
   color-scheme: dark;
 }
 
 .light {
-  --background:             #F4F5F8;
-  --foreground:             #0F172A;
+  --background:             #F5F5F5;
+  --foreground:             #212121;
   --card:                   #FFFFFF;
-  --card-foreground:        #0F172A;
+  --card-foreground:        #212121;
   --popover:                #FFFFFF;
-  --popover-foreground:     #0F172A;
-  --primary:                #14213D;
+  --popover-foreground:     #212121;
+  --primary:                #212121;
   --primary-foreground:     #FFFFFF;
-  --secondary:              #E2E8F0;
-  --secondary-foreground:   #14213D;
-  --muted:                  #F1F5F9;
-  --muted-foreground:       #64748B;
-  --accent:                 #FCA311;
-  --accent-foreground:      #000000;
-  --destructive:            #FF3B30;
+  --secondary:              #E0E0E0;
+  --secondary-foreground:   #212121;
+  --muted:                  #EEEEEE;
+  --muted-foreground:       #616161;
+  --accent:                 #212121;
+  --accent-foreground:      #FFFFFF;
+  --destructive:            #D32F2F;
   --destructive-foreground: #FFFFFF;
-  --border:                 #E2E8F0;
-  --input:                  #F8FAFC;
-  --ring:                   #FCA311;
-  --sidebar:                      rgba(255, 255, 255, 0.88);
-  --sidebar-foreground:           #0F172A;
-  --sidebar-primary:              #14213D;
-  --sidebar-primary-foreground:   #FFFFFF;
-  --sidebar-accent:               rgba(252, 163, 17, 0.12);
-  --sidebar-accent-foreground:    #14213D;
-  --sidebar-border:               rgba(226, 232, 240, 0.8);
-  --sidebar-ring:                 #FCA311;
-  --glass-bg:     rgba(255, 255, 255, 0.82);
-  --glass-border: rgba(0, 0, 0, 0.05);
-  --glass-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.05), 0 4px 12px -2px rgba(15, 23, 42, 0.03);
+  --border:                 #E0E0E0;
+  --input:                  #F5F5F5;
+  --ring:                   #212121;
+  --sidebar:                    rgba(255, 255, 255, 0.92);
+  --sidebar-foreground:         #212121;
+  --sidebar-primary:            #212121;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent:             rgba(33, 33, 33, 0.07);
+  --sidebar-accent-foreground:  #212121;
+  --sidebar-border:             rgba(224, 224, 224, 0.9);
+  --sidebar-ring:               #212121;
+  --glass-bg:     rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(0, 0, 0, 0.06);
+  --glass-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.06), 0 2px 8px -2px rgba(0, 0, 0, 0.03);
   color-scheme: light;
 }
 
@@ -191,15 +189,6 @@
     text-rendering: optimizeLegibility;
   }
 
-  /* Hide scrollbars cleanly */
-  * {
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-  }
-  *::-webkit-scrollbar {
-    display: none;
-  }
-
   h1, h2, h3, h4, h5, h6 {
     font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
     letter-spacing: -0.025em;
@@ -210,61 +199,56 @@
   }
 }
 
-/* ─── PWA Native Smooth Scroll & Scrollbar Hiding ──────────────────────── */
+/* ─── PWA Native Scroll ─────────────────────────────────────────────────── */
 * {
-  scrollbar-width: none !important; /* Firefox */
-  -ms-overflow-style: none !important; /* IE/Edge */
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
 }
 *::-webkit-scrollbar {
-  display: none !important; /* Chrome, Safari, iOS, Android */
+  display: none !important;
   width: 0 !important;
   height: 0 !important;
 }
 
 html, body {
-  overscroll-behavior-y: none; /* Desativa o efeito borracha do browser que quebra a sensação de PWA */
-  -webkit-overflow-scrolling: touch; /* Momentum smooth scrolling nativo iOS */
+  overscroll-behavior-y: none;
+  -webkit-overflow-scrolling: touch;
 }
 
-/* ─── Components: Glass & Apple Widget Aesthetics ─────────────────────── */
+/* ─── Components ────────────────────────────────────────────────────────── */
 @layer components {
 
-  /* Apple Glass Panel */
+  /* Glass Panel */
   .glass-panel {
     background: var(--glass-bg);
-    backdrop-filter: blur(24px) saturate(1.8);
-    -webkit-backdrop-filter: blur(24px) saturate(1.8);
+    backdrop-filter: blur(24px) saturate(1.4);
+    -webkit-backdrop-filter: blur(24px) saturate(1.4);
     border: 1px solid var(--glass-border);
     box-shadow: var(--glass-shadow);
   }
 
-  /* Apple Glass Widget Card */
+  /* Glass Card */
   .glass-card {
     background: var(--color-card);
     border: 1px solid var(--color-border);
     border-radius: 1.25rem;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.04), 0 4px 10px -2px rgba(0, 0, 0, 0.02);
+    box-shadow: 0 2px 8px -2px rgba(0, 0, 0, 0.05), 0 1px 3px -1px rgba(0, 0, 0, 0.04);
     transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease, border-color 0.2s ease;
   }
 
   .dark .glass-card {
-    background: rgba(28, 46, 74, 0.75);
-    backdrop-filter: blur(20px) saturate(1.6);
-    -webkit-backdrop-filter: blur(20px) saturate(1.6);
+    background: rgba(44, 44, 44, 0.80);
+    backdrop-filter: blur(20px) saturate(1.2);
+    -webkit-backdrop-filter: blur(20px) saturate(1.2);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 0 12px 32px -4px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.35);
   }
 
-  .glass-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 16px 32px -6px rgba(0, 0, 0, 0.08), 0 6px 16px -4px rgba(0, 0, 0, 0.04);
-  }
-  .dark .glass-card:hover {
-    border-color: rgba(252, 163, 17, 0.3);
-    box-shadow: 0 20px 40px -8px rgba(0, 0, 0, 0.45);
+  .glass-card:active {
+    transform: scale(0.99);
   }
 
-  /* Apple Squircle Icon Containers */
+  /* iOS Squircle */
   .ios-squircle {
     border-radius: 14px;
     display: flex;
@@ -273,35 +257,58 @@ html, body {
     transition: transform 0.2s ease;
   }
   .ios-squircle:hover {
-    transform: scale(1.05);
+    transform: scale(1.04);
   }
 
-  /* Primary Button iOS Amber */
+  /* Botão primário — monocromático */
   .btn-ios {
-    background: linear-gradient(135deg, #FCA311 0%, #E8920A 100%);
-    color: #000000;
+    background: #212121;
+    color: #FFFFFF;
     font-weight: 700;
     border-radius: 14px;
     padding: 0.75rem 1.25rem;
     font-size: 0.875rem;
     letter-spacing: -0.01em;
-    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-    box-shadow: 0 4px 16px rgba(252, 163, 17, 0.3);
+    transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
   }
+  .dark .btn-ios {
+    background: #FFFFFF;
+    color: #212121;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+  }
   .btn-ios:hover {
-    box-shadow: 0 6px 20px rgba(252, 163, 17, 0.45);
+    opacity: 0.88;
     transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.22);
   }
   .btn-ios:active {
     transform: scale(0.97);
-    box-shadow: 0 2px 8px rgba(252, 163, 17, 0.2);
+    opacity: 1;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
   }
 
-  /* Input estilo iOS */
+  /* Variante destrutiva */
+  .btn-ios-danger {
+    background: #D32F2F;
+    color: #FFFFFF;
+    font-weight: 700;
+    border-radius: 14px;
+    padding: 0.75rem 1.25rem;
+    font-size: 0.875rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.18s ease;
+  }
+  .btn-ios-danger:active { transform: scale(0.97); }
+
+  /* Input iOS */
   .input-ios {
     background: var(--color-input);
     border: 1px solid var(--color-border);
@@ -314,74 +321,102 @@ html, body {
     width: 100%;
   }
   .input-ios:focus {
-    border-color: #FCA311;
-    box-shadow: 0 0 0 3px rgba(252, 163, 17, 0.2);
+    border-color: #616161;
+    box-shadow: 0 0 0 3px rgba(97, 97, 97, 0.15);
+  }
+  .dark .input-ios:focus {
+    border-color: rgba(255, 255, 255, 0.35);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.08);
   }
 
-  /* Tab bar item ativo */
+  /* Nav pill */
   .tab-active {
-    color: #FCA311;
+    color: var(--color-foreground);
   }
   .tab-inactive {
     color: var(--color-muted-foreground);
   }
 
-  /* Pill de navegação ativa na sidebar */
   .nav-pill-active {
-    background: rgba(252, 163, 17, 0.12);
-    color: #FCA311;
+    background: rgba(33, 33, 33, 0.09);
+    color: #212121;
     font-weight: 700;
+  }
+  .dark .nav-pill-active {
+    background: rgba(255, 255, 255, 0.10);
+    color: #FFFFFF;
   }
   .nav-pill-inactive {
     color: var(--color-muted-foreground);
   }
   .nav-pill-inactive:hover {
-    background: rgba(252, 163, 17, 0.06);
+    background: rgba(33, 33, 33, 0.05);
     color: var(--color-foreground);
   }
-
-  /* Spring animation iOS-like */
-  .ios-spring {
-    transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-  .ios-spring:active {
-    transform: scale(0.96);
+  .dark .nav-pill-inactive:hover {
+    background: rgba(255, 255, 255, 0.06);
   }
 
-  /* Fade in suave */
-  .fade-in {
-    animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  }
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(8px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  /* Slide up */
-  .slide-up {
-    animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  }
-  @keyframes slideUp {
-    from { opacity: 0; transform: translateY(30px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  /* Divisor sutil estilo iOS */
-  .ios-divider {
-    height: 1px;
-    background: var(--color-border);
-  }
-
-  /* Badge */
+  /* Badge — monocromático */
   .badge-ios {
     display: inline-flex;
     align-items: center;
     border-radius: 9999px;
-    background: rgba(252,163,17,0.12);
-    color: #FCA311;
+    background: rgba(33, 33, 33, 0.08);
+    color: #616161;
     font-size: 0.6875rem;
     font-weight: 700;
     padding: 0.2rem 0.65rem;
     letter-spacing: 0.03em;
   }
+  .dark .badge-ios {
+    background: rgba(255, 255, 255, 0.10);
+    color: #9E9E9E;
+  }
+
+  /* Spring */
+  .ios-spring {
+    transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .ios-spring:active {
+    transform: scale(0.96);
+  }
+
+  /* Fade in */
+  .fade-in {
+    animation: fadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Slide up */
+  .slide-up {
+    animation: slideUp 0.30s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(28px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Divider */
+  .ios-divider {
+    height: 1px;
+    background: var(--color-border);
+  }
+
+  /* ── Exceções financeiras: verde/vermelho semântico ────────────────────
+     Aplicados via classes utilitárias diretamente nos componentes Finance.
+     Mantidos aqui como referência para não usar o accent global.
+  */
+  .finance-positive { color: #2E7D32; }
+  .finance-negative { color: #C62828; }
+  .dark .finance-positive { color: #66BB6A; }
+  .dark .finance-negative { color: #EF5350; }
+
+  .finance-positive-bg { background-color: rgba(46, 125, 50, 0.10); }
+  .finance-negative-bg { background-color: rgba(198, 40, 40, 0.10); }
+  .dark .finance-positive-bg { background-color: rgba(102, 187, 106, 0.12); }
+  .dark .finance-negative-bg { background-color: rgba(239, 83, 80, 0.12); }
 }
