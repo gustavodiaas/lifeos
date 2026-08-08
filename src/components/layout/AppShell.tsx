@@ -147,7 +147,7 @@ export function AppShell({ children }: { children?: ReactNode }) {
         {/* Header / Brand */}
         <div className="px-5 pt-6 pb-4">
           <Link to="/" className="flex items-center gap-3 group">
-            <div className="h-10 w-10 rounded-2xl bg-[#14213D] dark:bg-[#FCA311] flex items-center justify-center shadow-lg shadow-black/10 dark:shadow-[#FCA311]/20 transition-transform group-hover:scale-105">
+            <div className="h-10 w-10 rounded-2xl bg-foreground flex items-center justify-center shadow-lg shadow-black/10 transition-transform group-hover:scale-105">
               <span className="text-white dark:text-black text-base font-extrabold tracking-tight">
                 {firstName[0]?.toUpperCase() ?? "L"}
               </span>
@@ -182,10 +182,10 @@ export function AppShell({ children }: { children?: ReactNode }) {
                     active ? "nav-pill-active shadow-sm" : "nav-pill-inactive"
                   )}
                 >
-                  <Icon className={cn("h-4.5 w-4.5 shrink-0 transition-colors", active ? "text-[#FCA311]" : "")} />
+                  <Icon className={cn("h-4.5 w-4.5 shrink-0 transition-colors", active ? "text-foreground font-extrabold" : "")} />
                   <span>{label}</span>
                   {active && (
-                    <div className="ml-auto w-1.5 h-1.5 rounded-full bg-[#FCA311]" />
+                    <div className="ml-auto w-1.5 h-1.5 rounded-full bg-foreground" />
                   )}
                 </Link>
               );
@@ -207,10 +207,10 @@ export function AppShell({ children }: { children?: ReactNode }) {
                     active ? "nav-pill-active shadow-sm" : "nav-pill-inactive"
                   )}
                 >
-                  <Icon className={cn("h-4.5 w-4.5 shrink-0 transition-colors", active ? "text-[#FCA311]" : "")} />
+                  <Icon className={cn("h-4.5 w-4.5 shrink-0 transition-colors", active ? "text-foreground font-extrabold" : "")} />
                   <span>{label}</span>
                   {active && (
-                    <div className="ml-auto w-1.5 h-1.5 rounded-full bg-[#FCA311]" />
+                    <div className="ml-auto w-1.5 h-1.5 rounded-full bg-foreground" />
                   )}
                 </Link>
               );
@@ -227,17 +227,17 @@ export function AppShell({ children }: { children?: ReactNode }) {
               pathname.startsWith("/settings") ? "nav-pill-active shadow-sm" : "nav-pill-inactive"
             )}
           >
-            <Settings className={cn("h-4.5 w-4.5 shrink-0", pathname.startsWith("/settings") ? "text-[#FCA311]" : "")} />
+            <Settings className={cn("h-4.5 w-4.5 shrink-0", pathname.startsWith("/settings") ? "text-foreground" : "")} />
             <span>Ajustes</span>
           </Link>
 
           {user && (
             <div className="mt-1 flex items-center gap-3 p-2.5 rounded-xl bg-card/60 border border-border/50">
-              <div className="w-8 h-8 rounded-full bg-[#FCA311]/20 ring-2 ring-[#FCA311]/40 flex items-center justify-center overflow-hidden shrink-0">
+              <div className="w-8 h-8 rounded-full bg-muted ring-2 ring-border flex items-center justify-center overflow-hidden shrink-0">
                 {user.user_metadata?.avatar_url ? (
                   <img src={user.user_metadata.avatar_url} className="w-full h-full object-cover" alt="" />
                 ) : (
-                  <span className="text-xs font-extrabold text-[#FCA311]">
+                  <span className="text-xs font-extrabold text-foreground">
                     {(user.email?.[0] ?? "U").toUpperCase()}
                   </span>
                 )}
@@ -270,11 +270,11 @@ export function AppShell({ children }: { children?: ReactNode }) {
               <Search className="h-4.5 w-4.5" />
             </button>
             {user && (
-              <div className="w-9 h-9 rounded-full bg-[#FCA311]/20 ring-2 ring-[#FCA311]/40 flex items-center justify-center overflow-hidden">
+              <div className="w-9 h-9 rounded-full bg-muted ring-2 ring-border flex items-center justify-center overflow-hidden">
                 {user.user_metadata?.avatar_url ? (
                   <img src={user.user_metadata.avatar_url} className="w-full h-full object-cover" alt="" />
                 ) : (
-                  <span className="text-[11px] font-extrabold text-[#FCA311]">
+                  <span className="text-[11px] font-extrabold text-foreground">
                     {(user.email?.[0] ?? "U").toUpperCase()}
                   </span>
                 )}
@@ -284,21 +284,21 @@ export function AppShell({ children }: { children?: ReactNode }) {
         </header>
 
         {/* Page body content */}
-        <div className="flex-1 min-w-0 overflow-y-auto pb-28 md:pb-0">
+        <div className="flex-1 min-h-0 overflow-y-auto pb-28 md:pb-0">
           {children ?? <Outlet />}
         </div>
       </main>
 
       {/* ── iOS 26 Floating Glass Pill Bar no Mobile ────────────────── */}
       <div className="md:hidden fixed bottom-3 inset-x-0 z-[100] px-4 pointer-events-none flex justify-center">
-        <nav className="pointer-events-auto w-full max-w-md bg-card/85 dark:bg-[#14213D]/90 backdrop-blur-2xl border border-white/20 dark:border-white/10 shadow-2xl rounded-full px-3 py-1.5 flex items-center justify-between">
+        <nav className="pointer-events-auto w-full max-w-md bg-card/85 dark:bg-card/90 backdrop-blur-2xl border border-white/20 dark:border-white/10 shadow-2xl rounded-full px-3 py-1.5 flex items-center justify-between">
           
           {/* Painel */}
           <Link
             to="/"
             className={cn(
               "flex flex-col items-center gap-0.5 px-2 py-1 transition-all active:scale-95",
-              pathname === "/" ? "text-[#FCA311] font-bold" : "text-muted-foreground"
+              pathname === "/" ? "text-foreground font-bold" : "text-muted-foreground"
             )}
           >
             <LayoutDashboard size={20} strokeWidth={pathname === "/" ? 2.5 : 1.75} />
@@ -310,7 +310,7 @@ export function AppShell({ children }: { children?: ReactNode }) {
             to="/habits"
             className={cn(
               "flex flex-col items-center gap-0.5 px-2 py-1 transition-all active:scale-95",
-              pathname.startsWith("/habits") ? "text-[#FCA311] font-bold" : "text-muted-foreground"
+              pathname.startsWith("/habits") ? "text-foreground font-bold" : "text-muted-foreground"
             )}
           >
             <Repeat size={20} strokeWidth={pathname.startsWith("/habits") ? 2.5 : 1.75} />
@@ -320,7 +320,7 @@ export function AppShell({ children }: { children?: ReactNode }) {
           {/* BOTÃO CENTRAL INTEGRADOR (+) DE AÇÃO RÁPIDA */}
           <button
             onClick={() => setFabOpen(true)}
-            className="w-12 h-12 rounded-full bg-[#FCA311] text-black shadow-lg shadow-[#FCA311]/40 flex items-center justify-center active:scale-90 transition-all mx-1 shrink-0"
+            className="w-12 h-12 rounded-full bg-foreground text-background shadow-lg shadow-black/20 flex items-center justify-center active:scale-90 transition-all mx-1 shrink-0"
             title="Nova Ação"
           >
             <Plus size={24} strokeWidth={3} />
@@ -331,7 +331,7 @@ export function AppShell({ children }: { children?: ReactNode }) {
             to="/finance"
             className={cn(
               "flex flex-col items-center gap-0.5 px-2 py-1 transition-all active:scale-95",
-              pathname.startsWith("/finance") ? "text-[#FCA311] font-bold" : "text-muted-foreground"
+              pathname.startsWith("/finance") ? "text-foreground font-bold" : "text-muted-foreground"
             )}
           >
             <Wallet size={20} strokeWidth={pathname.startsWith("/finance") ? 2.5 : 1.75} />
@@ -343,7 +343,7 @@ export function AppShell({ children }: { children?: ReactNode }) {
             to="/tasks"
             className={cn(
               "flex flex-col items-center gap-0.5 px-2 py-1 transition-all active:scale-95",
-              pathname.startsWith("/tasks") ? "text-[#FCA311] font-bold" : "text-muted-foreground"
+              pathname.startsWith("/tasks") ? "text-foreground font-bold" : "text-muted-foreground"
             )}
           >
             <CheckSquare size={20} strokeWidth={pathname.startsWith("/tasks") ? 2.5 : 1.75} />
