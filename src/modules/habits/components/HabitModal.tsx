@@ -124,7 +124,7 @@ export function HabitModal({ open, onClose, onSave, editingHabit }: HabitModalPr
                     onClick={() => setTargetPerWeek(num)}
                     className={`flex-1 py-3 rounded-xl border-2 font-black text-sm transition-all ${
                       targetPerWeek === num
-                        ? "border-foreground bg-foreground text-background shadow-md shadow-black/20
+                        ? "border-foreground bg-foreground text-background shadow-md shadow-black/20"
                         : "border-border/60 bg-muted/30 text-muted-foreground hover:bg-muted"
                     }`}
                   >
