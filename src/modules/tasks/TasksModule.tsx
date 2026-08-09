@@ -6,7 +6,7 @@ import { TaskCard } from "./components/TaskCard";
 import { TaskModal } from "./components/TaskModal";
 import { ProjectModal } from "./components/ProjectModal";
 import { AlertModal } from "@/modules/finance/components/AlertModal";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import {
   Plus,
   CheckSquare,
