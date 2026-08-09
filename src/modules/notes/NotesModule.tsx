@@ -12,7 +12,7 @@ import { BacklinksPanel } from "./components/BacklinksPanel";
 import { FolderModal } from "./components/FolderModal";
 import { AtomicNotesView } from "./components/AtomicNotesView";
 import { AlertModal } from "@/modules/finance/components/AlertModal";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import { BookOpen, Atom } from "lucide-react";
 import { cn } from "@/lib/utils";
 
