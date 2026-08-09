@@ -89,7 +89,7 @@ export function FinanceModule() {
 
   const rawForMonth = useMemo(() => {
     const mmStr = String(month + 1).padStart(2, '0');
-    return expanded.filter((l) => (l.data || "").slice(0, 7) === `${year}-${mmStr}`);
+    return expanded.filter((l) => (l.data || '').slice(0, 7) === `${year}-${mmStr}`);
   }, [expanded, year, month]);
 
   const summary = useMemo(() => calcSummary(rawForMonth), [rawForMonth]);
@@ -177,7 +177,6 @@ export function FinanceModule() {
   const totalExpense = rawForMonth.filter((t) => t.tipo === 'saida').reduce((s, t) => s + t.valor, 0);
   const netBalance = totalIncome - totalExpense;
 
-  return (
   return (
     <div className="w-full max-w-6xl mx-auto px-4 md:px-6 py-4 flex flex-col space-y-4 relative">
       {toastMessage && (
