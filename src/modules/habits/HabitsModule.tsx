@@ -7,7 +7,7 @@ import { HabitHeatmap } from "./components/HabitHeatmap";
 import { HabitCard } from "./components/HabitCard";
 import { HabitModal } from "./components/HabitModal";
 import { AlertModal } from "@/modules/finance/components/AlertModal";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import {
   Plus,
   Repeat,
