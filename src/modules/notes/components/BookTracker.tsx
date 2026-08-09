@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { BookOpen, Plus, Trash2, CheckCircle2, Bookmark, Quote, Edit3 } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 
 const generateId = () =>
