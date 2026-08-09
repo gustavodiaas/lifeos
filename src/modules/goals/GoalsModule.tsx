@@ -6,7 +6,7 @@ import type { Goal, GoalScope } from "@/lib/supabase";
 import { GoalCard } from "./components/GoalCard";
 import { GoalModal } from "./components/GoalModal";
 import { AlertModal } from "@/modules/finance/components/AlertModal";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import {
   Plus,
   Target,
