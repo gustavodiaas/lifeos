@@ -165,7 +165,7 @@ export function CustomDatePicker({ value, onChange, label, className }: CustomDa
           className={cn(
             "px-3 py-1.5 rounded-xl text-xs font-extrabold capitalize transition-all border",
             viewMode === "months"
-              ? "bg-[#FCA311] text-black border-[#FCA311] shadow-sm font-black"
+              ? "bg-foreground text-background border-foreground shadow-sm font-black"
               : "bg-muted/60 text-foreground border-border/50 hover:bg-muted"
           )}
         >
@@ -178,7 +178,7 @@ export function CustomDatePicker({ value, onChange, label, className }: CustomDa
           className={cn(
             "px-3 py-1.5 rounded-xl text-xs font-extrabold transition-all border",
             viewMode === "years"
-              ? "bg-[#FCA311] text-black border-[#FCA311] shadow-sm font-black"
+              ? "bg-foreground text-background border-foreground shadow-sm font-black"
               : "bg-muted/60 text-foreground border-border/50 hover:bg-muted"
           )}
         >
@@ -205,7 +205,7 @@ export function CustomDatePicker({ value, onChange, label, className }: CustomDa
               className={cn(
                 "py-3 rounded-2xl text-xs font-bold transition-all border",
                 viewMonth === idx
-                  ? "bg-[#FCA311] text-black border-[#FCA311] font-black shadow-md scale-105"
+                  ? "bg-foreground text-background border-foreground font-black shadow-md scale-105"
                   : "bg-muted/30 border-border/50 text-foreground hover:bg-muted"
               )}
             >
@@ -226,7 +226,7 @@ export function CustomDatePicker({ value, onChange, label, className }: CustomDa
               className={cn(
                 "py-2 rounded-xl text-xs font-bold transition-all border text-center",
                 viewYear === y
-                  ? "bg-[#FCA311] text-black border-[#FCA311] font-black shadow-md scale-105"
+                  ? "bg-foreground text-background border-foreground font-black shadow-md scale-105"
                   : "bg-muted/30 border-border/50 text-foreground hover:bg-muted"
               )}
             >
@@ -261,7 +261,7 @@ export function CustomDatePicker({ value, onChange, label, className }: CustomDa
                   className={cn(
                     "w-8 h-8 rounded-xl text-xs font-bold transition-all flex items-center justify-center mx-auto",
                     isSelected
-                      ? "bg-[#FCA311] text-black shadow-md shadow-[#FCA311]/30 font-black scale-105"
+                      ? "bg-foreground text-background shadow-md font-black scale-105"
                       : "hover:bg-muted text-foreground"
                   )}
                 >
@@ -278,7 +278,7 @@ export function CustomDatePicker({ value, onChange, label, className }: CustomDa
         <button
           type="button"
           onClick={handleSelectToday}
-          className="text-xs font-bold text-[#FCA311] hover:underline px-2 py-1 rounded-lg hover:bg-amber-500/10 transition-colors"
+          className="text-xs font-bold text-muted-foreground hover:text-foreground hover:underline px-2 py-1 rounded-lg hover:bg-muted transition-colors"
         >
           Ir para Hoje
         </button>
@@ -291,7 +291,7 @@ export function CustomDatePicker({ value, onChange, label, className }: CustomDa
     <div className={cn("relative w-full select-none", className)}>
       {label && (
         <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
-          <CalendarIcon size={13} className="text-[#FCA311]" />
+          <CalendarIcon size={13} className="text-muted-foreground" />
           {label}
         </label>
       )}
@@ -306,7 +306,7 @@ export function CustomDatePicker({ value, onChange, label, className }: CustomDa
         className="w-full input-ios py-3 px-4 flex items-center justify-between gap-2 text-left font-bold text-sm transition-all"
       >
         <span className="flex items-center gap-2 truncate">
-          <CalendarIcon size={16} className="text-[#FCA311] shrink-0" />
+          <CalendarIcon size={16} className="text-muted-foreground shrink-0" />
           <span className="text-foreground capitalize truncate">{displayFormatted}</span>
         </span>
       </button>
