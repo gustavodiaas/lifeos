@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Play, Pause, RotateCcw, Clock, Sparkles, CheckCircle2, Volume2, VolumeX } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import { useAuthContext } from "@/context/AuthContext";
 import { useMetrics } from "@/hooks/useMetrics";
 import { todayIso } from "@/lib/date";
