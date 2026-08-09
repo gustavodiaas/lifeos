@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AppShell } from "@/components/layout/AppShell";
 import { PageBody, PageHeader } from "@/components/layout/PageHeader";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import { useRef, useEffect, useState } from "react";
 import { useAuthContext } from "@/context/AuthContext";
 import { supabase } from "@/lib/supabase";
@@ -711,10 +711,10 @@ function SettingsPage() {
           <div className="text-center py-4 space-y-1">
             <p className="text-xs font-bold text-muted-foreground flex items-center justify-center gap-1.5">
               <Sparkles size={14} className="text-muted-foreground" />
-              LifeOS v0.4 Pro — Sistema Operativo Pessoal
+              LifeOS
             </p>
             <p className="text-[11px] text-muted-foreground/70">
-              Desenvolvido com TanStack Router, Supabase & Tailwind CSS.
+              Desenvolvido por Gustavo O. Dias da Silva
             </p>
           </div>
 
