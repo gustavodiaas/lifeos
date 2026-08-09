@@ -93,14 +93,14 @@ export function AppleFinanceView({
       {/* ── Coluna Esquerda: Cartão Apple Wallet & Métricas Rápida (Desktop) ── */}
       <div className="md:col-span-5 lg:col-span-4 space-y-4">
         {/* Cartão de Saldo Apple Wallet */}
-        <div className="glass-card p-5 bg-foreground text-white shadow-2xl relative overflow-hidden border border-white/15 rounded-3xl flex flex-col justify-between min-h-[200px]">
+        <div className="glass-card p-5 bg-[#212121] dark:bg-[#1A1A1A] text-white shadow-2xl relative overflow-hidden border border-white/10 rounded-3xl flex flex-col justify-between min-h-[200px]">
           {/* Sheen Decorativo */}
           <div className="absolute -top-12 -right-12 w-40 h-40 bg-foreground/10 rounded-full blur-2xl pointer-events-none" />
 
           <div className="flex items-center justify-between gap-3 relative z-10">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-xl bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/10">
-                <Wallet size={16} className="text-foreground" />
+                <Wallet size={16} className="text-white" />
               </div>
               <span className="text-[10px] font-extrabold text-white/70 uppercase tracking-widest">
                 Balanço do Mês
@@ -109,7 +109,7 @@ export function AppleFinanceView({
 
             <button
               onClick={onNewTransaction}
-              className="px-3 py-1.5 rounded-xl text-xs font-extrabold text-black bg-foreground hover:bg-[currentColor] shadow-lg active:scale-95 transition-all flex items-center gap-1 shrink-0"
+              className="px-3 py-1.5 rounded-xl text-xs font-extrabold text-[#212121] bg-white hover:bg-[#E0E0E0] shadow-lg active:scale-95 transition-all flex items-center gap-1 shrink-0"
             >
               <Plus size={14} strokeWidth={3} />
               <span>Novo</span>
@@ -128,7 +128,7 @@ export function AppleFinanceView({
           {/* Resumo Receitas vs Despesas */}
           <div className="grid grid-cols-2 gap-3 pt-3 border-t border-white/10 relative z-10">
             <div className="flex items-center gap-2 bg-white/5 p-2 rounded-2xl border border-white/5">
-              <div className="w-7 h-7 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+              <div className="w-7 h-7 rounded-xl bg-white/10 text-white flex items-center justify-center shrink-0">
                 <ArrowUpRight size={15} strokeWidth={2.5} />
               </div>
               <div className="min-w-0">
@@ -138,7 +138,7 @@ export function AppleFinanceView({
             </div>
 
             <div className="flex items-center gap-2 bg-white/5 p-2 rounded-2xl border border-white/5">
-              <div className="w-7 h-7 rounded-xl bg-red-500/20 text-red-400 flex items-center justify-center shrink-0">
+              <div className="w-7 h-7 rounded-xl bg-white/10 text-white flex items-center justify-center shrink-0">
                 <ArrowDownRight size={15} strokeWidth={2.5} />
               </div>
               <div className="min-w-0">
