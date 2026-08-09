@@ -9,6 +9,7 @@ export type HabitFrequency = "daily" | "weekly";
 export type TaskPriority = "low" | "medium" | "high";
 export type TaskStatus = "todo" | "doing" | "done";
 export type GoalScope = "short" | "medium" | "long";
+export type BookStatus = "reading" | "want" | "completed";
 
 export interface ChecklistItem {
   id: string;
@@ -152,6 +153,26 @@ export interface Metric {
   value: number;
   unit: string;
   date: string;
+  createdAt: string;
+  created_at?: string;
+  updatedAt: string;
+  updated_at?: string;
+}
+
+export interface Book {
+  id: string;
+  user_id?: string;
+  title: string;
+  author: string;
+  cover?: string;
+  totalPages: number;
+  total_pages?: number;
+  currentPage: number;
+  current_page?: number;
+  status: BookStatus;
+  isbn?: string;
+  publisher?: string;
+  year?: string;
   createdAt: string;
   created_at?: string;
   updatedAt: string;
