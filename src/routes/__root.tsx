@@ -79,14 +79,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
+      { name: "viewport", content: "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" },
       { title: "LifeOS — O teu sistema operativo pessoal" },
       {
         name: "description",
         content:
           "O LifeOS centraliza o teu conhecimento, hábitos, tarefas, metas e finanças num único espaço de trabalho local e focado.",
       },
-      { name: "theme-color", content: "#14213D" },
+      { name: "theme-color", content: "#212121" },
       { name: "apple-mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
       { name: "apple-mobile-web-app-title", content: "LifeOS" },
