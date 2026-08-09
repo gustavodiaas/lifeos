@@ -3,10 +3,11 @@ import type { Note } from "@/lib/supabase";
 import {
   Plus, Search, Atom, GitBranch, LayoutGrid,
   Sprout, Leaf, TreePine, Tag, X, Edit3, Trash2,
-  Save, Filter,
+  Save, Check, ChevronDown,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AlertModal } from "@/modules/finance/components/AlertModal";
+import { CustomSelect } from "@/components/ui/CustomSelect";
 
 // ── Tipos ─────────────────────────────────────────────────────────────────
 type Maturity = "semente" | "crescimento" | "evergreen";
@@ -18,7 +19,6 @@ interface AtomicNote extends Note {
   cleanContent: string;
 }
 
-// Metadados armazenados nas tags: "domain:lean", "maturity:evergreen"
 function parseTags(tags: string[] = []): { domain: string; maturity: Maturity; userTags: string[] } {
   let domain = "";
   let maturity: Maturity = "semente";
@@ -44,23 +44,93 @@ function toAtomic(note: Note): AtomicNote {
   return { ...note, domain, maturity, cleanContent: note.content, tags: userTags };
 }
 
-// ── Domínios predefinidos ─────────────────────────────────────────────────
-const DOMAINS = [
-  "Lean", "Desenvolvimento", "Finanças", "Gestão",
-  "Sistemas", "Aprendizado", "Produtividade", "Outros",
-];
-
-// ── Maturidade — visual monocromático com densidade de preenchimento ──────
 const MATURITY: Record<Maturity, {
   label: string;
   icon: React.FC<any>;
-  pill: string;       // classe da pílula no card
-  border: string;     // borda do card
+  pill: string;
+  border: string;
 }> = {
-  semente:     { label: "Semente",     icon: Sprout,   pill: "bg-muted text-muted-foreground border-border",          border: "border-border" },
-  crescimento: { label: "Crescimento", icon: Leaf,     pill: "bg-foreground/10 text-foreground border-foreground/20", border: "border-foreground/30" },
-  evergreen:   { label: "Evergreen",   icon: TreePine, pill: "bg-foreground text-background border-foreground",        border: "border-foreground" },
+  semente:     { label: "Semente",     icon: Sprout,   pill: "bg-muted text-muted-foreground border-border",           border: "border-border" },
+  crescimento: { label: "Crescimento", icon: Leaf,     pill: "bg-foreground/10 text-foreground border-foreground/20",  border: "border-foreground/30" },
+  evergreen:   { label: "Evergreen",   icon: TreePine, pill: "bg-foreground text-background border-foreground",         border: "border-foreground" },
 };
+
+// ── Combobox: campo livre + sugestões das notas existentes ────────────────
+function DomainCombobox({
+  value,
+  onChange,
+  suggestions,
+  placeholder = "Domínio...",
+  className,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  suggestions: string[];
+  placeholder?: string;
+  className?: string;
+}) {
+  const [open, setOpen]   = useState(false);
+  const [input, setInput] = useState(value);
+  const wrapRef           = useRef<HTMLDivElement>(null);
+
+  // Sync input when value changes externally
+  useEffect(() => { setInput(value); }, [value]);
+
+  // Close on outside click
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: MouseEvent) => {
+      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [open]);
+
+  const filtered = suggestions.filter(
+    (s) => s.toLowerCase().includes(input.toLowerCase()) && s !== input
+  );
+
+  const commit = (val: string) => {
+    setInput(val);
+    onChange(val);
+    setOpen(false);
+  };
+
+  return (
+    <div ref={wrapRef} className={cn("relative", className)}>
+      <div className="relative">
+        <input
+          type="text"
+          value={input}
+          onChange={(e) => { setInput(e.target.value); onChange(e.target.value); setOpen(true); }}
+          onFocus={() => setOpen(true)}
+          placeholder={placeholder}
+          className="input-ios text-xs w-full pr-8"
+        />
+        <ChevronDown
+          size={14}
+          className={cn("absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition-transform pointer-events-none", open && "rotate-180")}
+        />
+      </div>
+
+      {open && filtered.length > 0 && (
+        <div className="absolute top-full left-0 right-0 mt-1 z-[200] glass-card border border-border rounded-xl shadow-xl overflow-hidden">
+          {filtered.map((s) => (
+            <button
+              key={s}
+              type="button"
+              onMouseDown={(e) => { e.preventDefault(); commit(s); }}
+              className="w-full px-3 py-2 text-xs font-bold text-left text-foreground hover:bg-muted transition-colors flex items-center gap-2"
+            >
+              <Tag size={11} className="text-muted-foreground shrink-0" />
+              {s}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 // ── Props ─────────────────────────────────────────────────────────────────
 interface AtomicNotesViewProps {
@@ -71,18 +141,19 @@ interface AtomicNotesViewProps {
 }
 
 export function AtomicNotesView({ notes, onSave, onDelete, onCreateNote }: AtomicNotesViewProps) {
-  const [viewMode, setViewMode]               = useState<ViewMode>("grid");
-  const [search, setSearch]                   = useState("");
-  const [filterDomain, setFilterDomain]       = useState("");
-  const [filterMaturity, setFilterMaturity]   = useState<Maturity | "">("");
-  const [editingNote, setEditingNote]         = useState<AtomicNote | null>(null);
-  const [deleteId, setDeleteId]               = useState<string | null>(null);
+  const [viewMode, setViewMode]             = useState<ViewMode>("grid");
+  const [search, setSearch]                 = useState("");
+  const [filterDomain, setFilterDomain]     = useState("");
+  const [filterMaturity, setFilterMaturity] = useState<Maturity | "">("");
+  const [editingNote, setEditingNote]       = useState<AtomicNote | null>(null);
+  const [deleteId, setDeleteId]             = useState<string | null>(null);
 
   const atomicNotes = useMemo(() => notes.map(toAtomic), [notes]);
 
+  // Domínios que já existem nas notas — base para sugestões
   const existingDomains = useMemo(() => {
     const s = new Set(atomicNotes.map((n) => n.domain).filter(Boolean));
-    return Array.from(s);
+    return Array.from(s).sort();
   }, [atomicNotes]);
 
   const filtered = useMemo(() => atomicNotes.filter((n) => {
@@ -94,7 +165,7 @@ export function AtomicNotesView({ notes, onSave, onDelete, onCreateNote }: Atomi
   }), [atomicNotes, search, filterDomain, filterMaturity]);
 
   const handleCreate = async () => {
-    const tags = buildTags([], filterDomain || "Outros", filterMaturity || "semente");
+    const tags = buildTags([], filterDomain || "", filterMaturity || "semente");
     const created = await onCreateNote({ title: "Nova Nota Atômica", content: "", tags });
     if (created) setEditingNote(toAtomic(created));
   };
@@ -105,18 +176,31 @@ export function AtomicNotesView({ notes, onSave, onDelete, onCreateNote }: Atomi
     setEditingNote(null);
   };
 
-  // Contadores por maturidade
   const counts = useMemo(() => {
     const c: Record<Maturity, number> = { semente: 0, crescimento: 0, evergreen: 0 };
     atomicNotes.forEach((n) => c[n.maturity]++);
     return c;
   }, [atomicNotes]);
 
+  // Opções de domínio para o filtro — só os que existem nas notas
+  const domainFilterOptions = useMemo(() => [
+    { value: "", label: "Todos os domínios" },
+    ...existingDomains.map((d) => ({ value: d, label: d })),
+  ], [existingDomains]);
+
+  const maturityFilterOptions = [
+    { value: "", label: "Todas as etapas" },
+    { value: "semente",     label: "Semente" },
+    { value: "crescimento", label: "Crescimento" },
+    { value: "evergreen",   label: "Evergreen" },
+  ];
+
   return (
     <div className="space-y-4 fade-in">
 
       {/* ── Toolbar ──────────────────────────────────────────────────── */}
       <div className="glass-card p-3 rounded-2xl border border-border flex flex-wrap items-center gap-2">
+        {/* Busca */}
         <div className="relative flex-1 min-w-[140px]">
           <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
           <input
@@ -128,18 +212,19 @@ export function AtomicNotesView({ notes, onSave, onDelete, onCreateNote }: Atomi
           />
         </div>
 
-        <select
-          value={filterDomain}
-          onChange={(e) => setFilterDomain(e.target.value)}
-          className="input-ios py-1.5 text-xs min-w-[110px] flex-none"
-        >
-          <option value="">Todos domínios</option>
-          {[...new Set([...existingDomains, ...DOMAINS])].map((d) => (
-            <option key={d} value={d}>{d}</option>
-          ))}
-        </select>
+        {/* Filtro domínio — CustomSelect, só domínios existentes */}
+        {existingDomains.length > 0 && (
+          <div className="min-w-[140px] flex-none">
+            <CustomSelect
+              options={domainFilterOptions}
+              value={filterDomain}
+              onChange={setFilterDomain}
+              placeholder="Todos os domínios"
+            />
+          </div>
+        )}
 
-        {/* Toggle view */}
+        {/* Toggle grid/grafo */}
         <div className="flex p-0.5 bg-muted rounded-xl border border-border shrink-0">
           <button
             onClick={() => setViewMode("grid")}
@@ -188,10 +273,10 @@ export function AtomicNotesView({ notes, onSave, onDelete, onCreateNote }: Atomi
         : <AtomicGraph notes={atomicNotes} filtered={filtered} onEdit={setEditingNote} />
       }
 
-      {/* ── Modal de edição ──────────────────────────────────────────── */}
       {editingNote && (
         <AtomicEditModal
           note={editingNote}
+          allDomains={existingDomains}
           onSave={handleSaveEdit}
           onClose={() => setEditingNote(null)}
         />
@@ -255,8 +340,8 @@ function AtomicCard({ note, onEdit, onDelete }: {
   onEdit: (n: AtomicNote) => void;
   onDelete: (id: string) => void;
 }) {
-  const meta = MATURITY[note.maturity];
-  const Icon = meta.icon;
+  const meta    = MATURITY[note.maturity];
+  const Icon    = meta.icon;
   const preview = note.cleanContent.replace(/#+\s/g, "").slice(0, 110);
 
   return (
@@ -284,7 +369,6 @@ function AtomicCard({ note, onEdit, onDelete }: {
       </div>
 
       <h3 className="text-sm font-extrabold text-foreground leading-tight line-clamp-2">{note.title}</h3>
-
       {preview && <p className="text-[11px] text-muted-foreground leading-relaxed line-clamp-3">{preview}</p>}
 
       {note.tags && note.tags.length > 0 && (
@@ -306,16 +390,14 @@ function AtomicGraph({ notes, filtered, onEdit }: {
   filtered: AtomicNote[];
   onEdit: (n: AtomicNote) => void;
 }) {
-  const wrapRef = useRef<HTMLDivElement>(null);
-  const [dim, setDim]         = useState({ w: 800, h: 480 });
-  const [hoverId, setHoverId] = useState<string | null>(null);
-  const [dragging, setDragging] = useState<string | null>(null);
-  const [pos, setPos]         = useState<Record<string, { x: number; y: number }>>({});
-  const offset                = useRef({ x: 0, y: 0 });
+  const wrapRef                   = useRef<HTMLDivElement>(null);
+  const [dim, setDim]             = useState({ w: 800, h: 480 });
+  const [hoverId, setHoverId]     = useState<string | null>(null);
+  const [dragging, setDragging]   = useState<string | null>(null);
+  const [pos, setPos]             = useState<Record<string, { x: number; y: number }>>({});
+  const offset                    = useRef({ x: 0, y: 0 });
+  const filteredIds               = useMemo(() => new Set(filtered.map((n) => n.id)), [filtered]);
 
-  const filteredIds = useMemo(() => new Set(filtered.map((n) => n.id)), [filtered]);
-
-  // Inicializa posições em clusters por domínio
   useEffect(() => {
     if (!notes.length) return;
     const { w, h } = dim;
@@ -340,9 +422,7 @@ function AtomicGraph({ notes, filtered, onEdit }: {
 
   useEffect(() => {
     if (!wrapRef.current) return;
-    const ro = new ResizeObserver(([e]) => {
-      setDim({ w: Math.max(e.contentRect.width, 300), h: 480 });
-    });
+    const ro = new ResizeObserver(([e]) => setDim({ w: Math.max(e.contentRect.width, 300), h: 480 }));
     ro.observe(wrapRef.current);
     return () => ro.disconnect();
   }, []);
@@ -376,13 +456,13 @@ function AtomicGraph({ notes, filtered, onEdit }: {
     }));
   }, [dragging, dim]);
   const onMouseUp = useCallback(() => setDragging(null), []);
+
   useEffect(() => {
     window.addEventListener("mousemove", onMouseMove);
     window.addEventListener("mouseup", onMouseUp);
     return () => { window.removeEventListener("mousemove", onMouseMove); window.removeEventListener("mouseup", onMouseUp); };
   }, [onMouseMove, onMouseUp]);
 
-  // Raio do nó varia com maturidade (visual hierárquico)
   const nodeRadius: Record<Maturity, number> = { semente: 5, crescimento: 7, evergreen: 10 };
 
   if (!notes.length) return (
@@ -394,12 +474,11 @@ function AtomicGraph({ notes, filtered, onEdit }: {
 
   return (
     <div ref={wrapRef} className="glass-card rounded-2xl border border-border overflow-hidden relative" style={{ height: 480 }}>
-      {/* Legenda */}
       <div className="absolute top-3 left-3 right-3 flex items-center justify-between z-10 pointer-events-none">
         <span className="text-[10px] font-bold text-muted-foreground bg-card/80 px-2 py-1 rounded-lg backdrop-blur-sm">
-          Grafo de conexões · arraste os nós · duplo-clique para editar
+          Arraste os nós · duplo-clique para editar
         </span>
-        <div className="flex gap-2 bg-card/80 px-2 py-1 rounded-lg backdrop-blur-sm">
+        <div className="flex gap-3 bg-card/80 px-2 py-1 rounded-lg backdrop-blur-sm">
           {(["semente", "crescimento", "evergreen"] as Maturity[]).map((m) => {
             const Icon = MATURITY[m].icon;
             return (
@@ -412,19 +491,14 @@ function AtomicGraph({ notes, filtered, onEdit }: {
       </div>
 
       <svg width="100%" height="100%" className="absolute inset-0" style={{ cursor: dragging ? "grabbing" : "default" }}>
-        {/* Arestas */}
         {edges.map(({ from, to }, i) => {
           const a = pos[from]; const b = pos[to]; if (!a || !b) return null;
           const hi = hoverId === from || hoverId === to;
-          return (
-            <line key={i} x1={a.x} y1={a.y} x2={b.x} y2={b.y}
-              stroke="currentColor" className="text-foreground"
-              strokeOpacity={hi ? 0.7 : 0.12} strokeWidth={hi ? 1.5 : 1}
-            />
-          );
+          return <line key={i} x1={a.x} y1={a.y} x2={b.x} y2={b.y}
+            stroke="currentColor" className="text-foreground"
+            strokeOpacity={hi ? 0.7 : 0.12} strokeWidth={hi ? 1.5 : 1} />;
         })}
 
-        {/* Nós */}
         {notes.map((note) => {
           const p = pos[note.id]; if (!p) return null;
           const isFiltered = filteredIds.has(note.id);
@@ -434,14 +508,10 @@ function AtomicGraph({ notes, filtered, onEdit }: {
           return (
             <g key={note.id}>
               {isHov && <circle cx={p.x} cy={p.y} r={r + 8} fill="currentColor" className="text-foreground" opacity={0.06} />}
-              <circle
-                cx={p.x} cy={p.y} r={isHov ? r + 2 : r}
-                fill={filled ? "currentColor" : "none"}
-                className="text-foreground"
-                stroke="currentColor"
-                strokeWidth={filled ? 0 : note.maturity === "crescimento" ? 2 : 1}
-                opacity={isFiltered ? 1 : 0.2}
-                style={{ cursor: "grab" }}
+              <circle cx={p.x} cy={p.y} r={isHov ? r + 2 : r}
+                fill={filled ? "currentColor" : "none"} className="text-foreground"
+                stroke="currentColor" strokeWidth={filled ? 0 : note.maturity === "crescimento" ? 2 : 1}
+                opacity={isFiltered ? 1 : 0.2} style={{ cursor: "grab" }}
                 onMouseDown={(e) => onMouseDown(e, note.id)}
                 onMouseEnter={() => setHoverId(note.id)}
                 onMouseLeave={() => setHoverId(null)}
@@ -463,14 +533,15 @@ function AtomicGraph({ notes, filtered, onEdit }: {
 }
 
 // ── Modal de Edição ───────────────────────────────────────────────────────
-function AtomicEditModal({ note, onSave, onClose }: {
+function AtomicEditModal({ note, allDomains, onSave, onClose }: {
   note: AtomicNote;
+  allDomains: string[];
   onSave: (draft: AtomicNote, userTags: string[]) => Promise<void>;
   onClose: () => void;
 }) {
-  const [draft, setDraft]       = useState<AtomicNote>({ ...note });
+  const [draft, setDraft]         = useState<AtomicNote>({ ...note });
   const [tagsInput, setTagsInput] = useState((note.tags || []).join(", "));
-  const [saving, setSaving]     = useState(false);
+  const [saving, setSaving]       = useState(false);
 
   const handleSave = async () => {
     setSaving(true);
@@ -479,12 +550,17 @@ function AtomicEditModal({ note, onSave, onClose }: {
     setSaving(false);
   };
 
+  const maturityOptions = [
+    { value: "semente",     label: "Semente",     icon: <Sprout size={13} /> },
+    { value: "crescimento", label: "Crescimento", icon: <Leaf size={13} /> },
+    { value: "evergreen",   label: "Evergreen",   icon: <TreePine size={13} /> },
+  ];
+
   return (
     <div className="fixed inset-0 z-[150] flex items-end sm:items-center justify-center p-0 sm:p-4">
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
       <div className="relative bg-card w-full sm:max-w-lg rounded-t-[28px] sm:rounded-[28px] shadow-2xl border border-border flex flex-col max-h-[92dvh] z-10">
 
-        {/* Header */}
         <div className="px-5 py-4 border-b border-border flex items-center justify-between shrink-0">
           <div className="flex items-center gap-2">
             <Atom size={15} className="text-muted-foreground" />
@@ -495,7 +571,6 @@ function AtomicEditModal({ note, onSave, onClose }: {
           </button>
         </div>
 
-        {/* Form */}
         <div className="flex-1 overflow-y-auto p-5 space-y-4">
           {/* Título */}
           <div>
@@ -509,29 +584,20 @@ function AtomicEditModal({ note, onSave, onClose }: {
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">Domínio</label>
-              <select value={draft.domain} onChange={(e) => setDraft((d) => ({ ...d, domain: e.target.value }))}
-                className="input-ios text-xs w-full">
-                <option value="">Sem domínio</option>
-                {DOMAINS.map((d) => <option key={d} value={d}>{d}</option>)}
-              </select>
+              <DomainCombobox
+                value={draft.domain}
+                onChange={(v) => setDraft((d) => ({ ...d, domain: v }))}
+                suggestions={allDomains}
+                placeholder="Ex: Lean, Dev..."
+              />
             </div>
             <div>
               <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">Maturidade</label>
-              <div className="flex gap-1">
-                {(["semente", "crescimento", "evergreen"] as Maturity[]).map((m) => {
-                  const meta = MATURITY[m]; const Icon = meta.icon;
-                  return (
-                    <button key={m} type="button" title={meta.label}
-                      onClick={() => setDraft((d) => ({ ...d, maturity: m }))}
-                      className={cn(
-                        "flex-1 flex items-center justify-center py-2 rounded-xl border-2 transition-all",
-                        draft.maturity === m ? meta.pill : "border-border text-muted-foreground bg-muted/30"
-                      )}
-                    ><Icon size={14} /></button>
-                  );
-                })}
-              </div>
-              <p className="text-[10px] text-muted-foreground mt-1 text-center">{MATURITY[draft.maturity].label}</p>
+              <CustomSelect
+                options={maturityOptions}
+                value={draft.maturity}
+                onChange={(v) => setDraft((d) => ({ ...d, maturity: v as Maturity }))}
+              />
             </div>
           </div>
 
@@ -554,7 +620,6 @@ function AtomicEditModal({ note, onSave, onClose }: {
           </div>
         </div>
 
-        {/* Footer */}
         <div className="px-5 py-4 border-t border-border flex items-center justify-end gap-2 shrink-0">
           <button onClick={onClose}
             className="px-4 py-2 rounded-xl bg-muted text-muted-foreground text-xs font-bold hover:text-foreground transition-colors">
