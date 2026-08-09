@@ -10,7 +10,7 @@ import { todayIso, monthIso, formatBRL } from "@/lib/date";
 import { ActivityRing } from "./components/ActivityRing";
 import { MetricLoggerModal } from "./components/MetricLoggerModal";
 import { MetricTrendChart } from "./components/WeightTrendChart";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import {
   Repeat, CheckSquare, Wallet, Target, NotebookPen,
   Plus, Award, TrendingUp, TrendingDown,
