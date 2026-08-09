@@ -296,7 +296,7 @@ function SettingsPage() {
           {/* ── 1. Perfil do Usuário & Dados Pessoais ──────────────────── */}
           <section className="glass-card p-6 md:p-8 space-y-6">
             <div className="flex items-center gap-3 border-b border-border/60 pb-4">
-              <div className="w-10 h-10 rounded-2xl bg-[#FCA311]/15 text-[#FCA311] flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 rounded-2xl bg-muted text-muted-foreground flex items-center justify-center shrink-0">
                 <User size={20} />
               </div>
               <div>
@@ -311,14 +311,14 @@ function SettingsPage() {
               {/* Avatar + Status */}
               <div className="flex items-center gap-5">
                 <div className="relative group">
-                  <div className="w-20 h-20 rounded-full bg-muted border-2 border-[#FCA311]/40 overflow-hidden flex items-center justify-center shadow-md">
+                  <div className="w-20 h-20 rounded-full bg-muted border-2 border-border overflow-hidden flex items-center justify-center shadow-md">
                     {avatarUrl ? (
                       <img src={avatarUrl} className="w-full h-full object-cover" alt="Avatar" />
                     ) : (
                       <User size={36} className="text-muted-foreground" />
                     )}
                   </div>
-                  <label className="absolute bottom-0 right-0 w-8 h-8 bg-[#FCA311] hover:bg-[#e8920a] border-2 border-background rounded-full flex items-center justify-center cursor-pointer shadow-md transition-transform active:scale-95">
+                  <label className="absolute bottom-0 right-0 w-8 h-8 bg-foreground hover:opacity-80 border-2 border-background rounded-full flex items-center justify-center cursor-pointer shadow-md transition-transform active:scale-95">
                     {uploadingAvatar ? (
                       <Loader2 size={14} className="text-black animate-spin" />
                     ) : (
@@ -337,7 +337,7 @@ function SettingsPage() {
                 <div>
                   <h3 className="text-base font-extrabold text-foreground">{username || "Usuário LifeOS"}</h3>
                   <div className="flex items-center gap-1.5 mt-0.5">
-                    <CheckCircle2 size={13} className="text-emerald-500" />
+                    <CheckCircle2 size={13} className="text-muted-foreground" />
                     <span className="text-xs text-muted-foreground font-medium">{user?.email}</span>
                   </div>
                   <span className="badge-ios mt-2 inline-block">Conta Ativa</span>
@@ -361,7 +361,7 @@ function SettingsPage() {
 
                 <div>
                   <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
-                    <Banknote size={14} className="text-emerald-500" />
+                    <Banknote size={14} className="text-muted-foreground" />
                     Renda Mensal (Referência para Finanças)
                   </label>
                   <input
@@ -384,7 +384,7 @@ function SettingsPage() {
 
                 <div>
                   <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
-                    <Briefcase size={14} className="text-purple-500" />
+                    <Briefcase size={14} className="text-muted-foreground" />
                     Profissão / Área de Atuação
                   </label>
                   <input
@@ -419,7 +419,7 @@ function SettingsPage() {
           {/* ── 2. Aparência & Tema (Apple Segmented Switcher) ──────────── */}
           <section className="glass-card p-6 md:p-8 space-y-4">
             <div className="flex items-center gap-3 border-b border-border/60 pb-4">
-              <div className="w-10 h-10 rounded-2xl bg-blue-500/15 text-blue-500 flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 rounded-2xl bg-muted text-muted-foreground flex items-center justify-center shrink-0">
                 <Sun size={20} />
               </div>
               <div>
@@ -436,11 +436,11 @@ function SettingsPage() {
                 onClick={() => handleThemeChange("light")}
                 className={`p-4 rounded-2xl border-2 flex flex-col items-center gap-2.5 transition-all ios-spring ${
                   theme === "light"
-                    ? "border-[#FCA311] bg-[#FCA311]/10 text-foreground font-bold shadow-sm"
+                    ? "border-foreground bg-foreground/10 text-foreground font-bold shadow-sm"
                     : "border-border/60 bg-muted/30 text-muted-foreground hover:bg-muted"
                 }`}
               >
-                <Sun size={24} className={theme === "light" ? "text-[#FCA311]" : ""} />
+                <Sun size={24} className={theme === "light" ? "text-foreground" : "text-muted-foreground"} />
                 <span className="text-xs">Claro</span>
               </button>
 
@@ -449,11 +449,11 @@ function SettingsPage() {
                 onClick={() => handleThemeChange("dark")}
                 className={`p-4 rounded-2xl border-2 flex flex-col items-center gap-2.5 transition-all ios-spring ${
                   theme === "dark"
-                    ? "border-[#FCA311] bg-[#FCA311]/10 text-foreground font-bold shadow-sm"
+                    ? "border-foreground bg-foreground/10 text-foreground font-bold shadow-sm"
                     : "border-border/60 bg-muted/30 text-muted-foreground hover:bg-muted"
                 }`}
               >
-                <Moon size={24} className={theme === "dark" ? "text-[#FCA311]" : ""} />
+                <Moon size={24} className={theme === "dark" ? "text-foreground" : "text-muted-foreground"} />
                 <span className="text-xs">Escuro</span>
               </button>
 
@@ -462,11 +462,11 @@ function SettingsPage() {
                 onClick={() => handleThemeChange("system")}
                 className={`p-4 rounded-2xl border-2 flex flex-col items-center gap-2.5 transition-all ios-spring ${
                   theme === "system"
-                    ? "border-[#FCA311] bg-[#FCA311]/10 text-foreground font-bold shadow-sm"
+                    ? "border-foreground bg-foreground/10 text-foreground font-bold shadow-sm"
                     : "border-border/60 bg-muted/30 text-muted-foreground hover:bg-muted"
                 }`}
               >
-                <Monitor size={24} className={theme === "system" ? "text-[#FCA311]" : ""} />
+                <Monitor size={24} className={theme === "system" ? "text-foreground" : "text-muted-foreground"} />
                 <span className="text-xs">Sistema</span>
               </button>
             </div>
@@ -475,7 +475,7 @@ function SettingsPage() {
           <section className="glass-card p-6 md:p-8 space-y-6">
             <div className="flex items-center justify-between border-b border-border/60 pb-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-[#FCA311]/15 text-[#FCA311] flex items-center justify-center shrink-0">
+                <div className="w-10 h-10 rounded-2xl bg-muted text-muted-foreground flex items-center justify-center shrink-0">
                   <Sparkles size={20} />
                 </div>
                 <div>
@@ -505,7 +505,7 @@ function SettingsPage() {
                 }}
                 className={`px-4 py-2 rounded-xl text-xs font-black uppercase transition-all ${
                   notifSettings.enabled
-                    ? "bg-emerald-500 text-white shadow-sm"
+                    ? "bg-foreground text-background shadow-sm"
                     : "bg-muted text-muted-foreground hover:text-foreground"
                 }`}
               >
@@ -570,7 +570,7 @@ function SettingsPage() {
           {/* ── 3. Segurança & Redefinição de Senha ───────────────────── */}
           <section className="glass-card p-6 md:p-8 space-y-6">
             <div className="flex items-center gap-3 border-b border-border/60 pb-4">
-              <div className="w-10 h-10 rounded-2xl bg-purple-500/15 text-purple-500 flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 rounded-2xl bg-muted text-muted-foreground flex items-center justify-center shrink-0">
                 <Shield size={20} />
               </div>
               <div>
@@ -647,7 +647,7 @@ function SettingsPage() {
           {/* ── 4. Dados Locais & Cópia de Segurança ──────────────────── */}
           <section className="glass-card p-6 md:p-8 space-y-4">
             <div className="flex items-center gap-3 border-b border-border/60 pb-4">
-              <div className="w-10 h-10 rounded-2xl bg-emerald-500/15 text-emerald-500 flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 rounded-2xl bg-muted text-muted-foreground flex items-center justify-center shrink-0">
                 <Download size={20} />
               </div>
               <div>
@@ -664,7 +664,7 @@ function SettingsPage() {
                 onClick={handleExport}
                 className="px-5 py-3 rounded-xl bg-muted border border-border font-bold text-xs text-foreground hover:bg-secondary transition-colors flex items-center gap-2"
               >
-                <Download size={16} className="text-[#FCA311]" />
+                <Download size={16} className="text-muted-foreground" />
                 <span>Exportar Backup (JSON)</span>
               </button>
 
@@ -710,7 +710,7 @@ function SettingsPage() {
           {/* ── 6. Sobre ──────────────────────────────────────────────── */}
           <div className="text-center py-4 space-y-1">
             <p className="text-xs font-bold text-muted-foreground flex items-center justify-center gap-1.5">
-              <Sparkles size={14} className="text-[#FCA311]" />
+              <Sparkles size={14} className="text-muted-foreground" />
               LifeOS v0.4 Pro — Sistema Operativo Pessoal
             </p>
             <p className="text-[11px] text-muted-foreground/70">
