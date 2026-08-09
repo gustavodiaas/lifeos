@@ -6,7 +6,7 @@ import { todayIso } from "@/lib/date";
 import { JournalEntryCard } from "./components/JournalEntryCard";
 import { JournalModal } from "./components/JournalModal";
 import { AlertModal } from "@/modules/finance/components/AlertModal";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import {
   Plus,
   NotebookPen,
