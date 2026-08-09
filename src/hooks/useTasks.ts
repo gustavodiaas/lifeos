@@ -217,7 +217,7 @@ export function useTasks(userId: string | undefined) {
     const payload = {
       user_id: userId,
       name: project.name,
-      color: project.color || '#FCA311',
+      color: project.color || '#212121',
     };
 
     const { data, error: insertError } = await supabase.from('projects').insert([payload]).select();
