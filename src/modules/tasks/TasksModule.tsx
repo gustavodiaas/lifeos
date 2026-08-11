@@ -52,6 +52,16 @@ export function TasksModule() {
     id: null,
   });
 
+  const [dragOverColumn, setDragOverColumn] = useState<TaskStatus | null>(null);
+
+  const handleDropOnColumn = (targetStatus: TaskStatus, e: React.DragEvent) => {
+    e.preventDefault();
+    setDragOverColumn(null);
+    const taskId = e.dataTransfer.getData("text/plain");
+    if (!taskId) return;
+    handleStatusChange(taskId, targetStatus);
+  };
+
   // Alternar checkbox de status da tarefa
   const handleToggleStatus = async (taskId: string) => {
     try {
@@ -348,7 +358,15 @@ export function TasksModule() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
           {/* Coluna 1: A FAZER (Todo) */}
-          <div className="space-y-3">
+          <div
+            onDragOver={(e) => { e.preventDefault(); setDragOverColumn("todo"); }}
+            onDragLeave={() => setDragOverColumn(null)}
+            onDrop={(e) => handleDropOnColumn("todo", e)}
+            className={cn(
+              "space-y-3 p-2 rounded-2xl transition-all duration-200 border border-transparent",
+              dragOverColumn === "todo" && "border-foreground/50 bg-foreground/5 shadow-inner scale-[1.01]"
+            )}
+          >
             <div className="flex items-center justify-between px-1 py-1">
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 rounded-full bg-foreground" />
@@ -371,10 +389,11 @@ export function TasksModule() {
               </button>
             </div>
 
-            <div className="space-y-3 min-h-[150px]">
+            <div className="space-y-3 min-h-[180px]">
               {todoTasks.length === 0 ? (
-                <div className="p-6 rounded-2xl border border-dashed border-border/70 text-center">
+                <div className="p-6 rounded-2xl border border-dashed border-border/70 text-center flex flex-col items-center justify-center h-32">
                   <p className="text-xs font-medium text-muted-foreground">Nenhuma tarefa pendente nesta coluna.</p>
+                  <p className="text-[10px] text-muted-foreground/60 mt-1">Arraste um cartão aqui</p>
                 </div>
               ) : (
                 todoTasks.map((t) => (
@@ -397,7 +416,15 @@ export function TasksModule() {
           </div>
 
           {/* Coluna 2: EM ANDAMENTO (Doing) */}
-          <div className="space-y-3">
+          <div
+            onDragOver={(e) => { e.preventDefault(); setDragOverColumn("doing"); }}
+            onDragLeave={() => setDragOverColumn(null)}
+            onDrop={(e) => handleDropOnColumn("doing", e)}
+            className={cn(
+              "space-y-3 p-2 rounded-2xl transition-all duration-200 border border-transparent",
+              dragOverColumn === "doing" && "border-foreground/50 bg-foreground/5 shadow-inner scale-[1.01]"
+            )}
+          >
             <div className="flex items-center justify-between px-1 py-1">
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 rounded-full bg-foreground" />
@@ -420,10 +447,11 @@ export function TasksModule() {
               </button>
             </div>
 
-            <div className="space-y-3 min-h-[150px]">
+            <div className="space-y-3 min-h-[180px]">
               {doingTasks.length === 0 ? (
-                <div className="p-6 rounded-2xl border border-dashed border-border/70 text-center">
+                <div className="p-6 rounded-2xl border border-dashed border-border/70 text-center flex flex-col items-center justify-center h-32">
                   <p className="text-xs font-medium text-muted-foreground">Nenhuma tarefa em andamento.</p>
+                  <p className="text-[10px] text-muted-foreground/60 mt-1">Arraste um cartão aqui</p>
                 </div>
               ) : (
                 doingTasks.map((t) => (
@@ -446,7 +474,15 @@ export function TasksModule() {
           </div>
 
           {/* Coluna 3: CONCLUÍDAS (Done) */}
-          <div className="space-y-3">
+          <div
+            onDragOver={(e) => { e.preventDefault(); setDragOverColumn("done"); }}
+            onDragLeave={() => setDragOverColumn(null)}
+            onDrop={(e) => handleDropOnColumn("done", e)}
+            className={cn(
+              "space-y-3 p-2 rounded-2xl transition-all duration-200 border border-transparent",
+              dragOverColumn === "done" && "border-emerald-500/50 bg-emerald-500/5 shadow-inner scale-[1.01]"
+            )}
+          >
             <div className="flex items-center justify-between px-1 py-1">
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 rounded-full bg-emerald-500" />
@@ -457,10 +493,11 @@ export function TasksModule() {
               </div>
             </div>
 
-            <div className="space-y-3 min-h-[150px]">
+            <div className="space-y-3 min-h-[180px]">
               {doneTasks.length === 0 ? (
-                <div className="p-6 rounded-2xl border border-dashed border-border/70 text-center">
+                <div className="p-6 rounded-2xl border border-dashed border-border/70 text-center flex flex-col items-center justify-center h-32">
                   <p className="text-xs font-medium text-muted-foreground">Nenhuma tarefa concluída ainda.</p>
+                  <p className="text-[10px] text-muted-foreground/60 mt-1">Arraste um cartão aqui</p>
                 </div>
               ) : (
                 doneTasks.map((t) => (
