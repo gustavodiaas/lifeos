@@ -3,6 +3,7 @@ import { Play, Pause, RotateCcw, SkipForward, Timer, CheckCircle2, Flame, Award 
 import type { Task } from "@/lib/supabase";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
+import { CustomSelect } from "@/components/ui/CustomSelect";
 
 interface FocusTimerProps {
   tasks?: Task[];
@@ -172,18 +173,19 @@ export function FocusTimer({ tasks = [], onFocusComplete }: FocusTimerProps) {
         {/* Vincular Tarefa */}
         {tasks.length > 0 ? (
           <div className="w-full sm:w-64">
-            <select
+            <CustomSelect
               value={selectedTaskId || ""}
-              onChange={(e) => setSelectedTaskId(e.target.value || null)}
-              className="input-ios py-2 px-3 text-xs font-bold w-full bg-muted/40"
-            >
-              <option value="" className="bg-card text-foreground">Vincular a uma tarefa...</option>
-              {tasks.filter((t) => t.status !== "done").map((t) => (
-                <option key={t.id} value={t.id} className="bg-card text-foreground">
-                  📌 {t.title}
-                </option>
-              ))}
-            </select>
+              onChange={(val) => setSelectedTaskId(val || null)}
+              options={[
+                { value: "", label: "Vincular a uma tarefa..." },
+                ...tasks.filter((t) => t.status !== "done").map((t) => ({
+                  value: t.id,
+                  label: `📌 ${t.title}`,
+                })),
+              ]}
+              placeholder="Vincular a uma tarefa..."
+              className="text-xs font-bold"
+            />
           </div>
         ) : (
           <div className="text-xs text-muted-foreground font-semibold">
