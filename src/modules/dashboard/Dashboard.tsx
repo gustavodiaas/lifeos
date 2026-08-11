@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { todayIso, monthIso, formatBRL } from "@/lib/date";
 import { StatCard } from "@/components/layout/StatCard";
 import { useAuthContext } from "@/context/AuthContext";
@@ -23,6 +23,7 @@ import {
   ArrowUpRight,
   Sparkles,
   ChevronRight,
+  ChevronLeft,
   Flame,
   Zap,
   Award,
@@ -30,6 +31,7 @@ import {
   PiggyBank,
   Timer,
   CheckCircle2,
+  Calendar,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -40,6 +42,148 @@ const LEVELS = [
   { level: 4, name: "Titã da Produtividade", minXp: 600, maxXp: 1000 },
   { level: 5, name: "Lenda do LifeOS", minXp: 1000, maxXp: 2000 },
 ];
+
+/** ── Componente de Pílula Noticiário de Eventos do Dia ────────────────────────────── */
+function TodayEventsTicker({ userId, today, tasks, lancamentos }: { userId: string; today: string; tasks: any[]; lancamentos: any[] }) {
+  const [events, setEvents] = useState<any[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+
+  useEffect(() => {
+    const list: any[] = [];
+
+    // 1. Calendário (v2 e v1)
+    try {
+      const v2 = localStorage.getItem(`lifeos_${userId}_calendar_events_v2`);
+      if (v2) {
+        const parsed = JSON.parse(v2);
+        parsed.filter((e: any) => e.date === today).forEach((e: any) => {
+          list.push({
+            id: e.id,
+            type: "calendar",
+            title: e.title,
+            time: e.startTime ? (e.endTime ? `${e.startTime} - ${e.endTime}` : e.startTime) : "Dia todo",
+            color: e.color || "#a78bfa",
+            badge: e.label || "COMPROMISSO",
+          });
+        });
+      }
+    } catch {}
+
+    // 2. Tarefas do dia
+    tasks.filter((t) => (t.dueDate || t.due_date) === today && t.status !== "done").forEach((t) => {
+      list.push({
+        id: t.id,
+        type: "task",
+        title: t.title,
+        time: "Prazo Hoje",
+        color: "#3b82f6",
+        badge: "TAREFA",
+      });
+    });
+
+    // 3. Lançamentos financeiros do dia
+    lancamentos.filter((l) => l.data === today).forEach((l) => {
+      list.push({
+        id: l.id,
+        type: "finance",
+        title: `${l.tipo === "entrada" ? "Recebimento" : "Pagamento"}: ${l.descricao}`,
+        time: formatBRL(l.valor),
+        color: l.tipo === "entrada" ? "#10b981" : "#ef4444",
+        badge: "FINANÇAS",
+      });
+    });
+
+    setEvents(list);
+    setCurrentIndex(0);
+  }, [userId, today, tasks, lancamentos]);
+
+  // Rotação automática a cada 3.5s
+  useEffect(() => {
+    if (events.length <= 1 || isPaused) return;
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % events.length);
+    }, 3500);
+    return () => clearInterval(interval);
+  }, [events.length, isPaused]);
+
+  if (events.length === 0) {
+    return (
+      <div className="glass-card px-4 py-3 rounded-2xl border border-border/70 flex items-center justify-between gap-3 text-xs font-bold text-muted-foreground shadow-sm">
+        <div className="flex items-center gap-2.5 min-w-0">
+          <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/80 animate-pulse shrink-0" />
+          <span className="font-extrabold text-foreground">Agenda de Hoje:</span>
+          <span className="truncate text-muted-foreground font-medium">✨ Nenhum compromisso agendado para hoje. Aproveite o dia!</span>
+        </div>
+        <Link to="/calendar" className="text-[11px] font-black text-foreground hover:underline shrink-0 flex items-center gap-1">
+          + Agendar no Calendário
+        </Link>
+      </div>
+    );
+  }
+
+  const current = events[currentIndex % events.length];
+
+  return (
+    <div
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+      className="glass-card px-4 py-3 rounded-2xl border border-border/80 shadow-md hover:border-foreground/30 transition-all flex flex-wrap sm:flex-nowrap items-center justify-between gap-3 overflow-hidden select-none"
+    >
+      <div className="flex items-center gap-3 min-w-0 flex-1">
+        {/* Ponto reluzente pulsante com a cor do evento */}
+        <div className="relative flex h-3 w-3 shrink-0 items-center justify-center">
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style={{ backgroundColor: current.color }} />
+          <span className="relative inline-flex rounded-full h-2.5 w-2.5" style={{ backgroundColor: current.color }} />
+        </div>
+
+        {/* Badge / Tag do tipo de evento */}
+        <span
+          className="px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider shrink-0 border"
+          style={{
+            backgroundColor: `${current.color}18`,
+            color: current.color,
+            borderColor: `${current.color}40`,
+          }}
+        >
+          {current.badge}
+        </span>
+
+        {/* Texto do noticiário rodando */}
+        <div className="min-w-0 flex-1 flex items-center gap-2 overflow-hidden transition-all duration-300">
+          <span className="text-xs font-black text-foreground shrink-0">{current.time}</span>
+          <span className="text-xs font-semibold text-muted-foreground truncate">{current.title}</span>
+        </div>
+      </div>
+
+      {/* Controles do Ticker & Link para o Calendário */}
+      <div className="flex items-center gap-3 shrink-0 ml-auto sm:ml-0">
+        <span className="text-[10px] font-extrabold text-muted-foreground bg-muted/60 px-2 py-0.5 rounded-full">
+          {currentIndex + 1} / {events.length}
+        </span>
+        <div className="flex items-center gap-0.5">
+          <button
+            onClick={() => setCurrentIndex((prev) => (prev - 1 + events.length) % events.length)}
+            className="p-1 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+            title="Anterior"
+          >
+            <ChevronLeft size={14} />
+          </button>
+          <button
+            onClick={() => setCurrentIndex((prev) => (prev + 1) % events.length)}
+            className="p-1 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+            title="Próximo"
+          >
+            <ChevronRight size={14} />
+          </button>
+        </div>
+        <Link to="/calendar" className="text-xs font-extrabold text-foreground hover:underline flex items-center gap-1 pl-1">
+          Ver Agenda <ChevronRight size={12} />
+        </Link>
+      </div>
+    </div>
+  );
+}
 
 export function Dashboard() {
   const { user } = useAuthContext();
@@ -200,6 +344,9 @@ export function Dashboard() {
           </div>
         </div>
       </div>
+
+      {/* ── Pílula Noticiário de Eventos do Dia ────────────────────────── */}
+      <TodayEventsTicker userId={userId} today={today} tasks={tasks} lancamentos={lancamentos} />
 
       {/* ── 2. Grid de Resumo de Status (4 Cards Principais) ─────────────── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
