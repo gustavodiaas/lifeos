@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from '@/lib/toast';
+import { CustomSelect } from '@/components/ui/CustomSelect';
 
 export interface InvestmentAsset {
   id: string;
@@ -340,17 +341,12 @@ export function InvestmentsView() {
               <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">
                 Tipo
               </label>
-              <select
+              <CustomSelect
                 value={type}
-                onChange={(e) => setType(e.target.value as any)}
-                className="input-ios py-2.5 text-xs font-bold w-full"
-              >
-                {ASSET_TYPES.map((t) => (
-                  <option key={t.value} value={t.value} className="bg-card text-foreground">
-                    {t.label}
-                  </option>
-                ))}
-              </select>
+                onChange={(val) => setType(val as any)}
+                options={ASSET_TYPES.map((t) => ({ value: t.value, label: t.label }))}
+                className="text-xs font-bold"
+              />
             </div>
 
             <div>
