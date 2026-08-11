@@ -59,7 +59,7 @@ export function ModalPortal({ open, onClose, children }: ModalPortalProps) {
 
   return createPortal(
     <div
-      className="fixed inset-0 bg-black/60 backdrop-blur-md z-[9999] flex items-end sm:items-center justify-center p-0 sm:p-4 fade-in"
+      className="fixed inset-0 bg-black/60 backdrop-blur-md z-[9999] flex items-end sm:items-center justify-center p-0 sm:p-4 overflow-y-auto overscroll-contain fade-in"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
