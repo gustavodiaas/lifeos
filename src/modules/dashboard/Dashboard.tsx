@@ -9,6 +9,7 @@ import { useNotes } from "@/hooks/useNotes";
 import { useLancamentos } from "@/hooks/useLancamentos";
 import { useMetrics } from "@/hooks/useMetrics";
 import { Link } from "@tanstack/react-router";
+import { useWorkspace } from "@/context/WorkspaceContext";
 import {
   Repeat,
   CheckSquare,
@@ -42,17 +43,18 @@ const LEVELS = [
 
 export function Dashboard() {
   const { user } = useAuthContext();
-  const { habits, logs } = useHabits(user?.id);
-  const { tasks } = useTasks(user?.id);
-  const { goals } = useGoals(user?.id);
-  const { notes } = useNotes(user?.id);
-  const { lancamentos } = useLancamentos(user?.id);
-  const { metrics } = useMetrics(user?.id);
+  const { activeUserId } = useWorkspace();
+  const { habits, logs } = useHabits(activeUserId);
+  const { tasks } = useTasks(activeUserId);
+  const { goals } = useGoals(activeUserId);
+  const { notes } = useNotes(activeUserId);
+  const { lancamentos } = useLancamentos(activeUserId);
+  const { metrics } = useMetrics(activeUserId);
 
   const today = todayIso();
   const month = monthIso();
 
-  const userId = user?.id || "guest";
+  const userId = activeUserId || user?.id || "guest";
 
   // Livros salvos no localStorage
   const savedBooks = useMemo(() => {
