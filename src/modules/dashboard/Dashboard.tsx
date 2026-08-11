@@ -52,23 +52,25 @@ export function Dashboard() {
   const today = todayIso();
   const month = monthIso();
 
+  const userId = user?.id || "guest";
+
   // Livros salvos no localStorage
   const savedBooks = useMemo(() => {
     try {
-      const b = localStorage.getItem("lifeos_books");
+      const b = localStorage.getItem(`lifeos_${userId}_books`);
       if (b) return JSON.parse(b);
     } catch {}
     return [];
-  }, []);
+  }, [userId]);
 
   // Caixinhas salvas
   const savedBoxes = useMemo(() => {
     try {
-      const saved = localStorage.getItem("lifeos_savings_boxes");
+      const saved = localStorage.getItem(`lifeos_${userId}_savings_boxes`);
       if (saved) return JSON.parse(saved);
     } catch {}
     return [];
-  }, []);
+  }, [userId]);
 
   const stats = useMemo(() => {
     const activeHabits = habits.filter((h) => !h.archivedAt && !h.archived_at);
