@@ -46,6 +46,7 @@ const NAV_ITEMS = [
   { to: "/tasks", label: "Tarefas", icon: CheckSquare },
   { to: "/goals", label: "Metas", icon: Target },
   { to: "/finance", label: "Finanças", icon: Wallet },
+  { to: "/books", label: "Livros", icon: Library },
   { to: "/notes", label: "Conhecimento", icon: BookOpen },
   { to: "/journal", label: "Diário", icon: NotebookPen },
   { to: "/stats", label: "Estatísticas", icon: BarChart3 },
@@ -53,6 +54,7 @@ const NAV_ITEMS = [
 
 const PAGE_TITLES: Record<string, string> = {
   "/": "LifeOS",
+  "/books": "Estante Virtual",
   "/notes": "Conhecimento",
   "/habits": "Hábitos",
   "/tasks": "Tarefas",
