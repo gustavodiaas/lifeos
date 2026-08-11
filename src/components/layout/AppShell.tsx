@@ -12,13 +12,6 @@ import {
   Search,
   Grid,
   Plus,
-  Cloud,
-  CloudRain,
-  CloudSnow,
-  Sun,
-  CloudLightning,
-  Wind,
-  CloudDrizzle,
 } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { CommandPalette } from "./CommandPalette";
@@ -47,55 +40,11 @@ function getFirstName(user: any): string {
   return name.split(/[\s.]/)[0];
 }
 
-type WeatherInfo = { icon: React.ReactNode; label: string } | null;
-
-/** WMO weather code -> icon + label */
-function wmoToInfo(code: number): WeatherInfo {
-  if (code === 0) return { icon: <Sun size={14} className="text-muted-foreground" />, label: "Sol" };
-  if (code <= 2) return { icon: <Cloud size={14} className="text-slate-400" />, label: "Nublado" };
-  if (code <= 9) return { icon: <Wind size={14} className="text-muted-foreground" />, label: "Ventoso" };
-  if (code <= 29) return { icon: <CloudDrizzle size={14} className="text-muted-foreground" />, label: "Garoa" };
-  if (code <= 39) return { icon: <CloudRain size={14} className="text-muted-foreground" />, label: "Chuva" };
-  if (code <= 49) return { icon: <CloudSnow size={14} className="text-muted-foreground" />, label: "Neve" };
-  if (code <= 59) return { icon: <CloudDrizzle size={14} className="text-muted-foreground" />, label: "Garoa" };
-  if (code <= 69) return { icon: <CloudRain size={14} className="text-muted-foreground" />, label: "Chuva" };
-  if (code <= 79) return { icon: <CloudSnow size={14} className="text-muted-foreground" />, label: "Neve" };
-  if (code <= 84) return { icon: <CloudRain size={14} className="text-muted-foreground" />, label: "Pancadas" };
-  if (code <= 89) return { icon: <CloudLightning size={14} className="text-muted-foreground" />, label: "Temporal" };
-  return { icon: <CloudLightning size={14} className="text-muted-foreground" />, label: "Temporal" };
-}
-
-function useWeather(): WeatherInfo {
-  const [weather, setWeather] = useState<WeatherInfo>(null);
-
-  useEffect(() => {
-    if (!navigator.geolocation) return;
-    navigator.geolocation.getCurrentPosition(
-      async ({ coords }) => {
-        try {
-          const res = await fetch(
-            `https://api.open-meteo.com/v1/forecast?latitude=${coords.latitude}&longitude=${coords.longitude}&current_weather=true`
-          );
-          const data = await res.json();
-          const code = data?.current_weather?.weathercode ?? -1;
-          if (code >= 0) setWeather(wmoToInfo(code));
-        } catch {}
-      },
-      () => {} // silently ignore denied
-    );
-  }, []);
-
-  return weather;
-}
-
-const NAV_MAIN = [
+const NAV_ITEMS = [
   { to: "/", label: "Painel", icon: LayoutDashboard },
   { to: "/habits", label: "Hábitos", icon: Repeat },
   { to: "/tasks", label: "Tarefas", icon: CheckSquare },
   { to: "/goals", label: "Metas", icon: Target },
-] as const;
-
-const NAV_MODULES = [
   { to: "/finance", label: "Finanças", icon: Wallet },
   { to: "/notes", label: "Conhecimento", icon: BookOpen },
   { to: "/journal", label: "Diário", icon: NotebookPen },
@@ -120,7 +69,6 @@ export function AppShell({ children }: { children?: ReactNode }) {
   const [fabOpen, setFabOpen] = useState(false);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const { user } = useAuthContext();
-  const weather = useWeather();
   const greeting = getGreeting();
   const firstName = getFirstName(user);
 
@@ -155,67 +103,31 @@ export function AppShell({ children }: { children?: ReactNode }) {
             <div>
               <p className="text-base font-extrabold text-foreground tracking-tight">{firstName}</p>
               <p className="text-[11px] text-muted-foreground font-medium">{greeting} 👋</p>
-              {weather ? (
-                <span className="flex items-center gap-1 mt-0.5 text-[10px] text-muted-foreground">
-                  {weather.icon}
-                  <span>{weather.label}</span>
-                </span>
-              ) : null}
             </div>
           </Link>
         </div>
 
-        {/* Navigation Categories */}
-        <nav className="flex-1 px-3 space-y-5 overflow-y-auto pt-2">
-          <div className="space-y-1">
-            <p className="px-3 text-[10px] font-extrabold text-muted-foreground/70 uppercase tracking-widest mb-1.5">
-              Principal
-            </p>
-            {NAV_MAIN.map(({ to, label, icon: Icon }) => {
-              const active = to === "/" ? pathname === "/" : pathname.startsWith(to);
-              return (
-                <Link
-                  key={to}
-                  to={to}
-                  className={cn(
-                    "group flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-semibold transition-all",
-                    active ? "nav-pill-active shadow-sm" : "nav-pill-inactive"
-                  )}
-                >
-                  <Icon className={cn("h-4.5 w-4.5 shrink-0 transition-colors", active ? "text-foreground" : "")} />
-                  <span>{label}</span>
-                  {active && (
-                    <div className="ml-auto w-1.5 h-1.5 rounded-full bg-foreground" />
-                  )}
-                </Link>
-              );
-            })}
-          </div>
-
-          <div className="space-y-1">
-            <p className="px-3 text-[10px] font-extrabold text-muted-foreground/70 uppercase tracking-widest mb-1.5">
-              Módulos
-            </p>
-            {NAV_MODULES.map(({ to, label, icon: Icon }) => {
-              const active = pathname.startsWith(to);
-              return (
-                <Link
-                  key={to}
-                  to={to}
-                  className={cn(
-                    "group flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-semibold transition-all",
-                    active ? "nav-pill-active shadow-sm" : "nav-pill-inactive"
-                  )}
-                >
-                  <Icon className={cn("h-4.5 w-4.5 shrink-0 transition-colors", active ? "text-foreground" : "")} />
-                  <span>{label}</span>
-                  {active && (
-                    <div className="ml-auto w-1.5 h-1.5 rounded-full bg-foreground" />
-                  )}
-                </Link>
-              );
-            })}
-          </div>
+        {/* Navigation - Menu Único Unificado */}
+        <nav className="flex-1 px-3 space-y-1 overflow-y-auto pt-2">
+          {NAV_ITEMS.map(({ to, label, icon: Icon }) => {
+            const active = to === "/" ? pathname === "/" : pathname.startsWith(to);
+            return (
+              <Link
+                key={to}
+                to={to}
+                className={cn(
+                  "group flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-semibold transition-all",
+                  active ? "nav-pill-active shadow-sm" : "nav-pill-inactive"
+                )}
+              >
+                <Icon className={cn("h-4.5 w-4.5 shrink-0 transition-colors", active ? "text-foreground" : "")} />
+                <span>{label}</span>
+                {active && (
+                  <div className="ml-auto w-1.5 h-1.5 rounded-full bg-foreground" />
+                )}
+              </Link>
+            );
+          })}
         </nav>
 
         {/* Footer: User Profile & Settings */}
