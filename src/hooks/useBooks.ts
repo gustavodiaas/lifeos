@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import type { Book } from '@/lib/supabase';
+import { isValidUuid } from '@/lib/utils';
 
 function normalize(item: any): Book {
   return {
@@ -30,14 +31,14 @@ export function useBooks(userId: string | undefined) {
   const [error, setError]     = useState<string | null>(null);
 
   const fetch = useCallback(async () => {
-    if (!userId) { setBooks([]); setLoading(false); return; }
+    if (!isValidUuid(userId)) { setBooks([]); setLoading(false); return; }
     setLoading(true);
     setError(null);
     try {
       const { data, error: err } = await supabase
         .from('books')
         .select('*')
-        .eq('user_id', userId)
+        .eq('user_id', userId!)
         .order('created_at', { ascending: false });
       if (err) throw err;
       setBooks((data || []).map(normalize));
