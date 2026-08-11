@@ -11,6 +11,7 @@ import {
   Settings,
   X,
   Sparkles,
+  Calendar,
 } from "lucide-react";
 import { useAuthContext } from "@/context/AuthContext";
 
@@ -21,6 +22,7 @@ interface MobileAppDrawerProps {
 
 const ALL_MODULES = [
   { to: "/", label: "Painel", icon: LayoutDashboard, color: "bg-muted text-muted-foreground" },
+  { to: "/calendar", label: "Calendário", icon: Calendar, color: "bg-purple-500/15 text-purple-500" },
   { to: "/habits", label: "Hábitos", icon: Repeat, color: "bg-muted text-foreground" },
   { to: "/finance", label: "Finanças", icon: Wallet, color: "bg-emerald-500/15 text-emerald-500" },
   { to: "/tasks", label: "Tarefas", icon: CheckSquare, color: "bg-muted text-muted-foreground" },
