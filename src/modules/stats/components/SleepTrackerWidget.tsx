@@ -4,6 +4,7 @@ import { Moon, Sparkles, Sliders, ChevronDown, ChevronUp, ShieldCheck } from "lu
 import { cn } from "@/lib/utils";
 import { CustomSelect } from "@/components/ui/CustomSelect";
 import { useAuthContext } from "@/context/AuthContext";
+import { useWorkspace } from "@/context/WorkspaceContext";
 
 interface SleepTrackerWidgetProps {
   sleepLogs: Metric[];
@@ -12,7 +13,8 @@ interface SleepTrackerWidgetProps {
 
 export function SleepTrackerWidget({ sleepLogs, onOpenLogger }: SleepTrackerWidgetProps) {
   const { user } = useAuthContext();
-  const userId = user?.id || "guest";
+  const { activeUserId } = useWorkspace();
+  const userId = activeUserId || user?.id || "guest";
   const storageKey = `lifeos_${userId}_sleep_target`;
 
   const [targetHours, setTargetHours] = useState<number>(() => {
