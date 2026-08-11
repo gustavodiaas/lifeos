@@ -20,6 +20,7 @@ import { cn } from '@/lib/utils';
 import { toast } from '@/lib/toast';
 import { CustomSelect } from '@/components/ui/CustomSelect';
 import { useAuthContext } from '@/context/AuthContext';
+import { useWorkspace } from '@/context/WorkspaceContext';
 
 export interface InvestmentAsset {
   id: string;
@@ -95,7 +96,8 @@ interface RealtimeRates {
 
 export function InvestmentsView() {
   const { user } = useAuthContext();
-  const userId = user?.id || "guest";
+  const { activeUserId } = useWorkspace();
+  const userId = activeUserId || user?.id || "guest";
   const storageKey = `lifeos_${userId}_investments`;
 
   const [assets, setAssets] = useState<InvestmentAsset[]>(() => {
