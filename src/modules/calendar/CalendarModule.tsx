@@ -3,6 +3,7 @@ import { useTasks } from "@/hooks/useTasks";
 import { useLancamentos } from "@/hooks/useLancamentos";
 import { useGoals } from "@/hooks/useGoals";
 import { useAuthContext } from "@/context/AuthContext";
+import { useWorkspace } from "@/context/WorkspaceContext";
 import { formatBRL } from "@/lib/date";
 import { CustomSelect } from "@/components/ui/CustomSelect";
 import { ModalPortal } from "@/components/ui/ModalPortal";
@@ -106,15 +107,16 @@ type ViewMode = "month" | "week" | "day";
 
 export function CalendarModule() {
   const { user } = useAuthContext();
-  const { tasks } = useTasks(user?.id);
-  const { lancamentos } = useLancamentos(user?.id);
-  const { goals } = useGoals(user?.id);
+  const { activeUserId } = useWorkspace();
+  const { tasks } = useTasks(activeUserId);
+  const { lancamentos } = useLancamentos(activeUserId);
+  const { goals } = useGoals(activeUserId);
 
   const [currentDate, setCurrentDate] = useState(new Date());
   const [viewMode, setViewMode] = useState<ViewMode>("month");
   const [selectedDateIso, setSelectedDateIso] = useState(new Date().toISOString().slice(0, 10));
 
-  const userId = user?.id || "guest";
+  const userId = activeUserId || user?.id || "guest";
   const storageKey = `lifeos_${userId}_calendar_events`;
 
   // Custom events
