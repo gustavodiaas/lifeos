@@ -38,7 +38,7 @@ export function TaskModal({
 }: TaskModalProps) {
   const [title, setTitle] = useState("");
   const [notes, setNotes] = useState("");
-  const [priority, setPriority] = useState<TaskPriority>("med");
+  const [priority, setPriority] = useState<TaskPriority>("medium");
   const [dueDate, setDueDate] = useState("");
   const [projectId, setProjectId] = useState<string | null>(null);
   const [status, setStatus] = useState<TaskStatus>(defaultStatus);
@@ -49,7 +49,8 @@ export function TaskModal({
     if (editingTask) {
       setTitle(editingTask.title || "");
       setNotes(editingTask.notes || "");
-      setPriority(editingTask.priority || "med");
+      const p = editingTask.priority as string;
+      setPriority(p === "med" ? "medium" : (editingTask.priority || "medium"));
       setDueDate(editingTask.dueDate || "");
       setProjectId(editingTask.projectId || null);
       setStatus(editingTask.status || "todo");
@@ -57,7 +58,7 @@ export function TaskModal({
     } else {
       setTitle("");
       setNotes("");
-      setPriority("med");
+      setPriority("medium");
       setDueDate("");
       setProjectId(null);
       setStatus(defaultStatus);
@@ -163,9 +164,9 @@ export function TaskModal({
 
               <button
                 type="button"
-                onClick={() => setPriority("med")}
+                onClick={() => setPriority("medium")}
                 className={`py-2.5 px-3 rounded-xl border-2 font-bold text-xs transition-all ${
-                  priority === "med"
+                  priority === "medium" || (priority as any) === "med"
                     ? "border-foreground bg-muted text-foreground font-extrabold"
                     : "border-border/60 bg-muted/30 text-muted-foreground hover:bg-muted"
                 }`}
