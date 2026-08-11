@@ -24,6 +24,8 @@ import { cn } from "@/lib/utils";
 
 type ViewMode = "kanban" | "list";
 
+import { FocusTimer } from "@/components/widgets/FocusTimer";
+
 export function TasksModule() {
   const { user } = useAuthContext();
   const {
@@ -259,6 +261,9 @@ export function TasksModule() {
           </button>
         </div>
       </div>
+
+      {/* ── Widget Pomodoro & Focus Timer ───────────────────────────── */}
+      <FocusTimer tasks={tasks} />
 
       {/* ── 2. Cards de Métricas de Produtividade ─────────────────────────── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
