@@ -14,14 +14,21 @@ import {
   Plus,
   Library,
   Calendar,
+  Users,
+  UserPlus,
+  Eye,
+  ChevronDown,
+  Check,
 } from "lucide-react";
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useState, useRef, type ReactNode } from "react";
 import { CommandPalette } from "./CommandPalette";
 import { MobileAppDrawer } from "./MobileAppDrawer";
 import { QuickActionFab } from "./QuickActionFab";
 import { NotificationManager } from "./NotificationManager";
 import { cn } from "@/lib/utils";
 import { useAuthContext } from "@/context/AuthContext";
+import { useWorkspace } from "@/context/WorkspaceContext";
+import { SharedAccessModal } from "@/components/modals/SharedAccessModal";
 
 /** Returns greeting based on current hour */
 function getGreeting(): string {
@@ -69,15 +76,13 @@ const PAGE_TITLES: Record<string, string> = {
   "/settings": "Ajustes",
 };
 
-import { useWorkspace } from "@/context/WorkspaceContext";
-import { SharedAccessModal } from "@/components/modals/SharedAccessModal";
-import { Users, UserPlus, Eye, ShieldAlert } from "lucide-react";
-
 export function AppShell({ children }: { children?: ReactNode }) {
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [fabOpen, setFabOpen] = useState(false);
   const [sharedModalOpen, setSharedModalOpen] = useState(false);
+  const [workspaceDropOpen, setWorkspaceDropOpen] = useState(false);
+  const wsDropRef = useRef<HTMLDivElement>(null);
 
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const { user } = useAuthContext();
@@ -90,6 +95,24 @@ export function AppShell({ children }: { children?: ReactNode }) {
   const pageTitle = Object.entries(PAGE_TITLES)
     .sort((a, b) => b[0].length - a[0].length)
     .find(([path]) => (path === "/" ? pathname === "/" : pathname.startsWith(path)))?.[1] ?? "LifeOS";
+
+  // Build option list for the workspace dropdown
+  const workspaceOptions = [
+    { id: user?.id || "guest", label: "Minha Conta Pessoal", isOwn: true },
+    ...myWorkspaces.map((ws) => ({ id: ws.ownerId, label: ws.ownerName, isOwn: false })),
+  ];
+  const activeOption = workspaceOptions.find((o) => o.id === activeUserId) ?? workspaceOptions[0];
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (wsDropRef.current && !wsDropRef.current.contains(e.target as Node)) {
+        setWorkspaceDropOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -108,7 +131,7 @@ export function AppShell({ children }: { children?: ReactNode }) {
       {/* ── Desktop Sidebar — macOS Style ───────────────────────────── */}
       <aside className="hidden md:flex w-64 shrink-0 flex-col glass-panel border-r border-[var(--glass-border)] select-none">
         {/* Header / Brand */}
-        <div className="px-5 pt-6 pb-3 space-y-3">
+        <div className="px-5 pt-6 pb-3">
           <Link to="/settings" className="flex items-center gap-3 group">
             <div className="h-10 w-10 rounded-full bg-[#212121] dark:bg-foreground flex items-center justify-center shadow-lg shadow-black/10 dark:shadow-black/20 transition-transform group-hover:scale-105 overflow-hidden shrink-0 ring-2 ring-border">
               {avatarUrl ? (
@@ -124,34 +147,6 @@ export function AppShell({ children }: { children?: ReactNode }) {
               <p className="text-[11px] text-muted-foreground font-medium truncate">{greeting} 👋</p>
             </div>
           </Link>
-
-          {/* Alternador de Espaço de Trabalho / Conta (Workspace Switcher) */}
-          <div className="p-2 rounded-2xl bg-muted/40 border border-border/50 space-y-1.5">
-            <div className="flex items-center justify-between px-1">
-              <span className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider">Espaço Ativo</span>
-              <button
-                onClick={() => setSharedModalOpen(true)}
-                className="text-[10px] font-extrabold text-foreground hover:underline flex items-center gap-1"
-                title="Convidar ou Acessar Outras Contas"
-              >
-                <UserPlus size={12} />
-                <span>Acessos</span>
-              </button>
-            </div>
-
-            <select
-              value={activeUserId}
-              onChange={(e) => setActiveUserId(e.target.value)}
-              className="w-full py-1.5 px-2 rounded-xl bg-card border border-border text-xs font-bold text-foreground outline-none cursor-pointer"
-            >
-              <option value={user?.id || "guest"}>👤 Minha Conta Pessoal</option>
-              {myWorkspaces.map((ws) => (
-                <option key={ws.ownerId} value={ws.ownerId}>
-                  👥 {ws.ownerName}
-                </option>
-              ))}
-            </select>
-          </div>
         </div>
 
         {/* Navigation - Menu Único Unificado */}
@@ -177,12 +172,70 @@ export function AppShell({ children }: { children?: ReactNode }) {
           })}
         </nav>
 
-        {/* Footer: User Profile & Settings */}
-        <div className="p-3 border-t border-[var(--glass-border)] bg-muted/20">
+        {/* Footer: Workspace Switcher + Settings + User */}
+        <div className="p-3 border-t border-[var(--glass-border)] bg-muted/20 space-y-2">
+
+          {/* Espaço Ativo — custom dropdown */}
+          <div className="p-2 rounded-2xl bg-muted/40 border border-border/50 space-y-1.5">
+            <div className="flex items-center justify-between px-1">
+              <span className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider">Espaço Ativo</span>
+              <button
+                onClick={() => setSharedModalOpen(true)}
+                className="text-[10px] font-extrabold text-foreground hover:underline flex items-center gap-1"
+                title="Convidar ou Acessar Outras Contas"
+              >
+                <UserPlus size={12} />
+                <span>Acessos</span>
+              </button>
+            </div>
+
+            {/* Custom dropdown — NOT a native select */}
+            <div className="relative" ref={wsDropRef}>
+              <button
+                onClick={() => setWorkspaceDropOpen((v) => !v)}
+                className="w-full flex items-center justify-between gap-2 py-2 px-3 rounded-xl bg-card border border-border text-xs font-bold text-foreground hover:bg-muted transition-colors"
+              >
+                <span className="flex items-center gap-1.5 truncate">
+                  <span>{activeOption.isOwn ? "👤" : "👥"}</span>
+                  <span className="truncate">{activeOption.label}</span>
+                </span>
+                <ChevronDown
+                  size={13}
+                  className={cn("shrink-0 transition-transform duration-200", workspaceDropOpen && "rotate-180")}
+                />
+              </button>
+
+              {workspaceDropOpen && (
+                <div className="absolute bottom-full mb-1 left-0 right-0 bg-card border border-border rounded-2xl shadow-xl z-50 overflow-hidden">
+                  {workspaceOptions.map((opt) => (
+                    <button
+                      key={opt.id}
+                      onClick={() => {
+                        setActiveUserId(opt.id);
+                        setWorkspaceDropOpen(false);
+                      }}
+                      className={cn(
+                        "w-full flex items-center gap-2 px-3 py-2.5 text-xs font-bold transition-colors text-left",
+                        opt.id === activeUserId
+                          ? "bg-foreground/10 text-foreground"
+                          : "hover:bg-muted text-foreground"
+                      )}
+                    >
+                      <span>{opt.isOwn ? "👤" : "👥"}</span>
+                      <span className="flex-1 truncate">{opt.label}</span>
+                      {opt.id === activeUserId && <Check size={12} className="shrink-0 text-foreground" />}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Ajustes */}
           <Link
             to="/settings"
             className={cn(
-              "flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-semibold transition-all mb-1",
+              "flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-semibold transition-all",
               pathname.startsWith("/settings") ? "nav-pill-active shadow-sm" : "nav-pill-inactive"
             )}
           >
@@ -191,7 +244,7 @@ export function AppShell({ children }: { children?: ReactNode }) {
           </Link>
 
           {user && (
-            <div className="mt-1 flex items-center gap-3 p-2.5 rounded-xl bg-card/60 border border-border/50">
+            <div className="flex items-center gap-3 p-2.5 rounded-xl bg-card/60 border border-border/50">
               <div className="w-8 h-8 rounded-full bg-foreground/20 ring-2 ring-foreground/40 flex items-center justify-center overflow-hidden shrink-0">
                 {avatarUrl ? (
                   <img src={avatarUrl} className="w-full h-full object-cover" alt="" />
