@@ -9,6 +9,7 @@ export interface ModulePermissions {
   tasks: "edit" | "view" | "none";
   books: "edit" | "view" | "none";
   habits: "edit" | "view" | "none";
+  shopping: "edit" | "view" | "none";
 }
 
 export interface SharedWorkspace {
@@ -39,6 +40,7 @@ const DEFAULT_PERMISSIONS: ModulePermissions = {
   tasks: "edit",
   books: "edit",
   habits: "edit",
+  shopping: "edit",
 };
 
 const WorkspaceContext = createContext<WorkspaceContextValue | null>(null);
