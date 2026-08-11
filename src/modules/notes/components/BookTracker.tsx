@@ -74,14 +74,33 @@ export function BookTracker() {
       const saved = localStorage.getItem(storageKey);
       if (saved) return JSON.parse(saved);
     } catch {}
-    return [];
+    return DEFAULT_BOOKS;
   });
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const [apiSearchQuery, setApiSearchQuery] = useState("");
+  const [apiResults, setApiResults] = useState<GoogleBookItem[]>([]);
+  const [loadingApi, setLoadingApi] = useState(false);
+
+  const [showModal, setShowModal] = useState(false);
+  const [modalMode, setModalMode] = useState<"search" | "form">("search");
+  const [editingBook, setEditingBook] = useState<ExtendedBook | null>(null);
+
+  const [title, setTitle] = useState("");
+  const [author, setAuthor] = useState("");
+  const [status, setStatus] = useState<ExtendedBook["status"]>("reading");
+  const [totalPages, setTotalPages] = useState("");
+  const [currentPage, setCurrentPage] = useState("");
+  const [coverUrl, setCoverUrl] = useState("");
+  const [description, setDescription] = useState("");
+  const [quoteInput, setQuoteInput] = useState("");
+  const [quotesList, setQuotesList] = useState<string[]>([]);
 
   useEffect(() => {
     try {
       const saved = localStorage.getItem(storageKey);
       if (saved) setBooks(JSON.parse(saved));
-      else setBooks([]);
+      else setBooks(DEFAULT_BOOKS);
     } catch {}
   }, [storageKey]);
 
