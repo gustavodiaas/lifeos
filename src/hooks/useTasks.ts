@@ -126,31 +126,47 @@ export function useTasks(userId: string | undefined) {
     status: TaskStatus;
     checklist?: ChecklistItem[];
   }): Promise<boolean> => {
-    if (!userId) return false;
     setError(null);
+    const tempId = crypto.randomUUID();
 
-    const payload = {
-      user_id: userId,
+    const newTask: Task = {
+      id: tempId,
+      user_id: userId || 'local',
       title: task.title,
-      notes: task.notes || null,
+      notes: task.notes || '',
       priority: task.priority,
+      dueDate: task.dueDate || null,
       due_date: task.dueDate || null,
+      projectId: task.projectId || null,
       project_id: task.projectId || null,
       status: task.status,
       checklist: task.checklist || [],
     };
 
-    const { data, error: insertError } = await supabase.from('tasks').insert([payload]).select();
-    if (insertError) {
-      console.error('Erro ao adicionar tarefa:', insertError);
-      setError('Erro ao salvar tarefa.');
-      return false;
+    // Atualização otimista imediata na UI
+    setTasks((prev) => [newTask, ...prev]);
+
+    if (userId) {
+      const payload = {
+        user_id: userId,
+        title: task.title,
+        notes: task.notes || null,
+        priority: task.priority,
+        due_date: task.dueDate || null,
+        project_id: task.projectId || null,
+        status: task.status,
+        checklist: task.checklist || [],
+      };
+
+      const { data, error: insertError } = await supabase.from('tasks').insert([payload]).select();
+      if (insertError) {
+        console.error('Erro ao adicionar tarefa no Supabase (mantida em cache local):', insertError);
+      } else if (data && data[0]) {
+        const normalized = normalizeTask(data[0]);
+        setTasks((prev) => prev.map((t) => (t.id === tempId ? normalized : t)));
+      }
     }
 
-    if (data && data[0]) {
-      const normalized = normalizeTask(data[0]);
-      setTasks((prev) => (prev.some((t) => t.id === normalized.id) ? prev : [...prev, normalized]));
-    }
     return true;
   };
 
