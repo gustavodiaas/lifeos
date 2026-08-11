@@ -87,9 +87,21 @@ export function AppShell({ children }: { children?: ReactNode }) {
   const [workspaceDropOpen, setWorkspaceDropOpen] = useState(false);
   const wsDropRef = useRef<HTMLDivElement>(null);
 
-  const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const { user } = useAuthContext();
-  const { activeUserId, isSharedWorkspace, activeWorkspace, myWorkspaces, setActiveUserId } = useWorkspace();
+  const { activeUserId, isSharedWorkspace, activeWorkspace, myWorkspaces, setActiveUserId, joinWorkspaceByToken } = useWorkspace();
+
+  // Auto-join workspace if URL contains ?invite=TOKEN (Notion-style 1-click join)
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const urlParams = new URLSearchParams(window.location.search);
+      const inviteToken = urlParams.get("invite");
+      if (inviteToken) {
+        joinWorkspaceByToken(inviteToken).then(() => {
+          const cleanUrl = window.location.pathname;
+          window.history.replaceState({}, document.title, cleanUrl);
+        });
+      }
+    }
+  }, [joinWorkspaceByToken]);
 
   const greeting = getGreeting();
   const firstName = getFirstName(user);
