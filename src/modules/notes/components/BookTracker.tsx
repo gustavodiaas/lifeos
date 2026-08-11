@@ -60,6 +60,7 @@ interface GoogleBookItem {
       smallThumbnail?: string;
     };
     categories?: string[];
+  };
 }
 
 export function BookTracker() {
