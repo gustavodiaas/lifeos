@@ -1,537 +1,431 @@
-import { useState, useRef } from "react";
-import { useAuthContext } from "@/context/AuthContext";
-import { useBooks } from "@/hooks/useBooks";
-import type { Book, BookStatus } from "@/lib/supabase";
-import {
-  BookOpen, Plus, Trash2, Search, X, Check,
-  BookMarked, Library, Clock, Edit3, Save, ChevronRight,
-} from "lucide-react";
+import { useState, useEffect } from "react";
+import type { Book } from "@/lib/supabase";
+import { BookOpen, Plus, Trash2, Edit3, Bookmark, Quote, CheckCircle2, Star, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { toast } from "@/lib/toast";
 
-// ── Google Books API ───────────────────────────────────────────────────────
-interface GoogleBook {
-  id: string;
-  volumeInfo: {
-    title: string;
-    authors?: string[];
-    pageCount?: number;
-    publisher?: string;
-    publishedDate?: string;
-    imageLinks?: { thumbnail?: string };
-    industryIdentifiers?: { type: string; identifier: string }[];
-  };
-}
+const DEFAULT_BOOKS: Book[] = [
+  {
+    id: "1",
+    title: "Hábitos Atômicos",
+    author: "James Clear",
+    status: "reading",
+    totalPages: 320,
+    currentPage: 185,
+    favoriteQuotes: ["Você não sobe ao nível dos seus objetivos. Você cai ao nível dos seus sistemas."],
+  },
+  {
+    id: "2",
+    title: "Essencialismo",
+    author: "Greg McKeown",
+    status: "completed",
+    totalPages: 272,
+    currentPage: 272,
+    rating: 5,
+    favoriteQuotes: ["Se você não priorizar sua vida, alguém fará isso por você."],
+  },
+  {
+    id: "3",
+    title: "Deep Work (Trabalho Focado)",
+    author: "Cal Newport",
+    status: "want",
+    totalPages: 300,
+    currentPage: 0,
+    favoriteQuotes: [],
+  },
+];
 
-async function searchGoogleBooks(query: string): Promise<GoogleBook[]> {
-  if (!query.trim()) return [];
-  try {
-    const res = await fetch(
-      `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=8&langRestrict=pt`
-    );
-    if (!res.ok) return [];
-    const data = await res.json();
-    return data.items || [];
-  } catch { return []; }
-}
-
-// ── Meta de status ─────────────────────────────────────────────────────────
-const STATUS_META: Record<BookStatus, { label: string; icon: React.FC<any>; pill: string }> = {
-  reading:   { label: "Lendo",     icon: BookOpen, pill: "bg-foreground text-background border-foreground" },
-  want:      { label: "Quero ler", icon: Clock,    pill: "bg-muted text-muted-foreground border-border" },
-  completed: { label: "Concluído", icon: Check,    pill: "bg-foreground/10 text-foreground border-foreground/20" },
-};
-
-type LibTab = "all" | BookStatus;
-
-// ── Componente principal ───────────────────────────────────────────────────
 export function BookTracker() {
-  const { user }                                    = useAuthContext();
-  const { books, loading, addBook, updateBook, removeBook } = useBooks(user?.id);
+  const [books, setBooks] = useState<Book[]>(() => {
+    try {
+      const saved = localStorage.getItem("lifeos_books");
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return DEFAULT_BOOKS;
+  });
 
-  const [tab, setTab]           = useState<LibTab>("all");
-  const [addOpen, setAddOpen]   = useState(false);
-  const [editBook, setEditBook] = useState<Book | null>(null);
-  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const [editingBook, setEditingBook] = useState<Book | null>(null);
 
-  const visible = books.filter((b) => tab === "all" || b.status === tab);
+  // Form states
+  const [title, setTitle] = useState("");
+  const [author, setAuthor] = useState("");
+  const [status, setStatus] = useState<Book["status"]>("reading");
+  const [totalPages, setTotalPages] = useState("");
+  const [currentPage, setCurrentPage] = useState("");
+  const [quoteInput, setQuoteInput] = useState("");
+  const [quotesList, setQuotesList] = useState<string[]>([]);
 
-  const counts = {
-    all:       books.length,
-    reading:   books.filter((b) => b.status === "reading").length,
-    want:      books.filter((b) => b.status === "want").length,
-    completed: books.filter((b) => b.status === "completed").length,
+  useEffect(() => {
+    localStorage.setItem("lifeos_books", JSON.stringify(books));
+  }, [books]);
+
+  const handleOpenModal = (bookToEdit?: Book) => {
+    if (bookToEdit) {
+      setEditingBook(bookToEdit);
+      setTitle(bookToEdit.title);
+      setAuthor(bookToEdit.author || "");
+      setStatus(bookToEdit.status);
+      setTotalPages(bookToEdit.totalPages?.toString() || "");
+      setCurrentPage(bookToEdit.currentPage?.toString() || "");
+      setQuotesList(bookToEdit.favoriteQuotes || []);
+    } else {
+      setEditingBook(null);
+      setTitle("");
+      setAuthor("");
+      setStatus("reading");
+      setTotalPages("");
+      setCurrentPage("");
+      setQuotesList([]);
+    }
+    setQuoteInput("");
+    setShowModal(true);
   };
 
-  const TABS: { id: LibTab; label: string }[] = [
-    { id: "all",       label: "Todos" },
-    { id: "reading",   label: "Lendo" },
-    { id: "want",      label: "Quero ler" },
-    { id: "completed", label: "Concluídos" },
-  ];
+  const handleSaveBook = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!title.trim()) return;
 
-  const handlePageUpdate = async (book: Book, page: number) => {
-    const newPage   = Math.max(0, Math.min(book.totalPages, page));
-    const newStatus: BookStatus =
-      newPage >= book.totalPages ? "completed"
-      : book.status === "want"  ? "reading"
-      : book.status;
-    await updateBook(book.id, { current_page: newPage, status: newStatus });
+    const total = parseInt(totalPages, 10) || 100;
+    const current = Math.min(total, parseInt(currentPage, 10) || 0);
+
+    if (editingBook) {
+      setBooks((prev) =>
+        prev.map((b) =>
+          b.id === editingBook.id
+            ? {
+                ...b,
+                title: title.trim(),
+                author: author.trim(),
+                status,
+                totalPages: total,
+                currentPage: current,
+                favoriteQuotes: quotesList,
+              }
+            : b
+        )
+      );
+      toast.success("Livro atualizado!");
+    } else {
+      const newBook: Book = {
+        id: crypto.randomUUID(),
+        title: title.trim(),
+        author: author.trim(),
+        status,
+        totalPages: total,
+        currentPage: current,
+        favoriteQuotes: quotesList,
+      };
+      setBooks((prev) => [newBook, ...prev]);
+      toast.success("Novo livro adicionado à estante!");
+    }
+
+    setShowModal(false);
   };
 
-  return (
-    <div className="glass-card rounded-2xl border border-border overflow-hidden">
+  const handleAddQuote = () => {
+    if (!quoteInput.trim()) return;
+    setQuotesList([...quotesList, quoteInput.trim()]);
+    setQuoteInput("");
+  };
 
-      {/* Header */}
-      <div className="px-5 py-4 border-b border-border flex items-center justify-between">
-        <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-xl bg-muted flex items-center justify-center shrink-0">
-            <Library size={17} className="text-muted-foreground" />
-          </div>
-          <div>
-            <h3 className="text-sm font-extrabold text-foreground">Biblioteca</h3>
-            <p className="text-[11px] text-muted-foreground">{books.length} livro{books.length !== 1 ? "s" : ""}</p>
-          </div>
-        </div>
-        <button onClick={() => setAddOpen(true)} className="btn-ios text-xs py-1.5 px-3">
-          <Plus size={13} strokeWidth={2.5} /><span>Adicionar</span>
-        </button>
-      </div>
+  const handleRemoveQuote = (idx: number) => {
+    setQuotesList(quotesList.filter((_, i) => i !== idx));
+  };
 
-      {/* Tabs */}
-      <div className="flex items-center gap-1 px-4 py-2.5 border-b border-border overflow-x-auto scrollbar-none">
-        {TABS.map(({ id, label }) => (
-          <button
-            key={id}
-            onClick={() => setTab(id)}
-            className={cn(
-              "flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0",
-              tab === id ? "bg-foreground text-background" : "text-muted-foreground hover:bg-muted"
-            )}
-          >
-            {label}
-            <span className={cn("text-[10px] font-extrabold px-1 rounded", tab === id ? "opacity-70" : "opacity-50")}>
-              {counts[id]}
-            </span>
-          </button>
-        ))}
-      </div>
+  const handleRemoveBook = (id: string) => {
+    setBooks((prev) => prev.filter((b) => b.id !== id));
+    toast.success("Livro removido.");
+  };
 
-      {/* Lista */}
-      <div className="p-4">
-        {loading ? (
-          <div className="py-10 flex items-center justify-center gap-2">
-            <div className="w-4 h-4 border-2 border-foreground border-t-transparent rounded-full animate-spin" />
-            <span className="text-xs text-muted-foreground">Carregando...</span>
-          </div>
-        ) : visible.length === 0 ? (
-          <div className="py-10 text-center space-y-2">
-            <BookMarked size={24} className="mx-auto text-muted-foreground" />
-            <p className="text-sm font-bold text-foreground">Nenhum livro aqui</p>
-            <p className="text-xs text-muted-foreground">
-              {tab === "all" ? "Adicione o primeiro livro da sua biblioteca." : `Nenhum livro com status "${STATUS_META[tab as BookStatus]?.label}".`}
-            </p>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {visible.map((book) => (
-              <BookRow
-                key={book.id}
-                book={book}
-                onEdit={() => setEditBook(book)}
-                onDelete={() => setDeleteId(book.id)}
-                onPageUpdate={(page) => handlePageUpdate(book, page)}
-              />
-            ))}
-          </div>
-        )}
-      </div>
-
-      {addOpen && (
-        <AddBookModal
-          onClose={() => setAddOpen(false)}
-          onAdd={async (payload) => { await addBook(payload); setAddOpen(false); }}
-        />
-      )}
-
-      {editBook && (
-        <EditBookModal
-          book={editBook}
-          onClose={() => setEditBook(null)}
-          onSave={async (id, payload) => { await updateBook(id, payload); setEditBook(null); }}
-        />
-      )}
-
-      {deleteId && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setDeleteId(null)} />
-          <div className="relative bg-card rounded-2xl border border-border p-5 w-full max-w-xs space-y-4 shadow-2xl z-10">
-            <p className="text-sm font-extrabold text-foreground">Remover livro?</p>
-            <p className="text-xs text-muted-foreground">Essa ação não pode ser desfeita.</p>
-            <div className="flex gap-2">
-              <button onClick={() => setDeleteId(null)} className="flex-1 py-2 rounded-xl bg-muted text-xs font-bold text-muted-foreground">Cancelar</button>
-              <button onClick={() => { removeBook(deleteId); setDeleteId(null); }} className="flex-1 py-2 rounded-xl bg-foreground text-background text-xs font-bold">Remover</button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+  const filteredBooks = books.filter(
+    (b) =>
+      b.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      b.author?.toLowerCase().includes(searchQuery.toLowerCase())
   );
-}
 
-// ── Card de livro ─────────────────────────────────────────────────────────
-function BookRow({ book, onEdit, onDelete, onPageUpdate }: {
-  book: Book;
-  onEdit: () => void;
-  onDelete: () => void;
-  onPageUpdate: (page: number) => void;
-}) {
-  const [editingPage, setEditingPage] = useState(false);
-  const [pageInput, setPageInput]     = useState(String(book.currentPage));
-
-  const pct  = book.totalPages > 0 ? Math.min(100, Math.round((book.currentPage / book.totalPages) * 100)) : 0;
-  const meta = STATUS_META[book.status];
-  const Icon = meta.icon;
-
-  const commitPage = () => {
-    const p = Math.max(0, Math.min(book.totalPages, Number(pageInput) || 0));
-    onPageUpdate(p);
-    setEditingPage(false);
-  };
+  const readingBooks = filteredBooks.filter((b) => b.status === "reading");
+  const wantBooks = filteredBooks.filter((b) => b.status === "want");
+  const completedBooks = filteredBooks.filter((b) => b.status === "completed");
 
   return (
-    <div className="flex gap-3 p-3 rounded-2xl border border-border bg-card hover:bg-muted/30 transition-colors group">
-      {/* Capa */}
-      <div className="w-12 h-16 rounded-lg overflow-hidden bg-muted shrink-0 border border-border">
-        {book.cover
-          ? <img src={book.cover} alt={book.title} className="w-full h-full object-cover" />
-          : <div className="w-full h-full flex items-center justify-center"><BookOpen size={16} className="text-muted-foreground" /></div>
-        }
-      </div>
-
-      {/* Conteúdo */}
-      <div className="flex-1 min-w-0 space-y-1.5">
-        <div className="flex items-start justify-between gap-2">
-          <div className="min-w-0">
-            <h4 className="text-xs font-extrabold text-foreground leading-tight line-clamp-1">{book.title}</h4>
-            <p className="text-[11px] text-muted-foreground truncate">{book.author}</p>
-          </div>
-          <span className={cn("flex items-center gap-1 text-[9px] font-extrabold px-1.5 py-0.5 rounded-full border shrink-0", meta.pill)}>
-            <Icon size={9} />{meta.label}
-          </span>
+    <div className="space-y-6 fade-in pb-8 select-none">
+      {/* Top Header */}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div>
+          <span className="badge-ios text-[10px]">Leitura & Conhecimento</span>
+          <h3 className="text-xl font-black text-foreground tracking-tight mt-1">Estante Pessoal de Livros</h3>
         </div>
 
-        {/* Progresso */}
-        {book.status !== "want" && (
-          <div className="space-y-1">
-            <div className="flex items-center justify-between text-[10px]">
-              {editingPage ? (
-                <div className="flex items-center gap-1">
-                  <input
-                    type="number"
-                    value={pageInput}
-                    onChange={(e) => setPageInput(e.target.value)}
-                    onBlur={commitPage}
-                    onKeyDown={(e) => e.key === "Enter" && commitPage()}
-                    className="w-14 px-1.5 py-0.5 rounded-lg border border-foreground bg-background text-foreground text-[10px] font-bold text-center"
-                    min={0} max={book.totalPages} autoFocus
-                  />
-                  <span className="text-muted-foreground">/ {book.totalPages} pág</span>
-                </div>
-              ) : (
-                <button
-                  onClick={() => { setEditingPage(true); setPageInput(String(book.currentPage)); }}
-                  className="flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors group/page"
-                >
-                  <span className="font-bold">{book.currentPage}</span>
-                  <span>/ {book.totalPages} pág</span>
-                  <Edit3 size={9} className="opacity-0 group-hover/page:opacity-60 transition-opacity" />
-                </button>
-              )}
-              <span className="font-extrabold text-foreground">{pct}%</span>
-            </div>
-            <div className="h-1.5 bg-muted rounded-full overflow-hidden">
-              <div className="h-full bg-foreground rounded-full transition-all duration-500" style={{ width: `${pct}%` }} />
-            </div>
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          <div className="relative flex-1 sm:w-64">
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Buscar livro ou autor..."
+              className="input-ios pl-9 py-2 text-xs w-full"
+            />
           </div>
-        )}
 
-        {/* Ações */}
-        <div className="flex items-center justify-between pt-0.5">
-          {book.status !== "want" ? (
-            <div className="flex gap-1">
-              {[10, 25, 50].map((n) => (
-                <button
-                  key={n}
-                  onClick={() => onPageUpdate(book.currentPage + n)}
-                  className="px-1.5 py-0.5 rounded-lg bg-muted text-[10px] font-bold text-muted-foreground hover:text-foreground border border-border transition-colors"
-                >+{n}</button>
+          <button onClick={() => handleOpenModal()} className="btn-ios text-xs py-2.5 px-4 shrink-0">
+            <Plus size={15} strokeWidth={2.5} />
+            <span>Adicionar Livro</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Grid de Seções (Lendo Atualmente, Quero Ler, Concluídos) */}
+      <div className="space-y-6">
+        {/* 1. LENDO ATUALMENTE */}
+        <section className="space-y-3">
+          <div className="flex items-center gap-2">
+            <BookOpen size={16} className="text-foreground" />
+            <h4 className="text-sm font-extrabold text-foreground uppercase tracking-wider">
+              Lendo Atualmente ({readingBooks.length})
+            </h4>
+          </div>
+
+          {readingBooks.length === 0 ? (
+            <div className="glass-card p-6 text-center text-xs text-muted-foreground font-medium rounded-2xl border border-dashed border-border">
+              Nenhum livro sendo lido no momento. Adicione um para acompanhar as páginas!
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {readingBooks.map((book) => (
+                <BookCard key={book.id} book={book} onEdit={() => handleOpenModal(book)} onDelete={() => handleRemoveBook(book.id)} />
               ))}
             </div>
-          ) : <span />}
-          <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-            <button onClick={onEdit} className="p-1 rounded-lg bg-muted text-muted-foreground hover:text-foreground transition-colors"><Edit3 size={11} /></button>
-            <button onClick={onDelete} className="p-1 rounded-lg bg-muted text-muted-foreground hover:text-foreground transition-colors"><Trash2 size={11} /></button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
+          )}
+        </section>
 
-// ── Modal Adicionar ────────────────────────────────────────────────────────
-function AddBookModal({ onClose, onAdd }: {
-  onClose: () => void;
-  onAdd: (payload: {
-    title: string; author: string; cover?: string;
-    total_pages: number; current_page: number;
-    status: string; isbn?: string; publisher?: string; year?: string;
-  }) => Promise<void>;
-}) {
-  const [query, setQuery]             = useState("");
-  const [results, setResults]         = useState<GoogleBook[]>([]);
-  const [searching, setSearching]     = useState(false);
-  const [title, setTitle]             = useState("");
-  const [author, setAuthor]           = useState("");
-  const [totalPages, setTotalPages]   = useState("");
-  const [currentPage, setCurrentPage] = useState("0");
-  const [status, setStatus]           = useState<BookStatus>("want");
-  const [cover, setCover]             = useState("");
-  const [publisher, setPublisher]     = useState("");
-  const [year, setYear]               = useState("");
-  const [saving, setSaving]           = useState(false);
-  const timer                         = useRef<ReturnType<typeof setTimeout>>();
-
-  const handleSearch = (q: string) => {
-    setQuery(q);
-    clearTimeout(timer.current);
-    if (q.length < 2) { setResults([]); return; }
-    timer.current = setTimeout(async () => {
-      setSearching(true);
-      const r = await searchGoogleBooks(q);
-      setResults(r);
-      setSearching(false);
-    }, 500);
-  };
-
-  const pickBook = (g: GoogleBook) => {
-    const v = g.volumeInfo;
-    setTitle(v.title || "");
-    setAuthor(v.authors?.join(", ") || "");
-    setTotalPages(String(v.pageCount || ""));
-    setCover(v.imageLinks?.thumbnail?.replace("http://", "https://") || "");
-    setPublisher(v.publisher || "");
-    setYear(v.publishedDate?.slice(0, 4) || "");
-    setResults([]);
-    setQuery(v.title || "");
-  };
-
-  const handleSave = async () => {
-    if (!title.trim() || !totalPages) return;
-    setSaving(true);
-    await onAdd({
-      title:        title.trim(),
-      author:       author.trim() || "Desconhecido",
-      cover:        cover || undefined,
-      total_pages:  Number(totalPages),
-      current_page: Number(currentPage) || 0,
-      status,
-      publisher:    publisher || undefined,
-      year:         year || undefined,
-    });
-    setSaving(false);
-  };
-
-  return (
-    <div className="fixed inset-0 z-[150] flex items-end sm:items-center justify-center p-0 sm:p-4">
-      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative bg-card w-full sm:max-w-md rounded-t-[28px] sm:rounded-[28px] shadow-2xl border border-border flex flex-col max-h-[92dvh] z-10">
-
-        <div className="px-5 py-4 border-b border-border flex items-center justify-between shrink-0">
-          <span className="text-sm font-extrabold text-foreground">Adicionar Livro</span>
-          <button onClick={onClose} className="w-7 h-7 rounded-full bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground"><X size={13} /></button>
-        </div>
-
-        <div className="flex-1 overflow-y-auto p-5 space-y-4">
-          {/* Busca */}
-          <div>
-            <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">Buscar título ou autor</label>
-            <div className="relative">
-              <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
-              <input type="text" value={query} onChange={(e) => handleSearch(e.target.value)}
-                placeholder="Ex: Hábitos Atômicos..." className="input-ios pl-8 text-sm w-full" autoFocus />
-              {searching && <div className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 border-2 border-foreground border-t-transparent rounded-full animate-spin" />}
-            </div>
-
-            {results.length > 0 && (
-              <div className="mt-2 rounded-2xl border border-border overflow-hidden shadow-xl bg-card divide-y divide-border">
-                {results.map((g) => {
-                  const v = g.volumeInfo;
-                  return (
-                    <button key={g.id} onClick={() => pickBook(g)}
-                      className="w-full flex items-center gap-3 p-3 hover:bg-muted text-left transition-colors">
-                      <div className="w-9 h-12 rounded-md overflow-hidden bg-muted shrink-0 border border-border">
-                        {v.imageLinks?.thumbnail
-                          ? <img src={v.imageLinks.thumbnail.replace("http://", "https://")} alt="" className="w-full h-full object-cover" />
-                          : <BookOpen size={14} className="m-auto mt-3 text-muted-foreground" />}
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <p className="text-xs font-extrabold text-foreground line-clamp-1">{v.title}</p>
-                        <p className="text-[11px] text-muted-foreground line-clamp-1">{v.authors?.join(", ")}</p>
-                        {v.pageCount && <p className="text-[10px] text-muted-foreground">{v.pageCount} páginas</p>}
-                      </div>
-                      <ChevronRight size={14} className="text-muted-foreground shrink-0" />
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-
+        {/* 2. QUERO LER */}
+        <section className="space-y-3">
           <div className="flex items-center gap-2">
-            <div className="flex-1 h-px bg-border" />
-            <span className="text-[10px] font-bold text-muted-foreground">ou preencha manualmente</span>
-            <div className="flex-1 h-px bg-border" />
+            <Bookmark size={16} className="text-muted-foreground" />
+            <h4 className="text-sm font-extrabold text-foreground uppercase tracking-wider">
+              Lista de Desejos / Quero Ler ({wantBooks.length})
+            </h4>
           </div>
 
-          <div className="space-y-3">
-            <div>
-              <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">Título *</label>
-              <input type="text" value={title} onChange={(e) => setTitle(e.target.value)}
-                placeholder="Título do livro" className="input-ios text-sm font-bold w-full" />
+          {wantBooks.length === 0 ? (
+            <div className="glass-card p-4 text-center text-xs text-muted-foreground font-medium rounded-2xl border border-dashed border-border">
+              Sua lista de desejos está vazia.
             </div>
-            <div>
-              <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">Autor</label>
-              <input type="text" value={author} onChange={(e) => setAuthor(e.target.value)}
-                placeholder="Nome do autor" className="input-ios text-xs w-full" />
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              {wantBooks.map((book) => (
+                <BookCard key={book.id} book={book} onEdit={() => handleOpenModal(book)} onDelete={() => handleRemoveBook(book.id)} />
+              ))}
             </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">Total de páginas *</label>
-                <input type="number" value={totalPages} onChange={(e) => setTotalPages(e.target.value)}
-                  placeholder="300" className="input-ios text-xs w-full" min={1} />
-              </div>
-              <div>
-                <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">Página atual</label>
-                <input type="number" value={currentPage} onChange={(e) => setCurrentPage(e.target.value)}
-                  placeholder="0" className="input-ios text-xs w-full" min={0} />
-              </div>
-            </div>
+          )}
+        </section>
 
-            <div>
-              <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">Status</label>
-              <div className="flex gap-2">
-                {(["want", "reading", "completed"] as BookStatus[]).map((s) => {
-                  const m = STATUS_META[s]; const Icon = m.icon;
-                  return (
-                    <button key={s} type="button" onClick={() => setStatus(s)}
-                      className={cn(
-                        "flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl border-2 text-xs font-bold transition-all",
-                        status === s ? m.pill : "border-border text-muted-foreground bg-muted/30"
-                      )}>
-                      <Icon size={12} />{m.label}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
+        {/* 3. CONCLUÍDOS */}
+        <section className="space-y-3">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 size={16} className="text-emerald-500" />
+            <h4 className="text-sm font-extrabold text-foreground uppercase tracking-wider">
+              Lidos & Concluídos ({completedBooks.length})
+            </h4>
           </div>
-        </div>
 
-        <div className="px-5 py-4 border-t border-border flex gap-2 shrink-0">
-          <button onClick={onClose} className="flex-1 py-2.5 rounded-xl bg-muted text-xs font-bold text-muted-foreground">Cancelar</button>
-          <button onClick={handleSave} disabled={!title.trim() || !totalPages || saving}
-            className="flex-1 btn-ios text-xs py-2.5 disabled:opacity-40">
-            <Save size={13} /><span>{saving ? "Salvando..." : "Salvar"}</span>
-          </button>
-        </div>
+          {completedBooks.length === 0 ? (
+            <div className="glass-card p-4 text-center text-xs text-muted-foreground font-medium rounded-2xl border border-dashed border-border">
+              Nenhum livro finalizado ainda.
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              {completedBooks.map((book) => (
+                <BookCard key={book.id} book={book} onEdit={() => handleOpenModal(book)} onDelete={() => handleRemoveBook(book.id)} />
+              ))}
+            </div>
+          )}
+        </section>
       </div>
+
+      {/* Modal de Cadastro / Edição de Livro */}
+      {showModal && (
+        <div className="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-card w-full max-w-md rounded-3xl border border-border shadow-2xl overflow-hidden flex flex-col max-h-[90vh] slide-up">
+            <div className="p-5 border-b border-border/60 flex items-center justify-between shrink-0">
+              <h3 className="text-base font-extrabold text-foreground">
+                {editingBook ? "Editar Livro" : "Adicionar Novo Livro"}
+              </h3>
+              <button onClick={() => setShowModal(false)} className="text-xs font-bold text-muted-foreground hover:text-foreground">
+                Fechar
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveBook} className="p-5 space-y-4 overflow-y-auto flex-1 custom-scrollbar">
+              <div>
+                <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">
+                  Título do Livro
+                </label>
+                <input
+                  type="text"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="Ex: Hábitos Atômicos"
+                  className="input-ios text-xs font-bold"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">
+                  Autor
+                </label>
+                <input
+                  type="text"
+                  value={author}
+                  onChange={(e) => setAuthor(e.target.value)}
+                  placeholder="Ex: James Clear"
+                  className="input-ios text-xs font-semibold"
+                />
+              </div>
+
+              <div className="grid grid-cols-3 gap-2">
+                <div>
+                  <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">
+                    Status
+                  </label>
+                  <select
+                    value={status}
+                    onChange={(e) => setStatus(e.target.value as any)}
+                    className="input-ios py-2 text-xs font-bold w-full bg-card text-foreground"
+                  >
+                    <option value="reading">Lendo</option>
+                    <option value="want">Quero Ler</option>
+                    <option value="completed">Concluído</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">
+                    Pág. Atual
+                  </label>
+                  <input
+                    type="number"
+                    value={currentPage}
+                    onChange={(e) => setCurrentPage(e.target.value)}
+                    placeholder="185"
+                    className="input-ios text-xs font-bold"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">
+                    Total Págs.
+                  </label>
+                  <input
+                    type="number"
+                    value={totalPages}
+                    onChange={(e) => setTotalPages(e.target.value)}
+                    placeholder="320"
+                    className="input-ios text-xs font-bold"
+                  />
+                </div>
+              </div>
+
+              {/* Citações Favoritas */}
+              <div className="space-y-2 pt-2 border-t border-border/50">
+                <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block flex items-center gap-1">
+                  <Quote size={12} />
+                  <span>Citações & Trechos Favoritos</span>
+                </label>
+
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={quoteInput}
+                    onChange={(e) => setQuoteInput(e.target.value)}
+                    placeholder="Adicionar citação inspiradora..."
+                    className="input-ios py-2 text-xs flex-1"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleAddQuote}
+                    className="p-2 rounded-xl bg-muted hover:bg-secondary text-foreground transition-colors font-bold text-xs"
+                  >
+                    <Plus size={15} />
+                  </button>
+                </div>
+
+                {quotesList.length > 0 && (
+                  <div className="space-y-1.5 pt-1">
+                    {quotesList.map((q, idx) => (
+                      <div key={idx} className="p-2 rounded-xl bg-muted/50 border border-border text-[11px] font-medium text-foreground flex items-center justify-between gap-2">
+                        <span className="italic">"{q}"</span>
+                        <button type="button" onClick={() => handleRemoveQuote(idx)} className="text-muted-foreground hover:text-red-500">
+                          <Trash2 size={13} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <button type="submit" className="btn-ios w-full py-3.5 text-xs font-black uppercase tracking-wider mt-2">
+                <span>Salvar Livro</span>
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
-// ── Modal Editar ──────────────────────────────────────────────────────────
-function EditBookModal({ book, onClose, onSave }: {
-  book: Book;
-  onClose: () => void;
-  onSave: (id: string, payload: Partial<{
-    title: string; author: string; total_pages: number;
-    current_page: number; status: string;
-  }>) => Promise<void>;
-}) {
-  const [title, setTitle]             = useState(book.title);
-  const [author, setAuthor]           = useState(book.author);
-  const [totalPages, setTotalPages]   = useState(String(book.totalPages));
-  const [currentPage, setCurrentPage] = useState(String(book.currentPage));
-  const [status, setStatus]           = useState<BookStatus>(book.status);
-  const [saving, setSaving]           = useState(false);
-
-  const handleSave = async () => {
-    setSaving(true);
-    await onSave(book.id, {
-      title:        title.trim(),
-      author:       author.trim(),
-      total_pages:  Number(totalPages),
-      current_page: Number(currentPage),
-      status,
-    });
-    setSaving(false);
-  };
+function BookCard({ book, onEdit, onDelete }: { book: Book; onEdit: () => void; onDelete: () => void }) {
+  const total = book.totalPages || 100;
+  const current = book.currentPage || 0;
+  const pct = Math.min(100, Math.round((current / total) * 100));
 
   return (
-    <div className="fixed inset-0 z-[150] flex items-end sm:items-center justify-center p-0 sm:p-4">
-      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative bg-card w-full sm:max-w-md rounded-t-[28px] sm:rounded-[28px] shadow-2xl border border-border flex flex-col max-h-[92dvh] z-10">
-
-        <div className="px-5 py-4 border-b border-border flex items-center justify-between shrink-0">
-          <span className="text-sm font-extrabold text-foreground">Editar Livro</span>
-          <button onClick={onClose} className="w-7 h-7 rounded-full bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground"><X size={13} /></button>
+    <div className="glass-card p-4 rounded-2xl border border-border space-y-3 relative group transition-all hover:scale-[1.01]">
+      <div className="flex items-start justify-between gap-2">
+        <div>
+          <h4 className="text-sm font-extrabold text-foreground leading-tight">{book.title}</h4>
+          <p className="text-[11px] font-medium text-muted-foreground mt-0.5">{book.author || "Autor desconhecido"}</p>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-5 space-y-4">
-          <div>
-            <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">Título</label>
-            <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} className="input-ios text-sm font-bold w-full" />
-          </div>
-          <div>
-            <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">Autor</label>
-            <input type="text" value={author} onChange={(e) => setAuthor(e.target.value)} className="input-ios text-xs w-full" />
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">Total páginas</label>
-              <input type="number" value={totalPages} onChange={(e) => setTotalPages(e.target.value)} className="input-ios text-xs w-full" min={1} />
-            </div>
-            <div>
-              <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">Página atual</label>
-              <input type="number" value={currentPage} onChange={(e) => setCurrentPage(e.target.value)} className="input-ios text-xs w-full" min={0} />
-            </div>
-          </div>
-          <div>
-            <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">Status</label>
-            <div className="flex gap-2">
-              {(["want", "reading", "completed"] as BookStatus[]).map((s) => {
-                const m = STATUS_META[s]; const Icon = m.icon;
-                return (
-                  <button key={s} type="button" onClick={() => setStatus(s)}
-                    className={cn(
-                      "flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl border-2 text-xs font-bold transition-all",
-                      status === s ? m.pill : "border-border text-muted-foreground bg-muted/30"
-                    )}>
-                    <Icon size={12} />{m.label}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-
-        <div className="px-5 py-4 border-t border-border flex gap-2 shrink-0">
-          <button onClick={onClose} className="flex-1 py-2.5 rounded-xl bg-muted text-xs font-bold text-muted-foreground">Cancelar</button>
-          <button onClick={handleSave} disabled={saving} className="flex-1 btn-ios text-xs py-2.5 disabled:opacity-40">
-            <Save size={13} /><span>{saving ? "Salvando..." : "Salvar"}</span>
+        <div className="flex items-center gap-1 opacity-80 group-hover:opacity-100 transition-opacity">
+          <button onClick={onEdit} className="p-1 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground">
+            <Edit3 size={14} />
+          </button>
+          <button onClick={onDelete} className="p-1 rounded-lg hover:bg-muted text-muted-foreground hover:text-red-500">
+            <Trash2 size={14} />
           </button>
         </div>
       </div>
+
+      {/* Progresso de Páginas */}
+      <div className="space-y-1">
+        <div className="flex items-center justify-between text-[10px] font-bold">
+          <span className="text-muted-foreground">Progresso: {current} / {total} págs</span>
+          <span className="text-foreground font-black">{pct}%</span>
+        </div>
+        <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+          <div
+            className={cn(
+              "h-full rounded-full transition-all",
+              book.status === "completed" ? "bg-emerald-500" : "bg-foreground"
+            )}
+            style={{ width: `${pct}%` }}
+          />
+        </div>
+      </div>
+
+      {/* Citações */}
+      {book.favoriteQuotes && book.favoriteQuotes.length > 0 && (
+        <div className="p-2.5 rounded-xl bg-muted/30 border border-border/40 text-[11px] italic text-muted-foreground flex items-start gap-1.5">
+          <Quote size={13} className="text-foreground shrink-0 mt-0.5" />
+          <span className="line-clamp-2">"{book.favoriteQuotes[0]}"</span>
+        </div>
+      )}
     </div>
   );
 }
