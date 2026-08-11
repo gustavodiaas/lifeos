@@ -7,7 +7,9 @@ export interface NotificationSettings {
   habitsReminder: boolean;
   habitsTime: string; // "20:00"
   journalReminder: boolean;
-  journalTime: string; // "21:30 text"
+  journalTime: string; // "21:30"
+  calendarReminder: boolean; // Notificação de eventos da agenda
+  calendarAdvanceMinutes: number; // 15
   pomodoroAlerts: boolean;
 }
 
@@ -24,6 +26,8 @@ export function getNotificationSettings(): NotificationSettings {
     habitsTime: "20:00",
     journalReminder: true,
     journalTime: "21:30",
+    calendarReminder: true,
+    calendarAdvanceMinutes: 15,
     pomodoroAlerts: true,
   };
 }
@@ -83,17 +87,49 @@ export async function checkDailyReminders() {
   if (!settings.enabled || Notification.permission !== "granted") return;
 
   const { data: { session } } = await supabase.auth.getSession();
-  if (!session?.user?.id) return;
-  const userId = session.user.id;
+  const userId = session?.user?.id || "guest";
 
   const now = new Date();
   const currentHours = String(now.getHours()).padStart(2, "0");
   const currentMinutes = String(now.getMinutes()).padStart(2, "0");
   const currentTime = `${currentHours}:${currentMinutes}`;
+  const nowTotalMinutes = now.getHours() * 60 + now.getMinutes();
 
   const today = todayIso();
 
-  // Lembrete de Hábitos
+  // 1. Notificações do Calendário
+  if (settings.calendarReminder) {
+    try {
+      const storageKey = `lifeos_${userId}_calendar_events_v2`;
+      const saved = localStorage.getItem(storageKey);
+      if (saved) {
+        const events = JSON.parse(saved);
+        const notifiedKey = `lifeos_notified_events_${today}`;
+        const notifiedSet = new Set<string>(JSON.parse(localStorage.getItem(notifiedKey) || "[]"));
+
+        events.forEach((evt: any) => {
+          if (evt.date === today && evt.startTime && !notifiedSet.has(evt.id)) {
+            const [evtHours, evtMins] = evt.startTime.split(":").map(Number);
+            const evtTotalMinutes = evtHours * 60 + evtMins;
+            const diffMinutes = evtTotalMinutes - nowTotalMinutes;
+
+            // Se estiver entre 0 e X minutos antes do evento
+            if (diffMinutes >= 0 && diffMinutes <= (settings.calendarAdvanceMinutes || 15)) {
+              sendBrowserNotification(`LifeOS — Lembrete de Agenda ⏰`, {
+                body: `${evt.title} começa às ${evt.startTime}${diffMinutes > 0 ? ` (em ${diffMinutes} min)` : " (agora!)"}`,
+              });
+              notifiedSet.add(evt.id);
+              localStorage.setItem(notifiedKey, JSON.stringify(Array.from(notifiedSet)));
+            }
+          }
+        });
+      }
+    } catch (err) {
+      console.error("Erro ao checar notificações do calendário:", err);
+    }
+  }
+
+  // 2. Lembrete de Hábitos
   if (settings.habitsReminder && currentTime === settings.habitsTime) {
     const lastSentHabits = localStorage.getItem("lifeos_last_notif_habits");
     if (lastSentHabits !== today) {
@@ -119,7 +155,7 @@ export async function checkDailyReminders() {
     }
   }
 
-  // Lembrete do Diário
+  // 3. Lembrete do Diário
   if (settings.journalReminder && currentTime === settings.journalTime) {
     const lastSentJournal = localStorage.getItem("lifeos_last_notif_journal");
     if (lastSentJournal !== today) {
