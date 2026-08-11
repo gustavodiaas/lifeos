@@ -59,9 +59,13 @@ export function AuthScreen() {
   const handleGoogleLogin = async () => {
     setError(null);
     try {
+      const redirectUrl = window.location.origin.includes('localhost')
+        ? window.location.origin
+        : 'https://lifeos-omega-three.vercel.app';
+
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
-        options: { redirectTo: window.location.origin },
+        options: { redirectTo: redirectUrl },
       });
       if (error) throw error;
     } catch (err: any) {
