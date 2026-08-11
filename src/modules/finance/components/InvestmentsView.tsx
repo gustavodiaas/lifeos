@@ -19,6 +19,7 @@ import {
 import { cn } from '@/lib/utils';
 import { toast } from '@/lib/toast';
 import { CustomSelect } from '@/components/ui/CustomSelect';
+import { useAuthContext } from '@/context/AuthContext';
 
 export interface InvestmentAsset {
   id: string;
@@ -90,17 +91,32 @@ interface RealtimeRates {
   USDBRL?: number;
   EURBRL?: number;
   BTCBRL?: number;
-  ETHBRL?: number;
 }
 
 export function InvestmentsView() {
+  const { user } = useAuthContext();
+  const userId = user?.id || "guest";
+  const storageKey = `lifeos_${userId}_investments`;
+
   const [assets, setAssets] = useState<InvestmentAsset[]>(() => {
     try {
-      const saved = localStorage.getItem('lifeos_investments');
+      const saved = localStorage.getItem(storageKey);
       if (saved) return JSON.parse(saved);
     } catch {}
-    return DEFAULT_ASSETS;
+    return [];
   });
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(storageKey);
+      if (saved) setAssets(JSON.parse(saved));
+      else setAssets([]);
+    } catch {}
+  }, [storageKey]);
+
+  useEffect(() => {
+    localStorage.setItem(storageKey, JSON.stringify(assets));
+  }, [assets, storageKey]);
 
   const [rates, setRates] = useState<RealtimeRates>({});
   const [loadingQuotes, setLoadingQuotes] = useState(false);
@@ -114,11 +130,6 @@ export function InvestmentsView() {
   const [avgPrice, setAvgPrice] = useState('');
   const [currentPriceInput, setCurrentPriceInput] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
-
-  // Salvar no localStorage
-  useEffect(() => {
-    localStorage.setItem('lifeos_investments', JSON.stringify(assets));
-  }, [assets]);
 
   // Buscar cotações em tempo real via AwesomeAPI (Dólar, Euro, BTC, ETH)
   const fetchQuotes = async () => {
