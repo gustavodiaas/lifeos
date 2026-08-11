@@ -65,19 +65,34 @@ export async function requestNotificationPermission(): Promise<boolean> {
   }
 }
 
-export function sendBrowserNotification(title: string, options?: NotificationOptions) {
+export async function sendBrowserNotification(title: string, options?: NotificationOptions) {
   if (!("Notification" in window) || Notification.permission !== "granted") {
     return;
   }
 
+  const notificationOptions: NotificationOptions = {
+    icon: "/icons/icon-192.png",
+    badge: "/icons/icon-192.png",
+    ...options,
+  };
+
   try {
-    new Notification(title, {
-      icon: "/favicon.ico",
-      badge: "/favicon.ico",
-      ...options,
-    });
+    if ("serviceWorker" in navigator) {
+      const registration = await navigator.serviceWorker.ready;
+      if (registration && registration.showNotification) {
+        await registration.showNotification(title, notificationOptions);
+        return;
+      }
+    }
+
+    new Notification(title, notificationOptions);
   } catch (err) {
-    console.error("Erro ao enviar notificação:", err);
+    console.error("Erro ao enviar notificação via PWA / SW:", err);
+    try {
+      new Notification(title, notificationOptions);
+    } catch (fallbackErr) {
+      console.error("Erro no fallback de notificação:", fallbackErr);
+    }
   }
 }
 
