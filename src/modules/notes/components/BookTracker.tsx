@@ -6,6 +6,7 @@ import { ModalPortal } from "@/components/ui/ModalPortal";
 import { cn } from "@/lib/utils";
 import { toast } from "@/lib/toast";
 import { useAuthContext } from "@/context/AuthContext";
+import { useWorkspace } from "@/context/WorkspaceContext";
 
 export interface ExtendedBook extends Book {
   coverUrl?: string;
@@ -59,12 +60,12 @@ interface GoogleBookItem {
       smallThumbnail?: string;
     };
     categories?: string[];
-  };
 }
 
 export function BookTracker() {
   const { user } = useAuthContext();
-  const userId = user?.id || "guest";
+  const { activeUserId } = useWorkspace();
+  const userId = activeUserId || user?.id || "guest";
   const storageKey = `lifeos_${userId}_books`;
 
   const [books, setBooks] = useState<ExtendedBook[]>(() => {
