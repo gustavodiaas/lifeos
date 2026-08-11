@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import type { Metric } from "@/lib/supabase";
 import { Scale, HeartPulse, Flame, Utensils, Info, ChevronDown, ChevronUp } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAuthContext } from "@/context/AuthContext";
 
 interface HealthWeightWidgetProps {
   weightLogs: Metric[];
@@ -9,15 +10,19 @@ interface HealthWeightWidgetProps {
 }
 
 export function HealthWeightWidget({ weightLogs, onOpenLogger }: HealthWeightWidgetProps) {
+  const { user } = useAuthContext();
+  const userId = user?.id || "guest";
+  const storageKey = `lifeos_${userId}_user_height`;
+
   const [heightCm, setHeightCm] = useState<string>(() => {
-    return localStorage.getItem("lifeos_user_height") || "175";
+    return localStorage.getItem(storageKey) || "175";
   });
   const [showRecipes, setShowRecipes] = useState(false);
   const [showTips, setShowTips] = useState(false);
 
   useEffect(() => {
-    if (heightCm) localStorage.setItem("lifeos_user_height", heightCm);
-  }, [heightCm]);
+    if (heightCm) localStorage.setItem(storageKey, heightCm);
+  }, [heightCm, storageKey]);
 
   const latestWeight = weightLogs.at(-1)?.value || 0;
   const heightM = parseFloat(heightCm) / 100;
