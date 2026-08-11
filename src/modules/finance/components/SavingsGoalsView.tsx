@@ -4,6 +4,7 @@ import { PiggyBank, Plus, ArrowUpRight, ArrowDownRight, Target, Shield, Plane, L
 import { cn } from "@/lib/utils";
 import { toast } from "@/lib/toast";
 import { CustomSelect } from "@/components/ui/CustomSelect";
+import { useAuthContext } from "@/context/AuthContext";
 
 export interface SavingsBox {
   id: string;
@@ -52,13 +53,29 @@ const CATEGORY_META = {
 };
 
 export function SavingsGoalsView() {
+  const { user } = useAuthContext();
+  const userId = user?.id || "guest";
+  const storageKey = `lifeos_${userId}_savings_boxes`;
+
   const [boxes, setBoxes] = useState<SavingsBox[]>(() => {
     try {
-      const saved = localStorage.getItem("lifeos_savings_boxes");
+      const saved = localStorage.getItem(storageKey);
       if (saved) return JSON.parse(saved);
     } catch {}
-    return DEFAULT_BOXES;
+    return [];
   });
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(storageKey);
+      if (saved) setBoxes(JSON.parse(saved));
+      else setBoxes([]);
+    } catch {}
+  }, [storageKey]);
+
+  useEffect(() => {
+    localStorage.setItem(storageKey, JSON.stringify(boxes));
+  }, [boxes, storageKey]);
 
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [activeBoxForTx, setActiveBoxForTx] = useState<{ box: SavingsBox; type: "deposit" | "withdraw" } | null>(null);
@@ -72,10 +89,6 @@ export function SavingsGoalsView() {
   // Form states para aporte/resgate
   const [txAmount, setTxAmount] = useState("");
   const [txNote, setTxNote] = useState("");
-
-  useEffect(() => {
-    localStorage.setItem("lifeos_savings_boxes", JSON.stringify(boxes));
-  }, [boxes]);
 
   const totalSaved = useMemo(() => boxes.reduce((acc, b) => acc + b.currentAmount, 0), [boxes]);
   const totalTarget = useMemo(() => boxes.reduce((acc, b) => acc + b.targetAmount, 0), [boxes]);
