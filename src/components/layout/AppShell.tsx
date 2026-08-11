@@ -12,6 +12,7 @@ import {
   Search,
   Grid,
   Plus,
+  Library,
 } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { CommandPalette } from "./CommandPalette";
