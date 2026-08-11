@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { Lancamento } from "@/lib/supabase";
 import { formatBRL } from "@/lib/date";
+import { exportFinanceToCSV, printFinanceReport } from "@/lib/export";
 import {
   Wallet,
   ArrowUpRight,
@@ -19,6 +20,8 @@ import {
   Search,
   PieChart,
   ShieldCheck,
+  Download,
+  Printer,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -225,6 +228,22 @@ export function AppleFinanceView({
               )}
             >
               <ArrowDownRight size={13} /> Despesas
+            </button>
+
+            <button
+              onClick={() => exportFinanceToCSV(filteredTransactions, "extrato")}
+              className="p-1.5 rounded-xl bg-muted/60 hover:bg-muted text-muted-foreground hover:text-foreground transition-colors shrink-0"
+              title="Exportar CSV"
+            >
+              <Download size={14} />
+            </button>
+
+            <button
+              onClick={() => printFinanceReport(filteredTransactions, "extrato", income, expense, balance)}
+              className="p-1.5 rounded-xl bg-muted/60 hover:bg-muted text-muted-foreground hover:text-foreground transition-colors shrink-0"
+              title="Imprimir Relatório (PDF)"
+            >
+              <Printer size={14} />
             </button>
           </div>
         </div>
