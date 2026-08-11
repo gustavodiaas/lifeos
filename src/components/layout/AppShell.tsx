@@ -69,12 +69,20 @@ const PAGE_TITLES: Record<string, string> = {
   "/settings": "Ajustes",
 };
 
+import { useWorkspace } from "@/context/WorkspaceContext";
+import { SharedAccessModal } from "@/components/modals/SharedAccessModal";
+import { Users, UserPlus, Eye, ShieldAlert } from "lucide-react";
+
 export function AppShell({ children }: { children?: ReactNode }) {
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [fabOpen, setFabOpen] = useState(false);
+  const [sharedModalOpen, setSharedModalOpen] = useState(false);
+
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const { user } = useAuthContext();
+  const { activeUserId, isSharedWorkspace, activeWorkspace, myWorkspaces, setActiveUserId } = useWorkspace();
+
   const greeting = getGreeting();
   const firstName = getFirstName(user);
   const avatarUrl = user?.user_metadata?.avatar_url || (typeof window !== "undefined" ? localStorage.getItem("lifeos_avatar_url") : null) || "";
@@ -100,7 +108,7 @@ export function AppShell({ children }: { children?: ReactNode }) {
       {/* ── Desktop Sidebar — macOS Style ───────────────────────────── */}
       <aside className="hidden md:flex w-64 shrink-0 flex-col glass-panel border-r border-[var(--glass-border)] select-none">
         {/* Header / Brand */}
-        <div className="px-5 pt-6 pb-4">
+        <div className="px-5 pt-6 pb-3 space-y-3">
           <Link to="/settings" className="flex items-center gap-3 group">
             <div className="h-10 w-10 rounded-full bg-[#212121] dark:bg-foreground flex items-center justify-center shadow-lg shadow-black/10 dark:shadow-black/20 transition-transform group-hover:scale-105 overflow-hidden shrink-0 ring-2 ring-border">
               {avatarUrl ? (
@@ -116,6 +124,34 @@ export function AppShell({ children }: { children?: ReactNode }) {
               <p className="text-[11px] text-muted-foreground font-medium truncate">{greeting} 👋</p>
             </div>
           </Link>
+
+          {/* Alternador de Espaço de Trabalho / Conta (Workspace Switcher) */}
+          <div className="p-2 rounded-2xl bg-muted/40 border border-border/50 space-y-1.5">
+            <div className="flex items-center justify-between px-1">
+              <span className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider">Espaço Ativo</span>
+              <button
+                onClick={() => setSharedModalOpen(true)}
+                className="text-[10px] font-extrabold text-foreground hover:underline flex items-center gap-1"
+                title="Convidar ou Acessar Outras Contas"
+              >
+                <UserPlus size={12} />
+                <span>Acessos</span>
+              </button>
+            </div>
+
+            <select
+              value={activeUserId}
+              onChange={(e) => setActiveUserId(e.target.value)}
+              className="w-full py-1.5 px-2 rounded-xl bg-card border border-border text-xs font-bold text-foreground outline-none cursor-pointer"
+            >
+              <option value={user?.id || "guest"}>👤 Minha Conta Pessoal</option>
+              {myWorkspaces.map((ws) => (
+                <option key={ws.ownerId} value={ws.ownerId}>
+                  👥 {ws.ownerName}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
         {/* Navigation - Menu Único Unificado */}
@@ -206,6 +242,24 @@ export function AppShell({ children }: { children?: ReactNode }) {
           </div>
         </header>
 
+        {/* Banner de Aviso de Espaço Compartilhado */}
+        {isSharedWorkspace && (
+          <div className="bg-amber-500/15 border-b border-amber-500/30 px-5 py-2 flex items-center justify-between text-xs font-bold text-amber-700 dark:text-amber-300 z-20 shrink-0">
+            <div className="flex items-center gap-2">
+              <Eye size={15} className="text-amber-500" />
+              <span>
+                Espaço Compartilhado: Visualizando a conta de <strong>{activeWorkspace.ownerName}</strong>
+              </span>
+            </div>
+            <button
+              onClick={() => setActiveUserId(user?.id || "guest")}
+              className="text-[11px] font-black underline hover:opacity-80"
+            >
+              Voltar para Minha Conta
+            </button>
+          </div>
+        )}
+
         {/* Page body content */}
         <div className="flex-1 min-w-0 overflow-y-auto pb-28 md:pb-0">
           {children ?? <Outlet />}
@@ -295,6 +349,9 @@ export function AppShell({ children }: { children?: ReactNode }) {
 
       {/* Gerenciador Silencioso de Notificações PWA */}
       <NotificationManager />
+
+      {/* Modal de Acessos Simultâneos & Convites */}
+      <SharedAccessModal open={sharedModalOpen} onClose={() => setSharedModalOpen(false)} />
     </div>
   );
 }
