@@ -87,6 +87,8 @@ export function AppShell({ children }: { children?: ReactNode }) {
   const [workspaceDropOpen, setWorkspaceDropOpen] = useState(false);
   const wsDropRef = useRef<HTMLDivElement>(null);
 
+  const { user } = useAuthContext();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
   const { activeUserId, isSharedWorkspace, activeWorkspace, myWorkspaces, setActiveUserId, joinWorkspaceByToken } = useWorkspace();
 
   // Auto-join workspace if URL contains ?invite=TOKEN (Notion-style 1-click join)
