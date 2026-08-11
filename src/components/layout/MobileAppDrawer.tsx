@@ -12,6 +12,7 @@ import {
   X,
   Sparkles,
   Calendar,
+  ShoppingCart,
 } from "lucide-react";
 import { useAuthContext } from "@/context/AuthContext";
 
@@ -25,6 +26,7 @@ const ALL_MODULES = [
   { to: "/calendar", label: "Calendário", icon: Calendar, color: "bg-purple-500/15 text-purple-500" },
   { to: "/habits", label: "Hábitos", icon: Repeat, color: "bg-muted text-foreground" },
   { to: "/finance", label: "Finanças", icon: Wallet, color: "bg-emerald-500/15 text-emerald-500" },
+  { to: "/shopping", label: "Compras", icon: ShoppingCart, color: "bg-pink-500/15 text-pink-500" },
   { to: "/tasks", label: "Tarefas", icon: CheckSquare, color: "bg-muted text-muted-foreground" },
   { to: "/goals", label: "Metas", icon: Target, color: "bg-muted text-muted-foreground" },
   { to: "/notes", label: "Conhecimento", icon: BookOpen, color: "bg-muted text-muted-foreground" },
