@@ -3,6 +3,7 @@ import type { Metric } from "@/lib/supabase";
 import { Moon, Sparkles, Sliders, ChevronDown, ChevronUp, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { CustomSelect } from "@/components/ui/CustomSelect";
+import { useAuthContext } from "@/context/AuthContext";
 
 interface SleepTrackerWidgetProps {
   sleepLogs: Metric[];
@@ -10,14 +11,18 @@ interface SleepTrackerWidgetProps {
 }
 
 export function SleepTrackerWidget({ sleepLogs, onOpenLogger }: SleepTrackerWidgetProps) {
+  const { user } = useAuthContext();
+  const userId = user?.id || "guest";
+  const storageKey = `lifeos_${userId}_sleep_target`;
+
   const [targetHours, setTargetHours] = useState<number>(() => {
-    return parseInt(localStorage.getItem("lifeos_sleep_target") || "8", 10);
+    return parseInt(localStorage.getItem(storageKey) || "8", 10);
   });
   const [showHygiene, setShowHygiene] = useState(false);
 
   useEffect(() => {
-    localStorage.setItem("lifeos_sleep_target", targetHours.toString());
-  }, [targetHours]);
+    localStorage.setItem(storageKey, targetHours.toString());
+  }, [targetHours, storageKey]);
 
   // Generate past 365 days sleep heatmap data
   const sleepHeatmap = useMemo(() => {
