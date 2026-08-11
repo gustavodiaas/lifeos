@@ -13,10 +13,10 @@ import { FolderModal } from "./components/FolderModal";
 import { AtomicNotesView } from "./components/AtomicNotesView";
 import { AlertModal } from "@/modules/finance/components/AlertModal";
 import { toast } from "@/lib/toast";
-import { BookOpen, Atom } from "lucide-react";
+import { BookOpen, Atom, Library } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-type Tab = "conhecimento" | "atomicas";
+type Tab = "conhecimento" | "estante" | "atomicas";
 
 export function NotesModule() {
   const { user } = useAuthContext();
@@ -113,6 +113,7 @@ export function NotesModule() {
 
   const TABS: { id: Tab; label: string; Icon: React.FC<any>; count?: number }[] = [
     { id: "conhecimento", label: "Conhecimento", Icon: BookOpen, count: activeNotes.length },
+    { id: "estante",      label: "Estante de Livros", Icon: Library },
     { id: "atomicas",     label: "Atômicas",     Icon: Atom,     count: atomicNotes.length },
   ];
 
@@ -143,6 +144,9 @@ export function NotesModule() {
           </button>
         ))}
       </div>
+
+      {/* ── Aba: Estante de Livros ────────────────────────────────────── */}
+      {tab === "estante" && <BookTracker />}
 
       {/* ── Aba: Conhecimento ─────────────────────────────────────────── */}
       {tab === "conhecimento" && (
