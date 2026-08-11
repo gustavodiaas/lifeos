@@ -18,13 +18,16 @@ import { cn } from "@/lib/utils";
 
 type Tab = "conhecimento" | "atomicas";
 
+import { useWorkspace } from "@/context/WorkspaceContext";
+
 export function NotesModule() {
   const { user } = useAuthContext();
+  const { activeUserId } = useWorkspace();
   const {
     notes, folders, loading,
     addNote, updateNote, removeNote, addFolder,
-  } = useNotes(user?.id);
-  const { metrics, refetch: refetchMetrics } = useMetrics(user?.id);
+  } = useNotes(activeUserId);
+  const { metrics, refetch: refetchMetrics } = useMetrics(activeUserId);
 
   const [tab, setTab]                     = useState<Tab>("conhecimento");
   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
