@@ -41,7 +41,7 @@ export function HabitModal({ open, onClose, onSave, editingHabit }: HabitModalPr
   };
 
   return (
-    <ModalPortal open={open} onClose={onClose}>
+    <ModalPortal open={open} onClose={onClose} raw>
       <div className="bg-card w-full max-w-lg rounded-t-[28px] sm:rounded-[28px] shadow-2xl border border-border overflow-hidden flex flex-col max-h-[95vh] slide-up">
         {/* Header */}
         <div className="px-6 py-4 border-b border-border/60 flex items-center justify-between shrink-0">
