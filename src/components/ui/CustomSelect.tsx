@@ -31,16 +31,38 @@ export function CustomSelect({
 
   const selectedOption = options.find((o) => o.value === value);
 
-  // Position popup below button
+  // Position popup relative to button (viewport relative for position: fixed)
   useEffect(() => {
-    if (open && btnRef.current) {
+    if (!open || !btnRef.current) return;
+
+    const updatePosition = () => {
+      if (!btnRef.current) return;
       const rect = btnRef.current.getBoundingClientRect();
+      const popupH = 220;
+      const spaceBelow = window.innerHeight - rect.bottom;
+      let top = rect.bottom + 6;
+
+      if (spaceBelow < popupH && rect.top > popupH) {
+        top = Math.max(10, rect.top - popupH - 6);
+      } else if (top + popupH > window.innerHeight) {
+        top = Math.max(10, window.innerHeight - popupH - 10);
+      }
+
       setPos({
-        top: rect.bottom + 6,
-        left: rect.left,
+        top,
+        left: Math.max(10, Math.min(rect.left, window.innerWidth - rect.width - 10)),
         width: rect.width,
       });
-    }
+    };
+
+    updatePosition();
+
+    window.addEventListener("resize", updatePosition);
+    window.addEventListener("scroll", updatePosition, true);
+    return () => {
+      window.removeEventListener("resize", updatePosition);
+      window.removeEventListener("scroll", updatePosition, true);
+    };
   }, [open]);
 
   // Close on outside click
