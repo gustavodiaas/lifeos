@@ -8,7 +8,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 export type HabitFrequency = "daily" | "weekly";
 export type TaskPriority = "low" | "medium" | "high";
 export type TaskStatus = "todo" | "doing" | "done";
-export type GoalScope = "short" | "medium" | "long";
+export type GoalScope = "short" | "medium" | "long" | "year" | "quarter" | "month";
 export type BookStatus = "reading" | "want" | "completed";
 
 export interface ChecklistItem {
