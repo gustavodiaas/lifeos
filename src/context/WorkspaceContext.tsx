@@ -3,6 +3,8 @@ import { useAuthContext } from "@/context/AuthContext";
 import { supabase } from "@/lib/supabase";
 import { toast } from "@/lib/toast";
 
+export type RoleType = "owner" | "member" | "viewer" | "custom";
+
 export interface ModulePermissions {
   calendar: "edit" | "view" | "none";
   finance: "edit" | "view" | "none";
@@ -17,8 +19,21 @@ export interface SharedWorkspace {
   ownerName: string;
   ownerEmail: string;
   ownerAvatar?: string;
+  role: RoleType;
   permissions: ModulePermissions;
   inviteCode?: string;
+  inviteLink?: string;
+}
+
+export interface TeamMember {
+  id: string;
+  email: string;
+  name: string;
+  avatarUrl?: string;
+  role: RoleType;
+  status: "active" | "pending";
+  permissions: ModulePermissions;
+  inviteCode: string;
 }
 
 interface WorkspaceContextValue {
@@ -26,21 +41,35 @@ interface WorkspaceContextValue {
   isSharedWorkspace: boolean;
   activeWorkspace: SharedWorkspace;
   myWorkspaces: SharedWorkspace[];
+  mySharedMembers: TeamMember[];
+  workspaceInviteLink: string;
+  isPublicLinkEnabled: boolean;
   setActiveUserId: (id: string) => void;
-  inviteUserByEmail: (email: string, permissions: ModulePermissions) => Promise<string>;
-  acceptInviteCode: (code: string) => Promise<boolean>;
-  updateMemberPermissions: (email: string, permissions: ModulePermissions) => void;
+  inviteMember: (email: string, role: RoleType, customPerms?: ModulePermissions) => Promise<string>;
+  joinWorkspaceByToken: (token: string) => Promise<boolean>;
+  updateMemberRole: (email: string, role: RoleType, customPerms?: ModulePermissions) => void;
   revokeAccess: (emailOrId: string) => void;
-  mySharedMembers: { email: string; name: string; permissions: ModulePermissions; code: string }[];
+  togglePublicLink: (enabled: boolean) => void;
+  getInviteLink: () => string;
 }
 
-const DEFAULT_PERMISSIONS: ModulePermissions = {
-  calendar: "edit",
-  finance: "edit",
-  tasks: "edit",
-  books: "edit",
-  habits: "edit",
-  shopping: "edit",
+export const PERMISSION_PRESETS: Record<"member" | "viewer", ModulePermissions> = {
+  member: {
+    calendar: "edit",
+    finance: "edit",
+    tasks: "edit",
+    books: "edit",
+    habits: "edit",
+    shopping: "edit",
+  },
+  viewer: {
+    calendar: "view",
+    finance: "view",
+    tasks: "view",
+    books: "view",
+    habits: "view",
+    shopping: "view",
+  },
 };
 
 const WorkspaceContext = createContext<WorkspaceContextValue | null>(null);
@@ -55,7 +84,16 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
   // Selected Active Workspace Owner ID
   const [activeUserId, setActiveUserIdState] = useState<string>(currentUserId);
 
-  // Lista de workspaces que este usuário pode acessar
+  // Toggle de link público do workspace (Estilo Notion: Qualquer pessoa com o link pode entrar)
+  const [isPublicLinkEnabled, setIsPublicLinkEnabled] = useState<boolean>(() => {
+    try {
+      const saved = localStorage.getItem(`lifeos_${currentUserId}_public_link`);
+      return saved ? JSON.parse(saved) : true;
+    } catch {}
+    return true;
+  });
+
+  // Lista de workspaces que este usuário pode acessar (Equipes onde sou membro)
   const [myWorkspaces, setMyWorkspaces] = useState<SharedWorkspace[]>(() => {
     try {
       const saved = localStorage.getItem(`lifeos_${currentUserId}_workspaces`);
@@ -64,10 +102,8 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     return [];
   });
 
-  // Lista de pessoas que eu convidei para a minha conta
-  const [mySharedMembers, setMySharedMembers] = useState<
-    { email: string; name: string; permissions: ModulePermissions; code: string }[]
-  >(() => {
+  // Membros do meu time / espaço
+  const [mySharedMembers, setMySharedMembers] = useState<TeamMember[]>(() => {
     try {
       const saved = localStorage.getItem(`lifeos_${currentUserId}_members`);
       if (saved) return JSON.parse(saved);
@@ -93,68 +129,104 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     }
   }, [mySharedMembers, currentUserId, user]);
 
+  const togglePublicLink = (enabled: boolean) => {
+    setIsPublicLinkEnabled(enabled);
+    localStorage.setItem(`lifeos_${currentUserId}_public_link`, JSON.stringify(enabled));
+    toast.success(enabled ? "Link de convite direto ativado!" : "Link de convite desativado.");
+  };
+
+  const getInviteLink = () => {
+    const origin = typeof window !== "undefined" ? window.location.origin : "https://lifeos.app";
+    const token = btoa(`${currentUserId}::${currentUserName}`);
+    return `${origin}/?invite=${token}`;
+  };
+
   const setActiveUserId = (id: string) => {
     setActiveUserIdState(id);
     const targetWs = myWorkspaces.find((w) => w.ownerId === id);
     if (targetWs) {
-      toast.info(`Navegando no espaço de trabalho de ${targetWs.ownerName}`);
+      toast.info(`Espaço de trabalho de ${targetWs.ownerName}`);
     } else {
-      toast.info("Navegando na sua Conta Pessoal");
+      toast.info("Navegando no seu Espaço Pessoal");
     }
   };
 
-  // Gerar código de convite / Convidar por E-mail
-  const inviteUserByEmail = async (email: string, permissions: ModulePermissions): Promise<string> => {
-    const code = "LIFEOS-" + Math.random().toString(36).substring(2, 8).toUpperCase();
-    const newMember = {
-      email: email.trim().toLowerCase(),
-      name: email.split("@")[0],
-      permissions,
-      code,
+  // Convidar membro por e-mail ou link (estilo Notion)
+  const inviteMember = async (
+    email: string,
+    role: RoleType,
+    customPerms?: ModulePermissions
+  ): Promise<string> => {
+    const cleanEmail = email.trim().toLowerCase();
+    const token = "LIFEOS-" + Math.random().toString(36).substring(2, 8).toUpperCase();
+    const perms = role === "member" ? PERMISSION_PRESETS.member : role === "viewer" ? PERMISSION_PRESETS.viewer : customPerms || PERMISSION_PRESETS.member;
+
+    const newMember: TeamMember = {
+      id: crypto.randomUUID(),
+      email: cleanEmail,
+      name: cleanEmail.split("@")[0],
+      role,
+      status: "pending",
+      permissions: perms,
+      inviteCode: token,
     };
 
-    setMySharedMembers((prev) => [...prev.filter((m) => m.email !== newMember.email), newMember]);
-    toast.success(`Código de acesso gerado para ${email}: ${code}`);
-    return code;
+    setMySharedMembers((prev) => [...prev.filter((m) => m.email !== cleanEmail), newMember]);
+    toast.success(`Convite de ${role === "member" ? "Membro" : "Visualizador"} enviado para ${cleanEmail}!`);
+    return token;
   };
 
-  // Aceitar Código de Convite
-  const acceptInviteCode = async (code: string): Promise<boolean> => {
-    const cleanCode = code.trim().toUpperCase();
-    if (!cleanCode.startsWith("LIFEOS-")) {
-      toast.error("Código de convite inválido. Formato esperado: LIFEOS-XXXXXX");
+  // Entrar em um workspace via link/token (1 clique estilo Notion)
+  const joinWorkspaceByToken = async (token: string): Promise<boolean> => {
+    try {
+      let ownerId = "";
+      let ownerName = "Espaço Compartilhado";
+
+      if (token.startsWith("LIFEOS-")) {
+        ownerId = `team_${token.toUpperCase()}`;
+        ownerName = `Equipe (${token.slice(-4).toUpperCase()})`;
+      } else {
+        const decoded = atob(token);
+        const parts = decoded.split("::");
+        ownerId = parts[0] || `team_${token}`;
+        ownerName = parts[1] || "Equipe LifeOS";
+      }
+
+      const newWs: SharedWorkspace = {
+        ownerId,
+        ownerName,
+        ownerEmail: "",
+        role: "member",
+        permissions: PERMISSION_PRESETS.member,
+        inviteCode: token,
+      };
+
+      setMyWorkspaces((prev) => [...prev.filter((w) => w.ownerId !== ownerId), newWs]);
+      setActiveUserIdState(ownerId);
+      toast.success(`Você entrou no espaço de trabalho de ${ownerName}!`);
+      return true;
+    } catch {
+      toast.error("Link de convite inválido ou expirado.");
       return false;
     }
-
-    // Criar um workspace compartilhado fictício associado ao código
-    const newWs: SharedWorkspace = {
-      ownerId: `shared_${cleanCode}`,
-      ownerName: `Conta Compartilhada (${cleanCode.slice(-4)})`,
-      ownerEmail: `convite-${cleanCode.slice(-4)}@lifeos.app`,
-      permissions: DEFAULT_PERMISSIONS,
-      inviteCode: cleanCode,
-    };
-
-    setMyWorkspaces((prev) => [...prev.filter((w) => w.inviteCode !== cleanCode), newWs]);
-    setActiveUserIdState(newWs.ownerId);
-    toast.success("Convite aceito! Espaço de trabalho conectado.");
-    return true;
   };
 
-  const updateMemberPermissions = (email: string, permissions: ModulePermissions) => {
+  const updateMemberRole = (email: string, role: RoleType, customPerms?: ModulePermissions) => {
+    const perms = role === "member" ? PERMISSION_PRESETS.member : role === "viewer" ? PERMISSION_PRESETS.viewer : customPerms || PERMISSION_PRESETS.member;
+
     setMySharedMembers((prev) =>
-      prev.map((m) => (m.email === email ? { ...m, permissions } : m))
+      prev.map((m) => (m.email === email ? { ...m, role, permissions: perms } : m))
     );
-    toast.success("Permissões do membro atualizadas!");
+    toast.success(`Função de ${email} atualizada para ${role === "member" ? "Membro" : role === "viewer" ? "Visualizador" : "Personalizado"}.`);
   };
 
   const revokeAccess = (identifier: string) => {
-    setMySharedMembers((prev) => prev.filter((m) => m.email !== identifier && m.code !== identifier));
+    setMySharedMembers((prev) => prev.filter((m) => m.email !== identifier && m.id !== identifier && m.inviteCode !== identifier));
     setMyWorkspaces((prev) => prev.filter((w) => w.ownerId !== identifier && w.inviteCode !== identifier));
     if (activeUserId === identifier) {
       setActiveUserIdState(currentUserId);
     }
-    toast.success("Acesso revogado.");
+    toast.success("Acesso removido.");
   };
 
   const isSharedWorkspace = activeUserId !== currentUserId;
@@ -162,16 +234,18 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
   const currentWorkspaceInfo: SharedWorkspace = isSharedWorkspace
     ? myWorkspaces.find((w) => w.ownerId === activeUserId) || {
         ownerId: activeUserId,
-        ownerName: "Conta Compartilhada",
+        ownerName: "Espaço Compartilhado",
         ownerEmail: "",
-        permissions: DEFAULT_PERMISSIONS,
+        role: "member",
+        permissions: PERMISSION_PRESETS.member,
       }
     : {
         ownerId: currentUserId,
         ownerName: currentUserName,
         ownerEmail: currentUserEmail,
         ownerAvatar: currentUserAvatar,
-        permissions: DEFAULT_PERMISSIONS,
+        role: "owner",
+        permissions: PERMISSION_PRESETS.member,
       };
 
   return (
@@ -181,12 +255,16 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
         isSharedWorkspace,
         activeWorkspace: currentWorkspaceInfo,
         myWorkspaces,
-        setActiveUserId,
-        inviteUserByEmail,
-        acceptInviteCode,
-        updateMemberPermissions,
-        revokeAccess,
         mySharedMembers,
+        workspaceInviteLink: getInviteLink(),
+        isPublicLinkEnabled,
+        setActiveUserId,
+        inviteMember,
+        joinWorkspaceByToken,
+        updateMemberRole,
+        revokeAccess,
+        togglePublicLink,
+        getInviteLink,
       }}
     >
       {children}
