@@ -19,10 +19,13 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+import { useWorkspace } from "@/context/WorkspaceContext";
+
 export function GoalsModule() {
   const { user } = useAuthContext();
-  const { goals, loading, addGoal, updateGoal, removeGoal, updateProgress } = useGoals(user?.id);
-  const { habits } = useHabits(user?.id);
+  const { activeUserId } = useWorkspace();
+  const { goals, loading, addGoal, updateGoal, removeGoal, updateProgress } = useGoals(activeUserId);
+  const { habits } = useHabits(activeUserId);
 
   const [selectedScope, setSelectedScope] = useState<GoalScope | "all">("all");
   const [searchQuery, setSearchQuery] = useState("");
