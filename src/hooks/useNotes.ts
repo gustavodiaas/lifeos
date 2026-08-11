@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import type { Note, Folder, NoteLink } from '@/lib/supabase';
+import { isValidUuid } from '@/lib/utils';
 
 function normalizeNote(item: any): Note {
   return {
@@ -49,7 +50,7 @@ export function useNotes(userId: string | undefined) {
   const [error, setError] = useState<string | null>(null);
 
   const fetchDados = useCallback(async () => {
-    if (!userId) {
+    if (!isValidUuid(userId)) {
       setNotes([]);
       setFolders([]);
       setLinks([]);
@@ -62,9 +63,9 @@ export function useNotes(userId: string | undefined) {
 
     try {
       const [notesRes, foldersRes, linksRes] = await Promise.all([
-        supabase.from('notes').select('*').eq('user_id', userId),
-        supabase.from('folders').select('*').eq('user_id', userId),
-        supabase.from('note_links').select('*').eq('user_id', userId),
+        supabase.from('notes').select('*').eq('user_id', userId!),
+        supabase.from('folders').select('*').eq('user_id', userId!),
+        supabase.from('note_links').select('*').eq('user_id', userId!),
       ]);
 
       if (notesRes.error) throw notesRes.error;
