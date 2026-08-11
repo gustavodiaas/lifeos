@@ -96,13 +96,16 @@ export async function sendBrowserNotification(title: string, options?: Notificat
   }
 }
 
+import { isValidUuid } from "@/lib/utils";
+
 // Verificação de lembretes automáticos em segundo plano
 export async function checkDailyReminders() {
   const settings = getNotificationSettings();
   if (!settings.enabled || Notification.permission !== "granted") return;
 
   const { data: { session } } = await supabase.auth.getSession();
-  const userId = session?.user?.id || "guest";
+  const userId = session?.user?.id;
+  if (!isValidUuid(userId)) return;
 
   const now = new Date();
   const currentHours = String(now.getHours()).padStart(2, "0");
