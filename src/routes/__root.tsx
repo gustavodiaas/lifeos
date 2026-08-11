@@ -63,7 +63,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
           >
             Tentar novamente
           </button>
-          <a
+          
             href="/"
             className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
           >
@@ -104,7 +104,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "" },
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap",
       },
     ],
   }),
@@ -163,9 +163,9 @@ function AuthGuard() {
 
   if (loading) {
     return (
-      <div className="h-[100dvh] flex flex-col items-center justify-center bg-[#14213D] text-white gap-3 select-none">
-        <div className="w-8 h-8 border-3 border-foreground border-t-transparent rounded-full animate-spin" />
-        <span className="text-xs font-semibold text-gray-400 tracking-wide">Sincronizando...</span>
+      <div className="h-[100dvh] flex flex-col items-center justify-center bg-background gap-3 select-none">
+        <div className="w-8 h-8 border-2 border-foreground border-t-transparent rounded-full animate-spin" />
+        <span className="text-xs font-semibold text-muted-foreground tracking-wide">Sincronizando...</span>
       </div>
     );
   }
