@@ -3,6 +3,7 @@ import type { Metric } from "@/lib/supabase";
 import { Scale, HeartPulse, Flame, Utensils, Info, ChevronDown, ChevronUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuthContext } from "@/context/AuthContext";
+import { useWorkspace } from "@/context/WorkspaceContext";
 
 interface HealthWeightWidgetProps {
   weightLogs: Metric[];
@@ -11,7 +12,8 @@ interface HealthWeightWidgetProps {
 
 export function HealthWeightWidget({ weightLogs, onOpenLogger }: HealthWeightWidgetProps) {
   const { user } = useAuthContext();
-  const userId = user?.id || "guest";
+  const { activeUserId } = useWorkspace();
+  const userId = activeUserId || user?.id || "guest";
   const storageKey = `lifeos_${userId}_user_height`;
 
   const [heightCm, setHeightCm] = useState<string>(() => {
