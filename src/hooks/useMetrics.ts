@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import type { Metric } from '@/lib/supabase';
+import { isValidUuid } from '@/lib/utils';
 
 function normalizeMetric(item: any): Metric {
   return {
@@ -18,7 +19,7 @@ export function useMetrics(userId: string | undefined) {
   const [error, setError] = useState<string | null>(null);
 
   const fetchDados = useCallback(async () => {
-    if (!userId) {
+    if (!isValidUuid(userId)) {
       setMetrics([]);
       setLoading(false);
       return;
@@ -31,7 +32,7 @@ export function useMetrics(userId: string | undefined) {
       const { data, error: fetchErr } = await supabase
         .from('metrics')
         .select('*')
-        .eq('user_id', userId)
+        .eq('user_id', userId!)
         .order('date', { ascending: true });
 
       if (fetchErr) throw fetchErr;
