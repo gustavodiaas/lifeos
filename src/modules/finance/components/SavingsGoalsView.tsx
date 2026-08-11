@@ -3,6 +3,7 @@ import { formatBRL } from "@/lib/date";
 import { PiggyBank, Plus, ArrowUpRight, ArrowDownRight, Target, Shield, Plane, Laptop, Car, Sparkles, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "@/lib/toast";
+import { CustomSelect } from "@/components/ui/CustomSelect";
 
 export interface SavingsBox {
   id: string;
@@ -296,17 +297,18 @@ export function SavingsGoalsView() {
                 <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">
                   Categoria
                 </label>
-                <select
+                <CustomSelect
                   value={category}
-                  onChange={(e) => setCategory(e.target.value as any)}
-                  className="input-ios py-2 text-xs font-bold w-full bg-card text-foreground"
-                >
-                  <option value="emergencia">Reserva de Emergência</option>
-                  <option value="viagem">Viagens & Férias</option>
-                  <option value="eletronico">Eletrônicos & Tech</option>
-                  <option value="carro">Veículo / Transporte</option>
-                  <option value="outro">Outro Objetivo</option>
-                </select>
+                  onChange={(val) => setCategory(val as any)}
+                  options={[
+                    { value: "emergencia", label: "Reserva de Emergência" },
+                    { value: "viagem", label: "Viagens & Férias" },
+                    { value: "eletronico", label: "Eletrônicos & Tech" },
+                    { value: "carro", label: "Veículo / Transporte" },
+                    { value: "outro", label: "Outro Objetivo" },
+                  ]}
+                  className="text-xs font-bold"
+                />
               </div>
 
               <div>
