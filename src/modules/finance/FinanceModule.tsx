@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useAuthContext } from '@/context/AuthContext';
 import { useLancamentos } from '@/hooks/useLancamentos';
+import { useWorkspace } from '@/context/WorkspaceContext';
 import { supabase } from '@/lib/supabase';
 import { AppleFinanceView } from './components/AppleFinanceView';
 import { SpreadsheetTable } from './components/SpreadsheetTable';
@@ -59,7 +60,8 @@ type Tab = 'extrato' | 'investimentos' | 'caixinhas' | 'planilha' | 'totais' | '
 
 export function FinanceModule() {
   const { user } = useAuthContext();
-  const { lancamentos, setLancamentos, loading, error, add, remove, update } = useLancamentos(user?.id);
+  const { activeUserId } = useWorkspace();
+  const { lancamentos, setLancamentos, loading, error, add, remove, update } = useLancamentos(activeUserId);
 
   const [perfil, setPerfil] = useState<Profile | null>(null);
   const now = new Date();
