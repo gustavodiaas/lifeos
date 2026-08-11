@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import type { Task, Project, TaskStatus, TaskPriority, ChecklistItem } from '@/lib/supabase';
+import { isValidUuid } from '@/lib/utils';
 
 function normalizeTask(item: any): Task {
   return {
@@ -36,7 +37,7 @@ export function useTasks(userId: string | undefined) {
   const [error, setError] = useState<string | null>(null);
 
   const fetchDados = useCallback(async () => {
-    if (!userId) {
+    if (!isValidUuid(userId)) {
       setTasks([]);
       setProjects([]);
       setLoading(false);
@@ -48,8 +49,8 @@ export function useTasks(userId: string | undefined) {
 
     try {
       const [tasksRes, projectsRes] = await Promise.all([
-        supabase.from('tasks').select('*').eq('user_id', userId),
-        supabase.from('projects').select('*').eq('user_id', userId),
+        supabase.from('tasks').select('*').eq('user_id', userId!),
+        supabase.from('projects').select('*').eq('user_id', userId!),
       ]);
 
       if (tasksRes.error) throw tasksRes.error;
@@ -71,10 +72,12 @@ export function useTasks(userId: string | undefined) {
 
   // Realtime
   useEffect(() => {
-    if (!userId) return;
+    if (!isValidUuid(userId)) return;
+
+    const channelId = Math.random().toString(36).substring(2, 7);
 
     const tasksChannel = supabase
-      .channel('tasks-realtime')
+      .channel(`tasks-realtime-${userId}-${channelId}`)
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'tasks', filter: `user_id=eq.${userId}` },
@@ -93,7 +96,7 @@ export function useTasks(userId: string | undefined) {
       .subscribe();
 
     const projectsChannel = supabase
-      .channel('projects-realtime')
+      .channel(`projects-realtime-${userId}-${channelId}`)
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'projects', filter: `user_id=eq.${userId}` },
