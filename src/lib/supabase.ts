@@ -206,4 +206,25 @@ export interface Book {
   updated_at?: string;
 }
 
+export interface CalendarEvent {
+  id: string;
+  user_id?: string;
+  title: string;
+  date: string;
+  startTime?: string;
+  start_time?: string;
+  endTime?: string;
+  end_time?: string;
+  color: string;
+  description?: string;
+  label?: string;
+  category?: string;
+  completed?: boolean;
+  createdAt?: string;
+  created_at?: string;
+  updatedAt?: string;
+  updated_at?: string;
+}
+
+
 
