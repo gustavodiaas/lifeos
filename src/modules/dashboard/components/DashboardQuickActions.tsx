@@ -294,29 +294,24 @@ export function DashboardQuickActions({ userId }: DashboardQuickActionsProps) {
 
       {/* ── Modais de Cadastro Rápido ────────────────────────────────────────────── */}
       {activeModal && (
-        <ModalPortal>
-          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[300] flex items-center justify-center p-4 fade-in">
-            <div className="bg-card border border-border rounded-3xl p-5 max-w-md w-full shadow-2xl space-y-4 slide-up relative">
-              <div className="flex items-center justify-between pb-3 border-b border-border/50">
-                <h4 className="text-sm font-black text-foreground flex items-center gap-2">
-                  <Sparkles size={16} className="text-primary" />
-                  {activeModal === "task" && "Nova Tarefa Rápida"}
-                  {activeModal === "finance" && "Novo Lançamento Financeiro"}
-                  {activeModal === "habit" && "Novo Hábito Diário"}
-                  {activeModal === "calendar" && "Agendar no Calendário"}
-                  {activeModal === "note" && "Nova Nota Rápida"}
-                  {activeModal === "goal" && "Nova Meta"}
-                </h4>
-                <button
-                  onClick={closeModal}
-                  className="w-7 h-7 rounded-full bg-muted text-muted-foreground hover:text-foreground flex items-center justify-center transition-colors"
-                >
-                  <X size={14} />
-                </button>
-              </div>
-
-              {/* Form Tarefa */}
-              {activeModal === "task" && (
+        <ModalPortal
+          open={!!activeModal}
+          onClose={closeModal}
+          maxWidth="max-w-md"
+          title={
+            <span className="flex items-center gap-2">
+              <Sparkles size={16} className="text-primary" />
+              {activeModal === "task" && "Nova Tarefa Rápida"}
+              {activeModal === "finance" && "Novo Lançamento Financeiro"}
+              {activeModal === "habit" && "Novo Hábito Diário"}
+              {activeModal === "calendar" && "Agendar no Calendário"}
+              {activeModal === "note" && "Nova Nota Rápida"}
+              {activeModal === "goal" && "Nova Meta"}
+            </span>
+          }
+        >
+          {/* Form Tarefa */}
+          {activeModal === "task" && (
                 <form onSubmit={handleSaveTask} className="space-y-3.5">
                   <div className="space-y-1">
                     <label className="text-xs font-bold text-foreground">Título da Tarefa</label>
@@ -604,8 +599,6 @@ export function DashboardQuickActions({ userId }: DashboardQuickActionsProps) {
                   </div>
                 </form>
               )}
-            </div>
-          </div>
         </ModalPortal>
       )}
     </div>
