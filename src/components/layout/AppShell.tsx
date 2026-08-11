@@ -13,6 +13,7 @@ import {
   Grid,
   Plus,
   Library,
+  Calendar,
 } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { CommandPalette } from "./CommandPalette";
@@ -43,6 +44,7 @@ function getFirstName(user: any): string {
 
 const NAV_ITEMS = [
   { to: "/", label: "Painel", icon: LayoutDashboard },
+  { to: "/calendar", label: "Calendário", icon: Calendar },
   { to: "/habits", label: "Hábitos", icon: Repeat },
   { to: "/tasks", label: "Tarefas", icon: CheckSquare },
   { to: "/goals", label: "Metas", icon: Target },
@@ -55,6 +57,7 @@ const NAV_ITEMS = [
 
 const PAGE_TITLES: Record<string, string> = {
   "/": "LifeOS",
+  "/calendar": "Calendário",
   "/books": "Estante Virtual",
   "/notes": "Conhecimento",
   "/habits": "Hábitos",
