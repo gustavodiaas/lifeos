@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import type { Book } from "@/lib/supabase";
-import { BookOpen, Plus, Trash2, Edit3, Bookmark, Quote, CheckCircle2, Star, Search, Sparkles, Loader2, Image as ImageIcon } from "lucide-react";
+import { BookOpen, Plus, Trash2, Edit3, Bookmark, Quote, CheckCircle2, Star, Search, Sparkles, Loader2, Image as ImageIcon, X } from "lucide-react";
 import { CustomSelect } from "@/components/ui/CustomSelect";
+import { ModalPortal } from "@/components/ui/ModalPortal";
 import { cn } from "@/lib/utils";
 import { toast } from "@/lib/toast";
 
@@ -72,6 +73,7 @@ export function BookTracker() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [editingBook, setEditingBook] = useState<ExtendedBook | null>(null);
+  const [modalMode, setModalMode] = useState<"search" | "form">("search");
 
   // Google Books API search states inside modal
   const [apiSearchQuery, setApiSearchQuery] = useState("");
@@ -95,14 +97,14 @@ export function BookTracker() {
 
   // Google Books API Fetch
   const handleSearchGoogleBooks = async (query: string) => {
-    if (!query.trim() || query.length < 3) {
+    if (!query.trim() || query.length < 2) {
       setApiResults([]);
       return;
     }
 
     setLoadingApi(true);
     try {
-      const res = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=5`);
+      const res = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=6`);
       if (!res.ok) throw new Error("Erro na busca");
       const data = await res.json();
       setApiResults(data.items || []);
@@ -123,9 +125,8 @@ export function BookTracker() {
       setCoverUrl(img);
     }
     setDescription(info.description || "");
-    setApiResults([]);
-    setApiSearchQuery("");
-    toast.success(`Dados do livro "${info.title}" preenchidos automaticamente!`);
+    setModalMode("form");
+    toast.success(`Livro "${info.title}" selecionado!`);
   };
 
   const handleOpenModal = (bookToEdit?: ExtendedBook) => {
@@ -139,6 +140,7 @@ export function BookTracker() {
       setCoverUrl(bookToEdit.coverUrl || "");
       setDescription(bookToEdit.description || "");
       setQuotesList(bookToEdit.favoriteQuotes || []);
+      setModalMode("form");
     } else {
       setEditingBook(null);
       setTitle("");
@@ -149,6 +151,7 @@ export function BookTracker() {
       setCoverUrl("");
       setDescription("");
       setQuotesList([]);
+      setModalMode("search");
     }
     setApiSearchQuery("");
     setApiResults([]);
@@ -181,7 +184,7 @@ export function BookTracker() {
             : b
         )
       );
-      toast.success("Livro atualizado!");
+      toast.success("Livro atualizado na estante!");
     } else {
       const newBook: ExtendedBook = {
         id: crypto.randomUUID(),
@@ -331,211 +334,269 @@ export function BookTracker() {
         </section>
       </div>
 
-      {/* Modal de Busca Automática (Google Books API) & Formulário */}
-      {showModal && (
-        <div className="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-card w-full max-w-lg rounded-3xl border border-border shadow-2xl overflow-hidden flex flex-col max-h-[90vh] slide-up">
-            <div className="p-5 border-b border-border/60 flex items-center justify-between shrink-0">
-              <h3 className="text-base font-extrabold text-foreground">
-                {editingBook ? "Editar Livro" : "Adicionar Livro à Estante"}
-              </h3>
-              <button onClick={() => setShowModal(false)} className="text-xs font-bold text-muted-foreground hover:text-foreground">
-                Fechar
+      {/* Modal Redesenhado Elegante com ModalPortal */}
+      <ModalPortal
+        open={showModal}
+        onClose={() => setShowModal(false)}
+        title={editingBook ? "Editar Livro" : "Adicionar Livro à Estante"}
+      >
+        <div className="space-y-4">
+          {/* Tabs Internas: Buscar Online vs Preencher */}
+          {!editingBook && (
+            <div className="grid grid-cols-2 gap-1 p-1 bg-muted/60 rounded-2xl border border-border/50">
+              <button
+                type="button"
+                onClick={() => setModalMode("search")}
+                className={cn(
+                  "py-2 rounded-xl text-xs font-extrabold transition-all flex items-center justify-center gap-1.5",
+                  modalMode === "search"
+                    ? "bg-foreground text-background shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                <Sparkles size={14} className="text-amber-500" />
+                <span>Buscar no Google Books</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setModalMode("form")}
+                className={cn(
+                  "py-2 rounded-xl text-xs font-extrabold transition-all flex items-center justify-center gap-1.5",
+                  modalMode === "form"
+                    ? "bg-foreground text-background shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                <Edit3 size={14} />
+                <span>Preencher Manualmente</span>
               </button>
             </div>
+          )}
 
-            <div className="p-5 space-y-4 overflow-y-auto flex-1 custom-scrollbar">
-              {/* Pesquisa no Google Books para Preenchimento Automático */}
-              {!editingBook && (
-                <div className="p-4 rounded-2xl bg-muted/40 border border-border/60 space-y-2">
-                  <div className="flex items-center gap-1.5">
-                    <Sparkles size={14} className="text-amber-500" />
-                    <label className="text-xs font-extrabold text-foreground">
-                      Preenchimento Automático via Google Books API
-                    </label>
-                  </div>
+          {/* MODO 1: Busca Online (Google Books API) */}
+          {modalMode === "search" && !editingBook && (
+            <div className="space-y-3 py-1 fade-in">
+              <div className="relative">
+                <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+                <input
+                  type="text"
+                  value={apiSearchQuery}
+                  onChange={(e) => {
+                    setApiSearchQuery(e.target.value);
+                    handleSearchGoogleBooks(e.target.value);
+                  }}
+                  placeholder="Digite o nome do livro ou autor (ex: O Alquimista)..."
+                  className="input-ios pl-10 pr-10 py-3 text-xs font-bold w-full"
+                  autoFocus
+                />
+                {loadingApi && <Loader2 size={16} className="absolute right-3.5 top-1/2 -translate-y-1/2 animate-spin text-muted-foreground" />}
+              </div>
 
-                  <div className="relative">
-                    <input
-                      type="text"
-                      value={apiSearchQuery}
-                      onChange={(e) => {
-                        setApiSearchQuery(e.target.value);
-                        handleSearchGoogleBooks(e.target.value);
-                      }}
-                      placeholder="Digite o título ou autor (ex: O Alquimista)..."
-                      className="input-ios pl-3 pr-8 text-xs font-semibold w-full"
-                    />
-                    {loadingApi && <Loader2 size={14} className="absolute right-3 top-1/2 -translate-y-1/2 animate-spin text-muted-foreground" />}
-                  </div>
+              {apiResults.length > 0 ? (
+                <div className="space-y-2 max-h-72 overflow-y-auto custom-scrollbar pr-1 pt-1">
+                  {apiResults.map((item) => {
+                    const info = item.volumeInfo;
+                    const img = (info.imageLinks?.thumbnail || info.imageLinks?.smallThumbnail || "").replace("http:", "https:");
 
-                  {apiResults.length > 0 && (
-                    <div className="space-y-1.5 pt-1 max-h-48 overflow-y-auto custom-scrollbar">
-                      {apiResults.map((item) => (
-                        <button
-                          key={item.id}
-                          type="button"
-                          onClick={() => handleSelectGoogleBook(item)}
-                          className="w-full p-2 rounded-xl bg-background hover:bg-muted border border-border/50 text-left flex items-center gap-3 transition-colors"
-                        >
-                          {item.volumeInfo.imageLinks?.thumbnail ? (
-                            <img
-                              src={item.volumeInfo.imageLinks.thumbnail.replace("http:", "https:")}
-                              alt=""
-                              className="w-8 h-11 object-cover rounded shadow-xs shrink-0"
-                            />
-                          ) : (
-                            <div className="w-8 h-11 bg-muted rounded flex items-center justify-center shrink-0 text-muted-foreground">
-                              <ImageIcon size={14} />
-                            </div>
-                          )}
-                          <div className="min-w-0 flex-1">
-                            <span className="text-xs font-extrabold text-foreground block truncate">
-                              {item.volumeInfo.title}
-                            </span>
-                            <span className="text-[10px] text-muted-foreground block truncate">
-                              {item.volumeInfo.authors?.join(", ") || "Autor desconhecido"} • {item.volumeInfo.pageCount || "?"} págs
+                    return (
+                      <button
+                        key={item.id}
+                        type="button"
+                        onClick={() => handleSelectGoogleBook(item)}
+                        className="w-full p-3 rounded-2xl bg-muted/40 hover:bg-muted border border-border/60 text-left flex items-center gap-3 transition-all group"
+                      >
+                        {img ? (
+                          <img
+                            src={img}
+                            alt=""
+                            className="w-11 h-16 object-cover rounded-xl shadow-md shrink-0 border border-black/10 group-hover:scale-105 transition-transform"
+                          />
+                        ) : (
+                          <div className="w-11 h-16 bg-muted rounded-xl border border-border flex items-center justify-center shrink-0 text-muted-foreground">
+                            <ImageIcon size={18} />
+                          </div>
+                        )}
+
+                        <div className="min-w-0 flex-1">
+                          <span className="text-xs font-black text-foreground block truncate">
+                            {info.title}
+                          </span>
+                          <span className="text-[11px] font-semibold text-muted-foreground block truncate mt-0.5">
+                            {info.authors?.join(", ") || "Autor não informado"}
+                          </span>
+                          <div className="flex items-center gap-2 mt-1">
+                            <span className="text-[10px] font-extrabold text-foreground bg-muted px-2 py-0.5 rounded-full border border-border">
+                              📖 {info.pageCount || "?"} páginas
                             </span>
                           </div>
-                        </button>
-                      ))}
-                    </div>
-                  )}
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              ) : apiSearchQuery.length >= 2 && !loadingApi ? (
+                <div className="p-6 text-center text-xs text-muted-foreground font-medium">
+                  Nenhum livro encontrado. Tente buscar por outro termo ou preencha manualmente acima.
+                </div>
+              ) : (
+                <div className="p-6 text-center text-xs text-muted-foreground font-medium border border-dashed border-border/70 rounded-2xl">
+                  Digite o título para buscar a capa, total de páginas e dados do livro em tempo real.
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* MODO 2: Formulário com Live Preview */}
+          {(modalMode === "form" || editingBook) && (
+            <form onSubmit={handleSaveBook} className="space-y-4 fade-in">
+              {/* Card de Live Preview se tiver dados */}
+              {(title || coverUrl) && (
+                <div className="p-3.5 rounded-2xl bg-muted/40 border border-border/60 flex items-center gap-3">
+                  <div className="w-10 h-14 rounded-lg bg-muted overflow-hidden border border-black/10 shrink-0 shadow-sm flex items-center justify-center">
+                    {coverUrl ? (
+                      <img src={coverUrl} alt="" className="w-full h-full object-cover" />
+                    ) : (
+                      <BookOpen size={16} className="text-muted-foreground" />
+                    )}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <span className="text-[10px] font-extrabold text-muted-foreground uppercase block">Pré-visualização</span>
+                    <span className="text-xs font-black text-foreground truncate block">{title || "Sem título"}</span>
+                    <span className="text-[10px] font-semibold text-muted-foreground truncate block">{author || "Autor não informado"}</span>
+                  </div>
                 </div>
               )}
 
-              {/* Formulário Principal */}
-              <form onSubmit={handleSaveBook} className="space-y-3">
+              <div>
+                <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">
+                  Título do Livro
+                </label>
+                <input
+                  type="text"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="Ex: Hábitos Atômicos"
+                  className="input-ios text-xs font-bold"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">
+                  Autor
+                </label>
+                <input
+                  type="text"
+                  value={author}
+                  onChange={(e) => setAuthor(e.target.value)}
+                  placeholder="Ex: James Clear"
+                  className="input-ios text-xs font-semibold"
+                />
+              </div>
+
+              <div>
+                <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">
+                  URL da Capa da Imagem
+                </label>
+                <input
+                  type="url"
+                  value={coverUrl}
+                  onChange={(e) => setCoverUrl(e.target.value)}
+                  placeholder="https://..."
+                  className="input-ios text-xs font-medium"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
                   <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">
-                    Título do Livro
+                    Status na Estante
+                  </label>
+                  <CustomSelect
+                    value={status}
+                    onChange={(val) => setStatus(val as any)}
+                    options={[
+                      { value: "reading", label: "Lendo Atualmente" },
+                      { value: "want", label: "Quero Ler" },
+                      { value: "completed", label: "Concluído" },
+                    ]}
+                    className="text-xs font-bold"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">
+                    Página Atual
                   </label>
                   <input
-                    type="text"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    placeholder="Ex: Hábitos Atômicos"
+                    type="number"
+                    value={currentPage}
+                    onChange={(e) => setCurrentPage(e.target.value)}
+                    placeholder="185"
                     className="input-ios text-xs font-bold"
-                    required
                   />
                 </div>
 
                 <div>
                   <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">
-                    Autor
+                    Total de Páginas
                   </label>
+                  <input
+                    type="number"
+                    value={totalPages}
+                    onChange={(e) => setTotalPages(e.target.value)}
+                    placeholder="320"
+                    className="input-ios text-xs font-bold"
+                  />
+                </div>
+              </div>
+
+              {/* Citações Favoritas */}
+              <div className="space-y-2 pt-2 border-t border-border/50">
+                <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block flex items-center gap-1">
+                  <Quote size={12} />
+                  <span>Citações & Trechos Favoritos</span>
+                </label>
+
+                <div className="flex items-center gap-2">
                   <input
                     type="text"
-                    value={author}
-                    onChange={(e) => setAuthor(e.target.value)}
-                    placeholder="Ex: James Clear"
-                    className="input-ios text-xs font-semibold"
+                    value={quoteInput}
+                    onChange={(e) => setQuoteInput(e.target.value)}
+                    placeholder="Adicionar citação..."
+                    className="input-ios py-2 text-xs flex-1"
                   />
+                  <button
+                    type="button"
+                    onClick={handleAddQuote}
+                    className="p-2.5 rounded-xl bg-muted hover:bg-secondary text-foreground transition-colors font-bold text-xs"
+                  >
+                    <Plus size={15} />
+                  </button>
                 </div>
 
-                <div>
-                  <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">
-                    URL da Capa do Livro (Imagem)
-                  </label>
-                  <input
-                    type="url"
-                    value={coverUrl}
-                    onChange={(e) => setCoverUrl(e.target.value)}
-                    placeholder="https://books.google.com/..."
-                    className="input-ios text-xs font-medium"
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <div>
-                    <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">
-                      Status na Estante
-                    </label>
-                    <CustomSelect
-                      value={status}
-                      onChange={(val) => setStatus(val as any)}
-                      options={[
-                        { value: "reading", label: "Lendo Atualmente" },
-                        { value: "want", label: "Quero Ler" },
-                        { value: "completed", label: "Concluído" },
-                      ]}
-                      className="text-xs font-bold"
-                    />
+                {quotesList.length > 0 && (
+                  <div className="space-y-1.5 pt-1">
+                    {quotesList.map((q, idx) => (
+                      <div key={idx} className="p-2 rounded-xl bg-muted/50 border border-border text-[11px] font-medium text-foreground flex items-center justify-between gap-2">
+                        <span className="italic">"{q}"</span>
+                        <button type="button" onClick={() => handleRemoveQuote(idx)} className="text-muted-foreground hover:text-red-500">
+                          <Trash2 size={13} />
+                        </button>
+                      </div>
+                    ))}
                   </div>
+                )}
+              </div>
 
-                  <div>
-                    <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">
-                      Página Atual
-                    </label>
-                    <input
-                      type="number"
-                      value={currentPage}
-                      onChange={(e) => setCurrentPage(e.target.value)}
-                      placeholder="185"
-                      className="input-ios text-xs font-bold"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">
-                      Total de Páginas
-                    </label>
-                    <input
-                      type="number"
-                      value={totalPages}
-                      onChange={(e) => setTotalPages(e.target.value)}
-                      placeholder="320"
-                      className="input-ios text-xs font-bold"
-                    />
-                  </div>
-                </div>
-
-                {/* Citações Favoritas */}
-                <div className="space-y-2 pt-2 border-t border-border/50">
-                  <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block flex items-center gap-1">
-                    <Quote size={12} />
-                    <span>Citações & Trechos Favoritos</span>
-                  </label>
-
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="text"
-                      value={quoteInput}
-                      onChange={(e) => setQuoteInput(e.target.value)}
-                      placeholder="Adicionar citação inspiradora..."
-                      className="input-ios py-2 text-xs flex-1"
-                    />
-                    <button
-                      type="button"
-                      onClick={handleAddQuote}
-                      className="p-2 rounded-xl bg-muted hover:bg-secondary text-foreground transition-colors font-bold text-xs"
-                    >
-                      <Plus size={15} />
-                    </button>
-                  </div>
-
-                  {quotesList.length > 0 && (
-                    <div className="space-y-1.5 pt-1">
-                      {quotesList.map((q, idx) => (
-                        <div key={idx} className="p-2 rounded-xl bg-muted/50 border border-border text-[11px] font-medium text-foreground flex items-center justify-between gap-2">
-                          <span className="italic">"{q}"</span>
-                          <button type="button" onClick={() => handleRemoveQuote(idx)} className="text-muted-foreground hover:text-red-500">
-                            <Trash2 size={13} />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                <button type="submit" className="btn-ios w-full py-3.5 text-xs font-black uppercase tracking-wider mt-2">
-                  Salvar na Estante
-                </button>
-              </form>
-            </div>
-          </div>
+              <button type="submit" className="btn-ios w-full py-4 text-xs font-black uppercase tracking-wider shadow-md shadow-black/10 mt-2">
+                Salvar na Estante
+              </button>
+            </form>
+          )}
         </div>
-      )}
+      </ModalPortal>
     </div>
   );
 }
