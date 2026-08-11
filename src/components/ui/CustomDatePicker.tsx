@@ -40,23 +40,38 @@ export function CustomDatePicker({ value, onChange, label, className }: CustomDa
     setViewMonth(d.getMonth());
   }, [value]);
 
-  // Position popup relative to button
+  // Position popup relative to button (viewport relative for position: fixed)
   useEffect(() => {
-    if (open && btnRef.current) {
+    if (!open || !btnRef.current) return;
+
+    const updatePosition = () => {
+      if (!btnRef.current) return;
       const rect = btnRef.current.getBoundingClientRect();
+      const popupH = 340;
       const spaceBelow = window.innerHeight - rect.bottom;
-      const popupH = 380; // approx height
-      let top = rect.bottom + window.scrollY + 6;
-      // If not enough space below, show above
-      if (spaceBelow < popupH) {
-        top = rect.top + window.scrollY - popupH - 6;
+      let top = rect.bottom + 6;
+
+      if (spaceBelow < popupH && rect.top > popupH) {
+        top = Math.max(10, rect.top - popupH - 6);
+      } else if (top + popupH > window.innerHeight) {
+        top = Math.max(10, window.innerHeight - popupH - 10);
       }
+
       setPos({
         top,
-        left: rect.left + window.scrollX,
+        left: Math.max(10, Math.min(rect.left, window.innerWidth - 310)),
         width: Math.max(rect.width, 300),
       });
-    }
+    };
+
+    updatePosition();
+
+    window.addEventListener("resize", updatePosition);
+    window.addEventListener("scroll", updatePosition, true);
+    return () => {
+      window.removeEventListener("resize", updatePosition);
+      window.removeEventListener("scroll", updatePosition, true);
+    };
   }, [open]);
 
   // Close on outside click
@@ -73,14 +88,6 @@ export function CustomDatePicker({ value, onChange, label, className }: CustomDa
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [open]);
-
-  // Close on scroll/resize
-  useEffect(() => {
-    if (!open) return;
-    const close = () => { setOpen(false); setViewMode("calendar"); };
-    window.addEventListener("resize", close);
-    return () => window.removeEventListener("resize", close);
   }, [open]);
 
   const monthNames = [
@@ -141,7 +148,7 @@ export function CustomDatePicker({ value, onChange, label, className }: CustomDa
       className="glass-card p-4 shadow-2xl border border-border fade-in"
       style={{
         position: "fixed",
-        top: pos.top - window.scrollY,
+        top: pos.top,
         left: pos.left,
         width: Math.max(pos.width, 300),
         maxWidth: "calc(100vw - 32px)",
