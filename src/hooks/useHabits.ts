@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import type { Habit, HabitLog } from '@/lib/supabase';
+import { isValidUuid } from '@/lib/utils';
 
 function normalizeHabit(item: any): Habit {
   return {
@@ -35,7 +36,7 @@ export function useHabits(userId: string | undefined) {
   const [error, setError] = useState<string | null>(null);
 
   const fetchDados = useCallback(async () => {
-    if (!userId) {
+    if (!isValidUuid(userId)) {
       setHabits([]);
       setLogs([]);
       setLoading(false);
@@ -47,8 +48,8 @@ export function useHabits(userId: string | undefined) {
 
     try {
       const [habitsRes, logsRes] = await Promise.all([
-        supabase.from('habits').select('*').eq('user_id', userId),
-        supabase.from('habit_logs').select('*').eq('user_id', userId),
+        supabase.from('habits').select('*').eq('user_id', userId!),
+        supabase.from('habit_logs').select('*').eq('user_id', userId!),
       ]);
 
       if (habitsRes.error) throw habitsRes.error;
@@ -70,10 +71,12 @@ export function useHabits(userId: string | undefined) {
 
   // Realtime subscriptions
   useEffect(() => {
-    if (!userId) return;
+    if (!isValidUuid(userId)) return;
+
+    const channelId = Math.random().toString(36).substring(2, 7);
 
     const habitsChannel = supabase
-      .channel('habits-realtime')
+      .channel(`habits-realtime-${userId}-${channelId}`)
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'habits', filter: `user_id=eq.${userId}` },
@@ -92,7 +95,7 @@ export function useHabits(userId: string | undefined) {
       .subscribe();
 
     const logsChannel = supabase
-      .channel('habit-logs-realtime')
+      .channel(`habit-logs-realtime-${userId}-${channelId}`)
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'habit_logs', filter: `user_id=eq.${userId}` },
