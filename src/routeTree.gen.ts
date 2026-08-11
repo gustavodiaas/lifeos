@@ -238,6 +238,7 @@ declare module '@tanstack/react-router' {
 
 import { Route as BooksRouteImport } from './routes/books'
 import { Route as CalendarRouteImport } from './routes/calendar'
+import { Route as ShoppingRouteImport } from './routes/shopping'
 
 const BooksRoute = BooksRouteImport.update({
   id: '/books',
@@ -248,6 +249,12 @@ const BooksRoute = BooksRouteImport.update({
 const CalendarRoute = CalendarRouteImport.update({
   id: '/calendar',
   path: '/calendar',
+  getParentRoute: () => rootRouteImport,
+} as any)
+
+const ShoppingRoute = ShoppingRouteImport.update({
+  id: '/shopping',
+  path: '/shopping',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -262,6 +269,7 @@ const rootRouteChildren: RootRouteChildren = {
   JournalRoute: JournalRoute,
   NotesRoute: NotesRoute,
   SettingsRoute: SettingsRoute,
+  ShoppingRoute: ShoppingRoute,
   StatsRoute: StatsRoute,
   TasksRoute: TasksRoute,
 }
