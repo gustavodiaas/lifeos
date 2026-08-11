@@ -74,6 +74,7 @@ export function AppShell({ children }: { children?: ReactNode }) {
   const { user } = useAuthContext();
   const greeting = getGreeting();
   const firstName = getFirstName(user);
+  const avatarUrl = user?.user_metadata?.avatar_url || (typeof window !== "undefined" ? localStorage.getItem("lifeos_avatar_url") : null) || "";
 
   const pageTitle = Object.entries(PAGE_TITLES)
     .sort((a, b) => b[0].length - a[0].length)
@@ -97,15 +98,19 @@ export function AppShell({ children }: { children?: ReactNode }) {
       <aside className="hidden md:flex w-64 shrink-0 flex-col glass-panel border-r border-[var(--glass-border)] select-none">
         {/* Header / Brand */}
         <div className="px-5 pt-6 pb-4">
-          <Link to="/" className="flex items-center gap-3 group">
-            <div className="h-10 w-10 rounded-2xl bg-[#212121] dark:bg-foreground flex items-center justify-center shadow-lg shadow-black/10 dark:shadow-black/20 transition-transform group-hover:scale-105">
-              <span className="text-white dark:text-black text-base font-extrabold tracking-tight">
-                {firstName[0]?.toUpperCase() ?? "L"}
-              </span>
+          <Link to="/settings" className="flex items-center gap-3 group">
+            <div className="h-10 w-10 rounded-full bg-[#212121] dark:bg-foreground flex items-center justify-center shadow-lg shadow-black/10 dark:shadow-black/20 transition-transform group-hover:scale-105 overflow-hidden shrink-0 ring-2 ring-border">
+              {avatarUrl ? (
+                <img src={avatarUrl} alt={firstName} className="w-full h-full object-cover" />
+              ) : (
+                <span className="text-white dark:text-black text-base font-extrabold tracking-tight">
+                  {firstName[0]?.toUpperCase() ?? "L"}
+                </span>
+              )}
             </div>
-            <div>
-              <p className="text-base font-extrabold text-foreground tracking-tight">{firstName}</p>
-              <p className="text-[11px] text-muted-foreground font-medium">{greeting} 👋</p>
+            <div className="min-w-0 flex-1">
+              <p className="text-base font-extrabold text-foreground tracking-tight truncate">{firstName}</p>
+              <p className="text-[11px] text-muted-foreground font-medium truncate">{greeting} 👋</p>
             </div>
           </Link>
         </div>
@@ -149,8 +154,8 @@ export function AppShell({ children }: { children?: ReactNode }) {
           {user && (
             <div className="mt-1 flex items-center gap-3 p-2.5 rounded-xl bg-card/60 border border-border/50">
               <div className="w-8 h-8 rounded-full bg-foreground/20 ring-2 ring-foreground/40 flex items-center justify-center overflow-hidden shrink-0">
-                {user.user_metadata?.avatar_url ? (
-                  <img src={user.user_metadata.avatar_url} className="w-full h-full object-cover" alt="" />
+                {avatarUrl ? (
+                  <img src={avatarUrl} className="w-full h-full object-cover" alt="" />
                 ) : (
                   <span className="text-xs font-extrabold text-foreground">
                     {(user.email?.[0] ?? "U").toUpperCase()}
@@ -186,8 +191,8 @@ export function AppShell({ children }: { children?: ReactNode }) {
             </button>
             {user && (
               <div className="w-9 h-9 rounded-full bg-foreground/20 ring-2 ring-foreground/40 flex items-center justify-center overflow-hidden">
-                {user.user_metadata?.avatar_url ? (
-                  <img src={user.user_metadata.avatar_url} className="w-full h-full object-cover" alt="" />
+                {avatarUrl ? (
+                  <img src={avatarUrl} className="w-full h-full object-cover" alt="" />
                 ) : (
                   <span className="text-[11px] font-extrabold text-foreground">
                     {(user.email?.[0] ?? "U").toUpperCase()}
