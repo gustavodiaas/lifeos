@@ -7,6 +7,16 @@ import { useWorkspace } from "@/context/WorkspaceContext";
 import { formatBRL } from "@/lib/date";
 import { ModalPortal } from "@/components/ui/ModalPortal";
 import {
+  downloadIcsFile,
+  getGoogleCalendarUrl,
+  getOutlookCalendarUrl,
+} from "@/lib/icsExporter";
+import {
+  getNotificationSettings,
+  saveNotificationSettings,
+  requestNotificationPermission,
+} from "@/lib/notifications";
+import {
   Calendar as CalendarIcon,
   ChevronLeft,
   ChevronRight,
@@ -18,7 +28,12 @@ import {
   Grid,
   List,
   Palette,
-  X,
+  Smartphone,
+  Download,
+  ExternalLink,
+  Bell,
+  Check,
+  Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "@/lib/toast";
@@ -89,8 +104,11 @@ export function CalendarModule() {
     localStorage.setItem(storageKey, JSON.stringify(events));
   }, [events, storageKey]);
 
-  // Modal state
+  // Modals state
   const [showModal, setShowModal] = useState(false);
+  const [syncModalOpen, setSyncModalOpen] = useState(false);
+  const [notifSettings, setNotifSettings] = useState(getNotificationSettings);
+
   const [title, setTitle] = useState("");
   const [eventDate, setEventDate] = useState(selectedDateIso);
   const [startTime, setStartTime] = useState("09:00");
@@ -211,6 +229,25 @@ export function CalendarModule() {
     toast.success("Compromisso removido.");
   };
 
+  const toggleCalendarNotifications = async () => {
+    if (!notifSettings.enabled) {
+      const granted = await requestNotificationPermission();
+      if (!granted) return;
+    }
+    const updated = {
+      ...notifSettings,
+      enabled: true,
+      calendarReminder: !notifSettings.calendarReminder,
+    };
+    saveNotificationSettings(updated);
+    setNotifSettings(updated);
+    if (updated.calendarReminder) {
+      toast.success("Notificações da agenda ativadas com sucesso!");
+    } else {
+      toast.info("Lembretes de agenda pausados.");
+    }
+  };
+
   const selectedItems = itemsByDate[selectedDateIso] || { customEvents: [], tasksDue: [], txs: [] };
   const todayIsoString = new Date().toISOString().slice(0, 10);
 
@@ -231,12 +268,12 @@ export function CalendarModule() {
             <CalendarIcon size={22} />
           </div>
           <div>
-            <span className="badge-ios text-[10px]">Agenda Pessoal</span>
+            <span className="badge-ios text-[10px]">Agenda Inteligente & Sincronizada</span>
             <h2 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight">{capitalizedMonth}</h2>
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2.5">
           {/* View toggle */}
           <div className="flex items-center gap-1 bg-muted/60 p-1 rounded-2xl border border-border/50">
             <button
@@ -271,6 +308,16 @@ export function CalendarModule() {
               <ChevronRight size={16} />
             </button>
           </div>
+
+          {/* Botão de Sincronizar com iOS/Android */}
+          <button
+            onClick={() => setSyncModalOpen(true)}
+            className="px-3.5 py-2.5 rounded-2xl bg-card border border-border text-xs font-bold text-foreground hover:bg-muted transition-colors flex items-center gap-1.5 shadow-xs"
+            title="Sincronizar com iPhone ou Android"
+          >
+            <Smartphone size={15} className="text-foreground" />
+            <span className="hidden sm:inline">Sincronizar Celular</span>
+          </button>
 
           <button
             onClick={() => openNew(selectedDateIso)}
@@ -405,7 +452,7 @@ export function CalendarModule() {
                       className="p-4 rounded-2xl border flex items-start justify-between gap-3"
                       style={{ background: hexToRgba(evt.color, 0.1), borderColor: hexToRgba(evt.color, 0.35) }}
                     >
-                      <div className="space-y-1">
+                      <div className="space-y-1 min-w-0 flex-1">
                         <div className="flex items-center gap-2">
                           <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: evt.color }} />
                           <span className="text-xs font-black" style={{ color: evt.color }}>{evt.title}</span>
@@ -426,9 +473,29 @@ export function CalendarModule() {
                           <p className="text-xs text-muted-foreground font-medium pt-1">{evt.description}</p>
                         )}
                       </div>
-                      <button onClick={() => handleDeleteEvent(evt.id)} className="p-1.5 rounded-lg hover:bg-black/10 text-muted-foreground hover:text-red-500 transition-colors">
-                        <Trash2 size={14} />
-                      </button>
+
+                      {/* Ações Rápidas de Sincronização do Evento */}
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <a
+                          href={getGoogleCalendarUrl(evt)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="p-1.5 rounded-lg hover:bg-black/10 text-muted-foreground hover:text-foreground transition-colors"
+                          title="Adicionar ao Google Calendar"
+                        >
+                          <ExternalLink size={14} />
+                        </a>
+                        <button
+                          onClick={() => downloadIcsFile([evt], `${evt.title}.ics`)}
+                          className="p-1.5 rounded-lg hover:bg-black/10 text-muted-foreground hover:text-foreground transition-colors"
+                          title="Baixar para iPhone/Android (.ics)"
+                        >
+                          <Download size={14} />
+                        </button>
+                        <button onClick={() => handleDeleteEvent(evt.id)} className="p-1.5 rounded-lg hover:bg-black/10 text-muted-foreground hover:text-red-500 transition-colors">
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -462,7 +529,7 @@ export function CalendarModule() {
                   className="p-3 rounded-2xl border flex items-center justify-between gap-2"
                   style={{ background: hexToRgba(evt.color, 0.1), borderColor: hexToRgba(evt.color, 0.3) }}
                 >
-                  <div className="min-w-0">
+                  <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-1.5">
                       <span className="w-2 h-2 rounded-full shrink-0" style={{ background: evt.color }} />
                       <span className="text-xs font-black truncate" style={{ color: evt.color }}>{evt.title}</span>
@@ -473,9 +540,19 @@ export function CalendarModule() {
                       </span>
                     )}
                   </div>
-                  <button onClick={() => handleDeleteEvent(evt.id)} className="text-muted-foreground hover:text-red-500 shrink-0">
-                    <Trash2 size={13} />
-                  </button>
+
+                  <div className="flex items-center gap-1 shrink-0">
+                    <button
+                      onClick={() => downloadIcsFile([evt], `${evt.title}.ics`)}
+                      className="p-1 rounded text-muted-foreground hover:text-foreground"
+                      title="Baixar para celular (.ics)"
+                    >
+                      <Download size={13} />
+                    </button>
+                    <button onClick={() => handleDeleteEvent(evt.id)} className="p-1 text-muted-foreground hover:text-red-500">
+                      <Trash2 size={13} />
+                    </button>
+                  </div>
                 </div>
               ))}
 
@@ -515,7 +592,6 @@ export function CalendarModule() {
       {/* ── MODAL NOVO EVENTO ─────────────────────────────────────────── */}
       <ModalPortal open={showModal} onClose={() => setShowModal(false)} title="Agendar Compromisso">
         <form onSubmit={handleCreateEvent} className="space-y-4">
-          {/* Título */}
           <div>
             <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">
               Título do Evento
@@ -531,7 +607,6 @@ export function CalendarModule() {
             />
           </div>
 
-          {/* Data + horários */}
           <div className="grid grid-cols-3 gap-3">
             <div>
               <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">Data</label>
@@ -547,7 +622,6 @@ export function CalendarModule() {
             </div>
           </div>
 
-          {/* Cor + Legenda */}
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">
@@ -580,7 +654,6 @@ export function CalendarModule() {
                         />
                       ))}
                     </div>
-                    {/* Custom hex */}
                     <div className="mt-3 flex items-center gap-2">
                       <input
                         type="color"
@@ -610,7 +683,6 @@ export function CalendarModule() {
             </div>
           </div>
 
-          {/* Prévia */}
           {title && (
             <div
               className="px-3 py-2 rounded-xl text-xs font-bold border"
@@ -622,7 +694,6 @@ export function CalendarModule() {
             </div>
           )}
 
-          {/* Descrição */}
           <div>
             <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">Notas</label>
             <textarea
@@ -637,6 +708,98 @@ export function CalendarModule() {
             Confirmar Agendamento
           </button>
         </form>
+      </ModalPortal>
+
+      {/* ── MODAL DE SINCRONIZAÇÃO iOS & ANDROID ───────────────────────── */}
+      <ModalPortal
+        open={syncModalOpen}
+        onClose={() => setSyncModalOpen(false)}
+        title="📲 Sincronizar Calendário (iOS & Android)"
+      >
+        <div className="space-y-5">
+          <p className="text-xs text-muted-foreground font-medium leading-relaxed">
+            Exporte seus compromissos diretamente para o aplicativo de calendário nativo do seu smartphone (Apple Calendar no iPhone ou Google Calendar no Android).
+          </p>
+
+          <div className="space-y-3">
+            {/* Sincronizar iOS (iPhone) */}
+            <div className="p-4 rounded-2xl bg-muted/40 border border-border/60 space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-xl bg-foreground text-background flex items-center justify-center text-xs font-black">
+                    🍏
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-extrabold text-foreground">iPhone / Apple Calendar</h4>
+                    <p className="text-[10px] text-muted-foreground font-medium">Exporta arquivo .ics com alarmes nativos de 15 min</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => {
+                    downloadIcsFile(events, `lifeos-agenda-iphone.ics`);
+                    toast.success("Arquivo .ics baixado! Toque nele para adicionar ao Calendário do iPhone.");
+                  }}
+                  className="btn-ios text-xs py-2 px-3 flex items-center gap-1.5 shrink-0"
+                >
+                  <Download size={13} />
+                  <span>Baixar .ics</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Sincronizar Android / Google */}
+            <div className="p-4 rounded-2xl bg-muted/40 border border-border/60 space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-xl bg-blue-500 text-white flex items-center justify-center text-xs font-black">
+                    🤖
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-extrabold text-foreground">Android / Google Calendar</h4>
+                    <p className="text-[10px] text-muted-foreground font-medium">Exporta todos os eventos para o Google/Samsung Calendar</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => {
+                    downloadIcsFile(events, `lifeos-agenda-android.ics`);
+                    toast.success("Arquivo .ics baixado! Abra no celular para sincronizar.");
+                  }}
+                  className="btn-ios text-xs py-2 px-3 flex items-center gap-1.5 shrink-0"
+                >
+                  <Download size={13} />
+                  <span>Baixar .ics</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Notificações do Navegador / PWA */}
+            <div className="p-4 rounded-2xl bg-muted/40 border border-border/60 space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-xl bg-purple-500/15 text-purple-500 flex items-center justify-center">
+                    <Bell size={16} />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-extrabold text-foreground">Lembretes & Notificações Push</h4>
+                    <p className="text-[10px] text-muted-foreground font-medium">Alertas do sistema no computador e celular antes do evento</p>
+                  </div>
+                </div>
+                <button
+                  onClick={toggleCalendarNotifications}
+                  className={cn(
+                    "px-3 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-1 shrink-0",
+                    notifSettings.calendarReminder
+                      ? "bg-emerald-500 text-white shadow-xs"
+                      : "bg-muted text-foreground border border-border"
+                  )}
+                >
+                  {notifSettings.calendarReminder ? <Check size={13} /> : <Bell size={13} />}
+                  <span>{notifSettings.calendarReminder ? "Ativado" : "Ativar Lembretes"}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       </ModalPortal>
     </div>
   );
