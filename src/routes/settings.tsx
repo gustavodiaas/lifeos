@@ -139,6 +139,7 @@ function SettingsPage() {
       const { data: { publicUrl } } = supabase.storage.from("avatars").getPublicUrl(fileName);
       await supabase.auth.updateUser({ data: { avatar_url: publicUrl } });
       setAvatarUrl(publicUrl);
+      localStorage.setItem("lifeos_avatar_url", publicUrl);
       toast.success("Foto de perfil atualizada!");
     } catch (err) {
       console.error(err);
@@ -175,6 +176,8 @@ function SettingsPage() {
           avatar_url: avatarUrl,
         },
       });
+
+      if (avatarUrl) localStorage.setItem("lifeos_avatar_url", avatarUrl);
 
       toast.success("Perfil atualizado com sucesso!");
     } catch (err) {
