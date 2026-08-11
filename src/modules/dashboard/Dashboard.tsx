@@ -53,7 +53,7 @@ function TodayEventsTicker({ userId, today, tasks, lancamentos }: { userId: stri
   useEffect(() => {
     const list: any[] = [];
 
-    // 1. Calendário (v2 e v1)
+    // 1. Calendário (v2 e v1
     try {
       const v2 = localStorage.getItem(`lifeos_${userId}_calendar_events_v2`);
       if (v2) {
