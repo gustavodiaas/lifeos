@@ -20,6 +20,8 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+import { MoodTrendChart } from "./components/MoodTrendChart";
+
 export function JournalModule() {
   const { user } = useAuthContext();
   const { entries, loading, saveEntry, removeEntry } = useJournal(user?.id);
@@ -132,6 +134,9 @@ export function JournalModule() {
           <span>{todayEntry ? "Editar Hoje" : "Escrever Hoje"}</span>
         </button>
       </div>
+
+      {/* ── Gráfico de Tendência de Humor (30 Dias) ────────────────────── */}
+      <MoodTrendChart entries={entries} />
 
       {/* ── 2. Cards de Métricas do Diário ──────────────────────────────── */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
