@@ -548,6 +548,30 @@ function SettingsPage() {
 
             {notifSettings.enabled && (
               <div className="space-y-4 fade-in">
+                {/* Lembrete de Agenda / Calendário */}
+                <div className="flex items-center justify-between p-3.5 rounded-2xl bg-muted/40 border border-border/50">
+                  <div>
+                    <span className="text-xs font-bold text-foreground block">Lembretes de Eventos do Calendário</span>
+                    <span className="text-[11px] text-muted-foreground font-medium">Alerta {notifSettings.calendarAdvanceMinutes || 15} minutos antes do início do compromisso</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <select
+                      value={notifSettings.calendarAdvanceMinutes || 15}
+                      onChange={(e) => {
+                        const updated = { ...notifSettings, calendarAdvanceMinutes: Number(e.target.value) };
+                        setNotifSettings(updated);
+                        saveNotificationSettings(updated);
+                      }}
+                      className="input-ios py-1.5 px-2 text-xs font-bold"
+                    >
+                      <option value={5}>5 min antes</option>
+                      <option value={15}>15 min antes</option>
+                      <option value={30}>30 min antes</option>
+                      <option value={60}>1 hora antes</option>
+                    </select>
+                  </div>
+                </div>
+
                 {/* Lembrete de Hábitos */}
                 <div className="flex items-center justify-between p-3.5 rounded-2xl bg-muted/40 border border-border/50">
                   <div>
