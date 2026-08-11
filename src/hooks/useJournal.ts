@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import type { JournalEntry } from '@/lib/supabase';
+import { isValidUuid } from '@/lib/utils';
 
 function normalizeJournalEntry(item: any): JournalEntry {
   return {
@@ -19,7 +20,7 @@ export function useJournal(userId: string | undefined) {
   const [error, setError] = useState<string | null>(null);
 
   const fetchDados = useCallback(async () => {
-    if (!userId) {
+    if (!isValidUuid(userId)) {
       setEntries([]);
       setLoading(false);
       return;
@@ -32,7 +33,7 @@ export function useJournal(userId: string | undefined) {
       const { data, error: fetchErr } = await supabase
         .from('journal_entries')
         .select('*')
-        .eq('user_id', userId)
+        .eq('user_id', userId!)
         .order('date', { ascending: false });
 
       if (fetchErr) throw fetchErr;
