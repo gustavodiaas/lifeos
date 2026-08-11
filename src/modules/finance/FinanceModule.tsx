@@ -80,10 +80,10 @@ export function FinanceModule() {
       });
   }, [user?.id]);
 
-  const expanded = useMemo(() => expandRecorrentes(lancamentos), [lancamentos]);
+  const expanded = useMemo(() => expandRecorrentes(lancamentos, year, month), [lancamentos, year, month]);
   const saldoInicial = useMemo(
-    () => calcSaldoInicial(expanded, year, month, perfil?.monthly_income ?? 0),
-    [expanded, year, month, perfil]
+    () => calcSaldoInicial(lancamentos, year, month),
+    [lancamentos, year, month]
   );
   const rows = useMemo(() => buildDayRows(expanded, year, month, saldoInicial), [expanded, year, month, saldoInicial]);
 
@@ -92,7 +92,10 @@ export function FinanceModule() {
     return expanded.filter((l) => (l.data || '').slice(0, 7) === `${year}-${mmStr}`);
   }, [expanded, year, month]);
 
-  const summary = useMemo(() => calcSummary(rawForMonth), [rawForMonth]);
+  const summary = useMemo(
+    () => calcSummary(rows, saldoInicial, year, month, perfil?.monthly_income ?? 0),
+    [rows, saldoInicial, year, month, perfil]
+  );
 
   const prevMonth = () => {
     if (month === 0) {
