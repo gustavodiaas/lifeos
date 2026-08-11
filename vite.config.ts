@@ -3,9 +3,10 @@ import { VitePWA } from "vite-plugin-pwa";
 
 export default defineConfig({
   tanstackStart: {
-    // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
-    // nitro/vite builds from this
     server: { entry: "server" },
+  },
+  nitro: {
+    preset: "vercel",
   },
   vite: {
     plugins: [
@@ -13,7 +14,7 @@ export default defineConfig({
         registerType: "autoUpdate",
         outDir: ".output/public",
         includeAssets: ["favicon.ico", "apple-touch-icon.png", "icons/*.png"],
-        manifest: false, // Usando public/manifest.webmanifest existente
+        manifest: false,
         workbox: {
           globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
           runtimeCaching: [
@@ -24,7 +25,7 @@ export default defineConfig({
                 cacheName: "supabase-api-cache",
                 expiration: {
                   maxEntries: 100,
-                  maxAgeSeconds: 60 * 60 * 24 * 7, // 7 dias
+                  maxAgeSeconds: 60 * 60 * 24 * 7,
                 },
                 cacheableResponse: {
                   statuses: [0, 200],
