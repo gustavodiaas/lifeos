@@ -11,6 +11,7 @@ export default defineConfig({
     plugins: [
       VitePWA({
         registerType: "autoUpdate",
+        outDir: ".output/public",
         includeAssets: ["favicon.ico", "apple-touch-icon.png", "icons/*.png"],
         manifest: false, // Usando public/manifest.webmanifest existente
         workbox: {
