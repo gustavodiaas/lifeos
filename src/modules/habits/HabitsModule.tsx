@@ -20,8 +20,11 @@ import {
   Search,
 } from "lucide-react";
 
+import { useWorkspace } from "@/context/WorkspaceContext";
+
 export function HabitsModule() {
   const { user } = useAuthContext();
+  const { activeUserId } = useWorkspace();
   const {
     habits,
     logs,
@@ -31,7 +34,7 @@ export function HabitsModule() {
     removeHabit,
     archiveHabit,
     toggleHabitLog,
-  } = useHabits(user?.id);
+  } = useHabits(activeUserId);
 
   const activeHabits = useMemo(() => habits.filter((h) => !h.archivedAt && !h.archived_at), [habits]);
 
