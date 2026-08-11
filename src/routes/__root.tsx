@@ -158,17 +158,14 @@ function RootComponent() {
   );
 }
 
+import { SyncingLoader } from "../components/ui/SyncingLoader";
+
 function AuthGuard() {
   const { user, loading } = useAuthContext();
   const pathname = typeof window !== 'undefined' ? window.location.pathname : '/';
 
   if (loading) {
-    return (
-      <div className="h-[100dvh] flex flex-col items-center justify-center bg-background gap-3 select-none">
-        <div className="w-8 h-8 border-2 border-foreground border-t-transparent rounded-full animate-spin" />
-        <span className="text-xs font-semibold text-muted-foreground tracking-wide">Sincronizando...</span>
-      </div>
-    );
+    return <SyncingLoader message="Sincronizando seus dados..." fullScreen />;
   }
 
   if (!user && pathname !== '/auth') {
