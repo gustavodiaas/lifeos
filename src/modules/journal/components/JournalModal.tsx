@@ -140,9 +140,22 @@ export function JournalModal({
 
           {/* Reflexão / Texto do Diário */}
           <div>
-            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5 block ml-1">
-              Reflexão Diária
-            </label>
+            <div className="flex items-center justify-between mb-1.5 ml-1">
+              <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider block">
+                Reflexão Diária
+              </label>
+              <button
+                type="button"
+                onClick={() => {
+                  const promptText = `\n\n🙏 3 Coisas pelas quais sou grato hoje:\n1. \n2. \n3. `;
+                  setContent((prev) => prev + promptText);
+                }}
+                className="text-[11px] font-extrabold text-foreground bg-muted/60 hover:bg-muted px-2.5 py-1 rounded-lg transition-colors flex items-center gap-1 border border-border/50"
+              >
+                <Sparkles size={12} className="text-amber-500" />
+                <span>+ Insert 3 Gratidões</span>
+              </button>
+            </div>
             <textarea
               value={content}
               onChange={(e) => setContent(e.target.value)}
