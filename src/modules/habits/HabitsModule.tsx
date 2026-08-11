@@ -211,12 +211,7 @@ export function HabitsModule() {
       </div>
 
       {/* ── 3. Heatmap Anual de Consistência (World-class Widget) ──────── */}
-      <HabitHeatmap
-        logs={logs}
-        totalHabitsCount={habits.length}
-        selectedHabitId={selectedHabitId}
-        habitName={selectedHabitName}
-      />
+      <HabitHeatmap logs={logs} />
 
       {/* ── 4. Barra de Filtro e Busca de Hábitos ──────────────────────── */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
