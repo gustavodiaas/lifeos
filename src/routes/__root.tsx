@@ -100,8 +100,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     links: [
       { rel: "stylesheet", href: appCss },
       { rel: "manifest", href: "/manifest.webmanifest" },
-      { rel: "icon", href: "/icons/icon-512.png", type: "image/png" },
-      { rel: "apple-touch-icon", href: "/icons/icon-512.png" },
+      { rel: "icon", href: "/icons/icon-192.png", type: "image/png" },
+      { rel: "apple-touch-icon", href: "/icons/apple-touch-icon.png" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "" },
       {
@@ -146,8 +146,15 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
+import { initPWA } from "../pwa/registerSW";
+import { PwaInstallBanner } from "../components/pwa/PwaInstallBanner";
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+
+  useEffect(() => {
+    initPWA();
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -155,6 +162,7 @@ function RootComponent() {
         <WorkspaceProvider>
           <AuthGuard />
           <Toaster />
+          <PwaInstallBanner />
         </WorkspaceProvider>
       </AuthProvider>
     </QueryClientProvider>
