@@ -34,6 +34,7 @@ import {
   Calendar,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { DashboardQuickActions } from "./components/DashboardQuickActions";
 
 const LEVELS = [
   { level: 1, name: "Iniciante Focado", minXp: 0, maxXp: 100 },
@@ -347,6 +348,9 @@ export function Dashboard() {
 
       {/* ── Pílula Noticiário de Eventos do Dia ────────────────────────── */}
       <TodayEventsTicker userId={userId} today={today} tasks={tasks} lancamentos={lancamentos} />
+
+      {/* ── Acessos Rápidos de Cadastro ──────────────────────────────────── */}
+      <DashboardQuickActions userId={userId} />
 
       {/* ── 2. Grid de Resumo de Status (4 Cards Principais) ─────────────── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
