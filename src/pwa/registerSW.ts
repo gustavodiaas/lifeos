@@ -1,6 +1,6 @@
 export function initPWA() {
   if (typeof window !== "undefined" && "serviceWorker" in navigator) {
-    window.addEventListener("load", () => {
+    const register = () => {
       navigator.serviceWorker
         .register("/sw.js")
         .then((registration) => {
@@ -22,8 +22,14 @@ export function initPWA() {
           };
         })
         .catch((error) => {
-          console.error("Falha ao registrar Service Worker do LifeOS:", error);
+          console.warn("Falha ao registrar Service Worker do LifeOS:", error);
         });
-    });
+    };
+
+    if (document.readyState === "complete") {
+      register();
+    } else {
+      window.addEventListener("load", register);
+    }
   }
 }
