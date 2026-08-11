@@ -85,9 +85,9 @@ export function MobileAppDrawer({ open, onClose }: MobileAppDrawerProps) {
         {user && (
           <div className="p-3.5 rounded-2xl bg-muted/50 border border-border/60 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-full bg-foreground/20 ring-2 ring-foreground/40 flex items-center justify-center overflow-hidden">
-                {user.user_metadata?.avatar_url ? (
-                  <img src={user.user_metadata.avatar_url} className="w-full h-full object-cover" alt="" />
+              <div className="w-9 h-9 rounded-full bg-foreground/20 ring-2 ring-foreground/40 flex items-center justify-center overflow-hidden shrink-0">
+                {user.user_metadata?.avatar_url || (typeof window !== "undefined" ? localStorage.getItem("lifeos_avatar_url") : null) ? (
+                  <img src={user.user_metadata?.avatar_url || localStorage.getItem("lifeos_avatar_url") || ""} className="w-full h-full object-cover" alt="" />
                 ) : (
                   <span className="text-xs font-extrabold text-foreground">
                     {(user.email?.[0] ?? "U").toUpperCase()}
