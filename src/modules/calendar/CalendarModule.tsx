@@ -6,6 +6,7 @@ import { useAuthContext } from "@/context/AuthContext";
 import { useWorkspace } from "@/context/WorkspaceContext";
 import { formatBRL } from "@/lib/date";
 import { ModalPortal } from "@/components/ui/ModalPortal";
+import { useCalendarEvents } from "@/hooks/useCalendarEvents";
 import {
   downloadIcsFile,
   getGoogleCalendarUrl,
@@ -34,6 +35,11 @@ import {
   Bell,
   Check,
   Sparkles,
+  Search,
+  SlidersHorizontal,
+  CloudSun,
+  MapPin,
+  Tag,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "@/lib/toast";
@@ -45,32 +51,24 @@ export interface CustomEvent {
   date: string; // YYYY-MM-DD
   startTime?: string; // HH:mm
   endTime?: string;
-  color: string; // user-chosen hex like "#a78bfa"
+  color: string; // hex color
   description?: string;
-  label?: string; // optional user label e.g. "Trabalho", "Saúde"
+  label?: string; // category/label e.g. "Trabalho", "Saúde"
 }
 
-// Palette of nice pastel/vivid colors the user can pick from
 const COLOR_PALETTE = [
-  { hex: "#a78bfa", name: "Lavanda" },
-  { hex: "#f472b6", name: "Rosa" },
-  { hex: "#34d399", name: "Menta" },
-  { hex: "#60a5fa", name: "Azul Céu" },
-  { hex: "#fb923c", name: "Pêssego" },
-  { hex: "#fbbf24", name: "Âmbar" },
-  { hex: "#f87171", name: "Coral" },
-  { hex: "#2dd4bf", name: "Turquesa" },
-  { hex: "#c084fc", name: "Lilás" },
-  { hex: "#4ade80", name: "Verde Neon" },
-  { hex: "#38bdf8", name: "Celeste" },
-  { hex: "#e879f9", name: "Orchidea" },
+  { hex: "#ef4444", name: "Vermelho iOS" },
+  { hex: "#f97316", name: "Laranja" },
+  { hex: "#eab308", name: "Âmbar" },
+  { hex: "#10b981", name: "Esmeralda" },
+  { hex: "#06b6d4", name: "Ciano" },
+  { hex: "#3b82f6", name: "Azul" },
+  { hex: "#8b5cf6", name: "Roxo" },
+  { hex: "#ec4899", name: "Rosa" },
 ];
 
-type ViewMode = "month" | "day";
+type ViewMode = "grid" | "split" | "week";
 
-import { useCalendarEvents } from "@/hooks/useCalendarEvents";
-
-// ── Component ─────────────────────────────────────────────────────────────────
 export function CalendarModule() {
   const { user } = useAuthContext();
   const { activeUserId } = useWorkspace();
@@ -80,15 +78,16 @@ export function CalendarModule() {
   const { events, addEvent, removeEvent } = useCalendarEvents(activeUserId || user?.id);
 
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [viewMode, setViewMode] = useState<ViewMode>("month");
+  const [viewMode, setViewMode] = useState<ViewMode>("split"); // Split view by default like Fantastical/iOS
   const [selectedDateIso, setSelectedDateIso] = useState(new Date().toISOString().slice(0, 10));
-
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Modals state
   const [showModal, setShowModal] = useState(false);
   const [syncModalOpen, setSyncModalOpen] = useState(false);
   const [notifSettings, setNotifSettings] = useState(getNotificationSettings);
 
+  // Form state for event creation
   const [title, setTitle] = useState("");
   const [eventDate, setEventDate] = useState(selectedDateIso);
   const [startTime, setStartTime] = useState("09:00");
@@ -96,31 +95,21 @@ export function CalendarModule() {
   const [color, setColor] = useState(COLOR_PALETTE[0].hex);
   const [labelText, setLabelText] = useState("");
   const [description, setDescription] = useState("");
-  const [showColorPicker, setShowColorPicker] = useState(false);
-  const colorPickerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (colorPickerRef.current && !colorPickerRef.current.contains(e.target as Node)) {
-        setShowColorPicker(false);
-      }
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, []);
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
 
-  const monthName = currentDate.toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
+  const monthName = currentDate.toLocaleDateString("pt-BR", { month: "long" });
   const capitalizedMonth = monthName.charAt(0).toUpperCase() + monthName.slice(1);
 
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const firstDayIndex = new Date(year, month, 1).getDay();
 
+  // Grid Days for Month View
   const monthGridDays = useMemo(() => {
     const days: { dateIso: string; dayNum: number; isCurrentMonth: boolean }[] = [];
     const prevMonthDays = new Date(year, month, 0).getDate();
+
     for (let i = firstDayIndex - 1; i >= 0; i--) {
       const d = prevMonthDays - i;
       const prevDate = new Date(year, month - 1, d);
@@ -138,34 +127,79 @@ export function CalendarModule() {
     return days;
   }, [year, month, firstDayIndex, daysInMonth]);
 
+  // Week days for Week View strip
+  const weekDays = useMemo(() => {
+    const sel = new Date(selectedDateIso + "T12:00:00");
+    const dayOfWeek = sel.getDay();
+    const startOfWeek = new Date(sel);
+    startOfWeek.setDate(sel.getDate() - dayOfWeek);
+
+    const result = [];
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(startOfWeek);
+      d.setDate(startOfWeek.getDate() + i);
+      const iso = d.toISOString().slice(0, 10);
+      result.push({
+        dateIso: iso,
+        dayNum: d.getDate(),
+        dayShort: d.toLocaleDateString("pt-BR", { weekday: "short" }).toUpperCase().slice(0, 3),
+      });
+    }
+    return result;
+  }, [selectedDateIso]);
+
+  // Items mapped by ISO date
   const itemsByDate = useMemo(() => {
     const map: Record<string, { customEvents: CustomEvent[]; tasksDue: typeof tasks; txs: typeof lancamentos }> = {};
     const ensure = (iso: string) => {
       if (!map[iso]) map[iso] = { customEvents: [], tasksDue: [], txs: [] };
     };
-    events.forEach((evt) => { ensure(evt.date); map[evt.date].customEvents.push(evt); });
+
+    events.forEach((evt) => {
+      ensure(evt.date);
+      map[evt.date].customEvents.push(evt);
+    });
+
     tasks.forEach((t) => {
       const iso = t.dueDate || t.due_date;
-      if (iso) { ensure(iso); map[iso].tasksDue.push(t); }
+      if (iso) {
+        ensure(iso);
+        map[iso].tasksDue.push(t);
+      }
     });
+
     lancamentos.forEach((l) => {
-      if (l.data) { ensure(l.data); map[l.data].txs.push(l); }
+      if (l.data) {
+        ensure(l.data);
+        map[l.data].txs.push(l);
+      }
     });
+
     return map;
   }, [events, tasks, lancamentos]);
 
-  // Dynamic legend: unique (color, label) pairs from events that have a label
-  const legend = useMemo(() => {
-    const seen = new Set<string>();
-    const items: { color: string; label: string }[] = [];
-    events.forEach((e) => {
-      if (e.label) {
-        const key = `${e.color}::${e.label}`;
-        if (!seen.has(key)) { seen.add(key); items.push({ color: e.color, label: e.label }); }
-      }
-    });
-    return items;
-  }, [events]);
+  // Filtered agenda list grouped by date
+  const agendaDatesList = useMemo(() => {
+    const todayStr = new Date().toISOString().slice(0, 10);
+    const dateKeys = Object.keys(itemsByDate).sort();
+
+    // Ensure selected date and today are present
+    const set = new Set([...dateKeys, selectedDateIso, todayStr]);
+    const sorted = Array.from(set).sort();
+
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      return sorted.filter((iso) => {
+        const item = itemsByDate[iso];
+        if (!item) return false;
+        const matchesEvt = item.customEvents.some((e) => e.title.toLowerCase().includes(q) || (e.label && e.label.toLowerCase().includes(q)));
+        const matchesTask = item.tasksDue.some((t) => t.title.toLowerCase().includes(q));
+        return matchesEvt || matchesTask;
+      });
+    }
+
+    return sorted;
+  }, [itemsByDate, selectedDateIso, searchQuery]);
 
   const handlePrevMonth = () => setCurrentDate(new Date(year, month - 1, 1));
   const handleNextMonth = () => setCurrentDate(new Date(year, month + 1, 1));
@@ -220,565 +254,724 @@ export function CalendarModule() {
     saveNotificationSettings(updated);
     setNotifSettings(updated);
     if (updated.calendarReminder) {
-      toast.success("Notificações da agenda ativadas com sucesso!");
+      toast.success("Notificações da agenda ativadas!");
     } else {
       toast.info("Lembretes de agenda pausados.");
     }
   };
 
-  const selectedItems = itemsByDate[selectedDateIso] || { customEvents: [], tasksDue: [], txs: [] };
   const todayIsoString = new Date().toISOString().slice(0, 10);
 
-  // Hex to rgba for subtle backgrounds
   const hexToRgba = (hex: string, alpha: number) => {
-    const r = parseInt(hex.slice(1, 3), 16);
-    const g = parseInt(hex.slice(3, 5), 16);
-    const b = parseInt(hex.slice(5, 7), 16);
+    const r = parseInt(hex.slice(1, 3), 16) || 160;
+    const g = parseInt(hex.slice(3, 5), 16) || 160;
+    const b = parseInt(hex.slice(5, 7), 16) || 160;
     return `rgba(${r},${g},${b},${alpha})`;
   };
 
   return (
-    <div className="space-y-5 fade-in select-none pb-12">
-      {/* ── Header ──────────────────────────────────────────────────── */}
-      <div className="glass-card p-5 rounded-3xl border border-border/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xl">
-        <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-2xl bg-foreground text-background flex items-center justify-center shadow-lg shadow-black/10 shrink-0">
-            <CalendarIcon size={22} />
+    <div className="space-y-5 fade-in select-none pb-24 max-w-7xl mx-auto">
+      {/* ── 1. Header iOS Style (Fantastical / Apple Calendar) ──────────────── */}
+      <div className="glass-card p-4 md:p-6 rounded-3xl border border-border/80 shadow-xl space-y-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          {/* Título do Mês / Ano */}
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handleToday}
+              className="w-10 h-10 rounded-2xl bg-red-500/10 text-red-500 border border-red-500/20 font-black text-sm flex items-center justify-center hover:bg-red-500 hover:text-white transition-all shadow-xs"
+              title="Ir para Hoje"
+            >
+              {new Date().getDate()}
+            </button>
+            <div>
+              <h2 className="text-2xl md:text-3xl font-black text-foreground tracking-tight flex items-center gap-2">
+                <span>{capitalizedMonth}</span>
+                <span className="text-red-500 font-extrabold">{year}</span>
+              </h2>
+            </div>
+
+            {/* Navegação de Mês */}
+            <div className="flex items-center gap-1 ml-2">
+              <button
+                onClick={handlePrevMonth}
+                className="w-8 h-8 rounded-xl bg-muted/60 hover:bg-muted text-muted-foreground hover:text-foreground flex items-center justify-center transition-colors"
+              >
+                <ChevronLeft size={18} />
+              </button>
+              <button
+                onClick={handleNextMonth}
+                className="w-8 h-8 rounded-xl bg-muted/60 hover:bg-muted text-muted-foreground hover:text-foreground flex items-center justify-center transition-colors"
+              >
+                <ChevronRight size={18} />
+              </button>
+            </div>
           </div>
-          <div>
-            <span className="badge-ios text-[10px]">Agenda Inteligente & Sincronizada</span>
-            <h2 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight">{capitalizedMonth}</h2>
+
+          {/* Modos de Visualização & Ações */}
+          <div className="flex items-center gap-2 flex-wrap">
+            {/* Toggle de Modos */}
+            <div className="flex items-center p-1 bg-muted/70 rounded-2xl border border-border/50">
+              <button
+                onClick={() => setViewMode("grid")}
+                className={cn(
+                  "px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5",
+                  viewMode === "grid" ? "bg-card text-foreground shadow-xs" : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                <Grid size={14} /> Mês Completo
+              </button>
+              <button
+                onClick={() => setViewMode("split")}
+                className={cn(
+                  "px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5",
+                  viewMode === "split" ? "bg-card text-foreground shadow-xs" : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                <List size={14} /> Split + Agenda
+              </button>
+              <button
+                onClick={() => setViewMode("week")}
+                className={cn(
+                  "px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5",
+                  viewMode === "week" ? "bg-card text-foreground shadow-xs" : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                <Clock size={14} /> Semana
+              </button>
+            </div>
+
+            {/* Ações */}
+            <button
+              onClick={toggleCalendarNotifications}
+              className={cn(
+                "p-2.5 rounded-2xl border transition-all text-xs font-bold flex items-center gap-1.5",
+                notifSettings.calendarReminder
+                  ? "bg-red-500/10 border-red-500/30 text-red-500"
+                  : "bg-card border-border text-muted-foreground hover:text-foreground"
+              )}
+              title="Notificações de Lembretes"
+            >
+              <Bell size={16} />
+            </button>
+
+            <button
+              onClick={() => setSyncModalOpen(true)}
+              className="p-2.5 rounded-2xl bg-card border border-border text-muted-foreground hover:text-foreground text-xs font-bold transition-colors"
+              title="Sincronizar / Exportar ICS"
+            >
+              <Download size={16} />
+            </button>
+
+            <button
+              onClick={() => openNew(selectedDateIso)}
+              className="btn-ios text-xs py-2.5 px-4 shadow-md bg-red-600 hover:bg-red-700 text-white"
+            >
+              <Plus size={16} strokeWidth={2.5} />
+              <span>Novo Evento</span>
+            </button>
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2.5">
-          {/* View toggle */}
-          <div className="flex items-center gap-1 bg-muted/60 p-1 rounded-2xl border border-border/50">
-            <button
-              onClick={() => setViewMode("month")}
-              className={cn(
-                "px-3 py-1.5 rounded-xl text-xs font-black transition-all flex items-center gap-1.5",
-                viewMode === "month" ? "bg-foreground text-background shadow-xs" : "text-muted-foreground hover:text-foreground"
-              )}
-            >
-              <Grid size={13} /><span>Mês</span>
-            </button>
-            <button
-              onClick={() => setViewMode("day")}
-              className={cn(
-                "px-3 py-1.5 rounded-xl text-xs font-black transition-all flex items-center gap-1.5",
-                viewMode === "day" ? "bg-foreground text-background shadow-xs" : "text-muted-foreground hover:text-foreground"
-              )}
-            >
-              <List size={13} /><span>Dia</span>
-            </button>
-          </div>
-
-          {/* Navigation */}
-          <div className="flex items-center gap-1">
-            <button onClick={handlePrevMonth} className="p-2 rounded-xl bg-card border border-border hover:bg-muted text-foreground transition-colors">
-              <ChevronLeft size={16} />
-            </button>
-            <button onClick={handleToday} className="px-3 py-2 rounded-xl bg-card border border-border hover:bg-muted text-xs font-extrabold text-foreground transition-colors">
-              Hoje
-            </button>
-            <button onClick={handleNextMonth} className="p-2 rounded-xl bg-card border border-border hover:bg-muted text-foreground transition-colors">
-              <ChevronRight size={16} />
-            </button>
-          </div>
-
-          {/* Botão de Sincronizar com iOS/Android */}
-          <button
-            onClick={() => setSyncModalOpen(true)}
-            className="px-3.5 py-2.5 rounded-2xl bg-card border border-border text-xs font-bold text-foreground hover:bg-muted transition-colors flex items-center gap-1.5 shadow-xs"
-            title="Sincronizar com iPhone ou Android"
-          >
-            <Smartphone size={15} className="text-foreground" />
-            <span className="hidden sm:inline">Sincronizar Celular</span>
-          </button>
-
-          <button
-            onClick={() => openNew(selectedDateIso)}
-            className="btn-ios text-xs py-2.5 px-4"
-          >
-            <Plus size={16} strokeWidth={2.5} />
-            <span>Novo Evento</span>
-          </button>
+        {/* Campo de Busca Rápida na Agenda */}
+        <div className="relative">
+          <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
+          <input
+            type="text"
+            placeholder="Buscar evento, tarefa ou categoria..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-10 pr-4 py-2 rounded-2xl bg-background/80 border border-input text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-red-500"
+          />
         </div>
       </div>
 
-      {/* ── Dynamic Legend ───────────────────────────────────────────── */}
-      {legend.length > 0 && (
-        <div className="flex flex-wrap gap-2 px-1">
-          {legend.map((item, i) => (
-            <div key={i} className="flex items-center gap-1.5 px-3 py-1 rounded-full border text-xs font-bold"
-              style={{ borderColor: hexToRgba(item.color, 0.4), backgroundColor: hexToRgba(item.color, 0.12), color: item.color }}
-            >
-              <span className="w-2 h-2 rounded-full shrink-0" style={{ background: item.color }} />
-              {item.label}
-            </div>
-          ))}
+      {/* ── 2. MODO GRID (TELA 1 - Mês Completo com Event Pills Estilo iOS) ──────── */}
+      {viewMode === "grid" && (
+        <div className="glass-card rounded-3xl border border-border/80 shadow-xl overflow-hidden">
+          {/* Dias da semana */}
+          <div className="grid grid-cols-7 border-b border-border/60 bg-muted/40 text-center">
+            {["DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SÁB"].map((d, i) => (
+              <div
+                key={d}
+                className={cn(
+                  "py-3 text-[11px] font-black uppercase tracking-wider",
+                  i === 0 || i === 6 ? "text-red-500" : "text-muted-foreground"
+                )}
+              >
+                {d}
+              </div>
+            ))}
+          </div>
+
+          {/* Grid de Dias */}
+          <div className="grid grid-cols-7">
+            {monthGridDays.map((cell, idx) => {
+              const isSelected = cell.dateIso === selectedDateIso;
+              const isToday = cell.dateIso === todayIsoString;
+              const cellData = itemsByDate[cell.dateIso];
+              const evts = cellData?.customEvents ?? [];
+              const tasksDue = cellData?.tasksDue ?? [];
+              const txs = cellData?.txs ?? [];
+
+              const isLastRow = idx >= monthGridDays.length - 7;
+
+              return (
+                <div
+                  key={cell.dateIso}
+                  onClick={() => setSelectedDateIso(cell.dateIso)}
+                  className={cn(
+                    "min-h-[110px] md:min-h-[135px] p-1.5 md:p-2 text-left flex flex-col border-b border-r border-border/30 transition-all cursor-pointer group",
+                    isLastRow && "border-b-0",
+                    (idx + 1) % 7 === 0 && "border-r-0",
+                    cell.isCurrentMonth ? "bg-card/40 hover:bg-muted/30" : "bg-muted/10 opacity-40",
+                    isSelected && "bg-red-500/5 ring-2 ring-inset ring-red-500/40"
+                  )}
+                >
+                  {/* Número do Dia */}
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span
+                      className={cn(
+                        "text-xs font-black w-6 h-6 rounded-full flex items-center justify-center transition-all",
+                        isToday
+                          ? "bg-red-600 text-white font-bold shadow-sm"
+                          : isSelected
+                          ? "bg-foreground text-background font-bold"
+                          : "text-foreground group-hover:text-red-500"
+                      )}
+                    >
+                      {cell.dayNum}
+                    </span>
+
+                    {/* Indicador de Bolinhas coloridas */}
+                    <div className="flex items-center gap-1">
+                      {evts.slice(0, 3).map((e) => (
+                        <span key={e.id} className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: e.color }} />
+                      ))}
+                      {tasksDue.length > 0 && <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />}
+                      {txs.length > 0 && <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />}
+                    </div>
+                  </div>
+
+                  {/* Event Pills dentro da célula */}
+                  <div className="space-y-1 flex-1 overflow-hidden">
+                    {evts.slice(0, 2).map((evt) => (
+                      <div
+                        key={evt.id}
+                        className="px-1.5 py-0.5 rounded-md text-[10px] font-bold truncate leading-tight flex items-center gap-1 shadow-2xs"
+                        style={{
+                          backgroundColor: hexToRgba(evt.color, 0.2),
+                          color: evt.color,
+                          borderLeft: `2.5 solid ${evt.color}`,
+                        }}
+                      >
+                        <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: evt.color }} />
+                        <span className="truncate">{evt.title}</span>
+                      </div>
+                    ))}
+
+                    {tasksDue.slice(0, 1).map((t) => (
+                      <div
+                        key={t.id}
+                        className="px-1.5 py-0.5 rounded-md text-[10px] font-bold truncate bg-blue-500/15 text-blue-500 border-l-2 border-blue-500 flex items-center gap-1"
+                      >
+                        <CheckSquare size={9} />
+                        <span className="truncate">{t.title}</span>
+                      </div>
+                    ))}
+
+                    {evts.length + tasksDue.length > 3 && (
+                      <span className="text-[9px] font-extrabold text-muted-foreground pl-1 block">
+                        +{evts.length + tasksDue.length - 3} mais
+                      </span>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
 
-      {/* ── Main Grid ────────────────────────────────────────────────── */}
-      <div className="grid grid-cols-1 xl:grid-cols-12 gap-5">
-
-        {/* CALENDÁRIO — coluna principal, muito maior */}
-        <div className="xl:col-span-9">
-          {viewMode === "month" && (
-            <div className="glass-card rounded-3xl border border-border/70 shadow-lg overflow-hidden">
-              {/* Weekday headers */}
-              <div className="grid grid-cols-7 border-b border-border/50 bg-muted/30">
-                {["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"].map((d) => (
-                  <div key={d} className="py-3 text-center text-[11px] font-black text-muted-foreground uppercase tracking-wider">
-                    {d}
-                  </div>
-                ))}
+      {/* ── 3. MODO SPLIT (TELA 2 - Calendário no Topo + Feed Continuo da Agenda) ──── */}
+      {viewMode === "split" && (
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          {/* Lado Esquerdo: Mini Calendário de Seleção */}
+          <div className="lg:col-span-5 space-y-4">
+            <div className="glass-card p-4 rounded-3xl border border-border/80 shadow-lg">
+              <div className="flex items-center justify-between pb-3 border-b border-border/50">
+                <span className="text-xs font-black uppercase tracking-wider text-muted-foreground">
+                  {capitalizedMonth} {year}
+                </span>
+                <div className="flex gap-1">
+                  <button onClick={handlePrevMonth} className="p-1 rounded-lg hover:bg-muted text-muted-foreground">
+                    <ChevronLeft size={16} />
+                  </button>
+                  <button onClick={handleNextMonth} className="p-1 rounded-lg hover:bg-muted text-muted-foreground">
+                    <ChevronRight size={16} />
+                  </button>
+                </div>
               </div>
 
-              {/* Day cells */}
-              <div className="grid grid-cols-7">
-                {monthGridDays.map((cell, idx) => {
+              {/* Grid Compacto */}
+              <div className="grid grid-cols-7 text-center pt-2 gap-y-2">
+                {["D", "S", "T", "Q", "Q", "S", "S"].map((d, i) => (
+                  <span key={i} className={`text-[10px] font-black ${i === 0 || i === 6 ? "text-red-500" : "text-muted-foreground"}`}>
+                    {d}
+                  </span>
+                ))}
+
+                {monthGridDays.map((cell) => {
                   const isSelected = cell.dateIso === selectedDateIso;
                   const isToday = cell.dateIso === todayIsoString;
                   const cellData = itemsByDate[cell.dateIso];
-                  const evts = cellData?.customEvents ?? [];
-                  const taskCount = cellData?.tasksDue.length ?? 0;
-                  const isLastRow = idx >= monthGridDays.length - 7;
+                  const hasEvt = cellData && (cellData.customEvents.length > 0 || cellData.tasksDue.length > 0);
 
                   return (
                     <button
                       key={cell.dateIso}
                       onClick={() => setSelectedDateIso(cell.dateIso)}
                       className={cn(
-                        "min-h-[100px] lg:min-h-[120px] p-2 text-left flex flex-col border-b border-r border-border/30 transition-all relative",
-                        isLastRow && "border-b-0",
-                        (idx + 1) % 7 === 0 && "border-r-0",
-                        cell.isCurrentMonth ? "bg-card/50 hover:bg-muted/40" : "bg-muted/10 opacity-50",
-                        isSelected && "bg-foreground/5 ring-inset ring-1 ring-foreground/40",
-                        isToday && !isSelected && "bg-primary/5"
+                        "h-9 rounded-2xl flex flex-col items-center justify-center relative transition-all text-xs font-bold",
+                        !cell.isCurrentMonth && "opacity-30",
+                        isToday && !isSelected && "bg-red-500/10 text-red-500 border border-red-500/30",
+                        isSelected && "bg-red-600 text-white shadow-md font-extrabold"
                       )}
                     >
-                      {/* Day number */}
-                      <div className="flex items-center justify-between mb-1.5">
-                        <span
-                          className={cn(
-                            "text-xs font-black w-6 h-6 rounded-full flex items-center justify-center",
-                            isToday ? "bg-foreground text-background" : "text-foreground"
-                          )}
-                        >
-                          {cell.dayNum}
-                        </span>
-                        {taskCount > 0 && (
-                          <span className="text-[9px] font-bold text-muted-foreground">
-                            📌{taskCount}
-                          </span>
-                        )}
-                      </div>
-
-                      {/* Event pills */}
-                      <div className="space-y-0.5 flex-1 overflow-hidden">
-                        {evts.slice(0, 3).map((evt) => (
-                          <div
-                            key={evt.id}
-                            className="px-1.5 py-0.5 rounded-md text-[10px] font-bold truncate leading-tight"
-                            style={{
-                              background: hexToRgba(evt.color, 0.18),
-                              color: evt.color,
-                              borderLeft: `3px solid ${evt.color}`,
-                            }}
-                          >
-                            {evt.startTime && `${evt.startTime} `}{evt.title}
-                          </div>
-                        ))}
-                        {evts.length > 3 && (
-                          <div className="text-[9px] font-extrabold text-muted-foreground pl-1">
-                            +{evts.length - 3} mais
-                          </div>
-                        )}
-                      </div>
+                      <span>{cell.dayNum}</span>
+                      {hasEvt && (
+                        <div className="flex items-center gap-0.5 absolute bottom-1">
+                          {cellData.customEvents.slice(0, 2).map((e) => (
+                            <span
+                              key={e.id}
+                              className={cn("w-1 h-1 rounded-full", isSelected ? "bg-white" : "")}
+                              style={{ backgroundColor: isSelected ? "#fff" : e.color }}
+                            />
+                          ))}
+                        </div>
+                      )}
                     </button>
                   );
                 })}
               </div>
             </div>
-          )}
 
-          {/* MODO DIA */}
-          {viewMode === "day" && (
-            <div className="glass-card p-6 rounded-3xl border border-border/70 space-y-4 min-h-[400px]">
-              <h3 className="text-base font-black text-foreground border-b border-border/50 pb-2">
-                {new Date(selectedDateIso + "T12:00:00").toLocaleDateString("pt-BR", {
-                  weekday: "long", day: "numeric", month: "long",
-                })}
-              </h3>
+            {/* Eventos selecionados resumo */}
+            <div className="glass-card p-4 rounded-3xl border border-border/80 space-y-2">
+              <h4 className="text-xs font-black text-foreground uppercase tracking-wider flex items-center justify-between">
+                <span>Resumo da Seleção</span>
+                <span className="text-red-500">{selectedDateIso}</span>
+              </h4>
+              <p className="text-xs text-muted-foreground font-medium">
+                {(itemsByDate[selectedDateIso]?.customEvents.length || 0)} compromissos e{" "}
+                {(itemsByDate[selectedDateIso]?.tasksDue.length || 0)} tarefas marcadas.
+              </p>
+            </div>
+          </div>
 
-              {selectedItems.customEvents.length === 0 && selectedItems.tasksDue.length === 0 && selectedItems.txs.length === 0 ? (
+          {/* Lado Direito: Feed Continuo de Agenda por Data (Estilo Fantastical) */}
+          <div className="lg:col-span-7 space-y-4">
+            <div className="glass-card p-5 rounded-3xl border border-border/80 shadow-xl space-y-6">
+              <div className="flex items-center justify-between pb-3 border-b border-border/50">
+                <h3 className="text-sm font-black text-foreground uppercase tracking-wider flex items-center gap-2">
+                  <Clock size={16} className="text-red-500" /> Agenda de Compromissos
+                </h3>
+                <span className="text-xs font-bold text-muted-foreground bg-muted px-2.5 py-1 rounded-full">
+                  {agendaDatesList.length} datas com registros
+                </span>
+              </div>
+
+              {agendaDatesList.length === 0 ? (
                 <div className="py-16 text-center text-xs text-muted-foreground font-medium flex flex-col items-center gap-3">
-                  <CalendarIcon size={32} className="opacity-30" />
-                  Nenhum evento registrado para este dia.
+                  <CalendarIcon size={36} className="opacity-30 text-red-500" />
+                  Nenhum compromisso encontrado para os filtros selecionados.
                   <button onClick={() => openNew(selectedDateIso)} className="btn-ios text-xs py-2 px-4 mt-2">
-                    <Plus size={14} /> Agendar algo
+                    <Plus size={14} /> Agendar Novo Evento
                   </button>
                 </div>
               ) : (
-                <div className="space-y-3">
-                  {selectedItems.customEvents.map((evt) => (
-                    <div
-                      key={evt.id}
-                      className="p-4 rounded-2xl border flex items-start justify-between gap-3"
-                      style={{ background: hexToRgba(evt.color, 0.1), borderColor: hexToRgba(evt.color, 0.35) }}
-                    >
-                      <div className="space-y-1 min-w-0 flex-1">
-                        <div className="flex items-center gap-2">
-                          <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: evt.color }} />
-                          <span className="text-xs font-black" style={{ color: evt.color }}>{evt.title}</span>
-                        </div>
-                        {evt.startTime && (
-                          <p className="text-[11px] font-bold text-muted-foreground flex items-center gap-1">
-                            <Clock size={11} />
-                            {evt.startTime} {evt.endTime ? `→ ${evt.endTime}` : ""}
-                          </p>
-                        )}
-                        {evt.label && (
-                          <span className="inline-block text-[10px] font-bold px-2 py-0.5 rounded-full"
-                            style={{ background: hexToRgba(evt.color, 0.2), color: evt.color }}>
-                            {evt.label}
-                          </span>
-                        )}
-                        {evt.description && (
-                          <p className="text-xs text-muted-foreground font-medium pt-1">{evt.description}</p>
-                        )}
-                      </div>
+                <div className="space-y-6">
+                  {agendaDatesList.map((dateIso) => {
+                    const data = itemsByDate[dateIso] || { customEvents: [], tasksDue: [], txs: [] };
+                    const isToday = dateIso === todayIsoString;
 
-                      {/* Ações Rápidas de Sincronização do Evento */}
-                      <div className="flex items-center gap-1.5 shrink-0">
-                        <a
-                          href={getGoogleCalendarUrl(evt)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="p-1.5 rounded-lg hover:bg-black/10 text-muted-foreground hover:text-foreground transition-colors"
-                          title="Adicionar ao Google Calendar"
-                        >
-                          <ExternalLink size={14} />
-                        </a>
-                        <button
-                          onClick={() => downloadIcsFile([evt], `${evt.title}.ics`)}
-                          className="p-1.5 rounded-lg hover:bg-black/10 text-muted-foreground hover:text-foreground transition-colors"
-                          title="Baixar para iPhone/Android (.ics)"
-                        >
-                          <Download size={14} />
-                        </button>
-                        <button onClick={() => handleDeleteEvent(evt.id)} className="p-1.5 rounded-lg hover:bg-black/10 text-muted-foreground hover:text-red-500 transition-colors">
-                          <Trash2 size={14} />
-                        </button>
+                    const dateObj = new Date(dateIso + "T12:00:00");
+                    const dateFormatted = dateObj.toLocaleDateString("pt-BR", {
+                      weekday: "long",
+                      day: "numeric",
+                      month: "long",
+                    });
+
+                    return (
+                      <div key={dateIso} className="space-y-3">
+                        {/* Header do Dia na Agenda */}
+                        <div className="flex items-center justify-between bg-muted/40 px-3.5 py-2 rounded-2xl border border-border/40">
+                          <span
+                            className={cn(
+                              "text-xs font-black uppercase tracking-wider flex items-center gap-2",
+                              isToday ? "text-red-500" : "text-foreground"
+                            )}
+                          >
+                            {isToday ? "HOJE" : dateObj.toLocaleDateString("pt-BR", { weekday: "short" }).toUpperCase()} —{" "}
+                            {dateFormatted}
+                          </span>
+                          {isToday && (
+                            <span className="px-2 py-0.5 rounded-full bg-red-500/15 text-red-500 text-[10px] font-black">
+                              HOJE
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Lista de itens daquele dia */}
+                        <div className="space-y-2.5 pl-2">
+                          {data.customEvents.map((evt) => (
+                            <div
+                              key={evt.id}
+                              className="p-3.5 rounded-2xl border flex items-start justify-between gap-3 transition-all hover:scale-[1.01] shadow-xs"
+                              style={{
+                                backgroundColor: hexToRgba(evt.color, 0.08),
+                                borderColor: hexToRgba(evt.color, 0.3),
+                              }}
+                            >
+                              <div className="flex items-start gap-3 min-w-0 flex-1">
+                                <span className="w-3 h-3 rounded-full mt-1 shrink-0" style={{ backgroundColor: evt.color }} />
+                                <div className="space-y-1 min-w-0 flex-1">
+                                  <div className="flex items-center gap-2 flex-wrap">
+                                    <span className="text-xs font-black text-foreground">{evt.title}</span>
+                                    {evt.label && (
+                                      <span
+                                        className="px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider"
+                                        style={{ backgroundColor: hexToRgba(evt.color, 0.2), color: evt.color }}
+                                      >
+                                        {evt.label}
+                                      </span>
+                                    )}
+                                  </div>
+                                  <div className="flex items-center gap-3 text-[11px] font-bold text-muted-foreground">
+                                    {evt.startTime && (
+                                      <span className="flex items-center gap-1">
+                                        <Clock size={12} /> {evt.startTime} {evt.endTime ? `— ${evt.endTime}` : ""}
+                                      </span>
+                                    )}
+                                    {evt.description && (
+                                      <span className="truncate max-w-xs text-muted-foreground font-medium">
+                                        {evt.description}
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+
+                              <button
+                                onClick={() => handleDeleteEvent(evt.id)}
+                                className="text-muted-foreground hover:text-red-500 p-1.5 rounded-xl hover:bg-red-500/10 transition-colors shrink-0"
+                                title="Apagar evento"
+                              >
+                                <Trash2 size={14} />
+                              </button>
+                            </div>
+                          ))}
+
+                          {data.tasksDue.map((t) => (
+                            <div
+                              key={t.id}
+                              className="p-3 rounded-2xl border border-blue-500/30 bg-blue-500/5 flex items-center justify-between gap-3 text-xs"
+                            >
+                              <div className="flex items-center gap-2.5 min-w-0">
+                                <CheckSquare size={16} className="text-blue-500 shrink-0" />
+                                <span className="font-bold text-foreground truncate">{t.title}</span>
+                              </div>
+                              <span className="text-[10px] font-black px-2 py-0.5 rounded-md bg-blue-500/15 text-blue-500 shrink-0">
+                                TAREFA
+                              </span>
+                            </div>
+                          ))}
+
+                          {data.customEvents.length === 0 && data.tasksDue.length === 0 && (
+                            <p className="text-xs text-muted-foreground italic pl-2 py-1">
+                              Nenhum compromisso marcado para este dia.
+                            </p>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </div>
-          )}
+          </div>
         </div>
+      )}
 
-        {/* PAINEL DO DIA SELECIONADO */}
-        <div className="xl:col-span-3 space-y-4">
-          <div className="glass-card p-5 rounded-3xl border border-border/80 shadow-lg space-y-4">
-            <div className="flex items-center justify-between border-b border-border/60 pb-3">
-              <div>
-                <span className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block">Dia Selecionado</span>
-                <h3 className="text-base font-black text-foreground mt-0.5">
-                  {new Date(selectedDateIso + "T12:00:00").toLocaleDateString("pt-BR", { day: "numeric", month: "short" })}
-                </h3>
-              </div>
-              <button
-                onClick={() => openNew(selectedDateIso)}
-                className="p-2 rounded-xl bg-muted hover:bg-secondary text-foreground transition-colors font-bold text-xs flex items-center gap-1"
-              >
-                <Plus size={14} /><span>Add</span>
+      {/* ── 4. MODO SEMANA (TELA 3 - Faixa de 7 dias + Lista Timeline) ──────────── */}
+      {viewMode === "week" && (
+        <div className="space-y-5">
+          {/* Strip Semanal Estilo iOS */}
+          <div className="glass-card p-4 rounded-3xl border border-border/80 shadow-lg">
+            <div className="grid grid-cols-7 gap-2 text-center">
+              {weekDays.map((w) => {
+                const isSelected = w.dateIso === selectedDateIso;
+                const isToday = w.dateIso === todayIsoString;
+                const hasEvts = (itemsByDate[w.dateIso]?.customEvents.length || 0) > 0;
+
+                return (
+                  <button
+                    key={w.dateIso}
+                    onClick={() => setSelectedDateIso(w.dateIso)}
+                    className={cn(
+                      "py-3 rounded-2xl flex flex-col items-center justify-center gap-1 transition-all",
+                      isSelected
+                        ? "bg-red-600 text-white font-extrabold shadow-md scale-105"
+                        : isToday
+                        ? "bg-red-500/10 text-red-500 border border-red-500/30"
+                        : "bg-muted/30 text-foreground hover:bg-muted/60"
+                    )}
+                  >
+                    <span className="text-[10px] font-black tracking-wider uppercase opacity-80">{w.dayShort}</span>
+                    <span className="text-sm font-black">{w.dayNum}</span>
+                    {hasEvts && <span className={cn("w-1.5 h-1.5 rounded-full", isSelected ? "bg-white" : "bg-red-500")} />}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Agenda da Data Selecionada na Semana */}
+          <div className="glass-card p-5 rounded-3xl border border-border/80 shadow-xl space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-border/50">
+              <h3 className="text-sm font-black text-foreground uppercase tracking-wider flex items-center gap-2">
+                <CalendarIcon size={16} className="text-red-500" />
+                {new Date(selectedDateIso + "T12:00:00").toLocaleDateString("pt-BR", {
+                  weekday: "long",
+                  day: "numeric",
+                  month: "long",
+                })}
+              </h3>
+              <button onClick={() => openNew(selectedDateIso)} className="btn-ios text-xs py-2 px-3">
+                <Plus size={14} /> Novo Evento
               </button>
             </div>
 
-            <div className="space-y-3 max-h-[480px] overflow-y-auto custom-scrollbar pr-1">
-              {selectedItems.customEvents.map((evt) => (
-                <div
-                  key={evt.id}
-                  className="p-3 rounded-2xl border flex items-center justify-between gap-2"
-                  style={{ background: hexToRgba(evt.color, 0.1), borderColor: hexToRgba(evt.color, 0.3) }}
-                >
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full shrink-0" style={{ background: evt.color }} />
-                      <span className="text-xs font-black truncate" style={{ color: evt.color }}>{evt.title}</span>
+            {!(itemsByDate[selectedDateIso]?.customEvents.length) && !(itemsByDate[selectedDateIso]?.tasksDue.length) ? (
+              <div className="py-12 text-center text-xs text-muted-foreground font-medium flex flex-col items-center gap-2">
+                <Clock size={32} className="opacity-30 text-red-500" />
+                Sem compromissos nesta data.
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {itemsByDate[selectedDateIso]?.customEvents.map((evt) => (
+                  <div
+                    key={evt.id}
+                    className="p-4 rounded-2xl border flex items-center justify-between gap-3 shadow-xs"
+                    style={{ backgroundColor: hexToRgba(evt.color, 0.1), borderColor: hexToRgba(evt.color, 0.3) }}
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: evt.color }} />
+                      <div>
+                        <h4 className="text-xs font-black text-foreground">{evt.title}</h4>
+                        {evt.startTime && (
+                          <p className="text-[11px] font-bold text-muted-foreground">
+                            {evt.startTime} {evt.endTime ? `→ ${evt.endTime}` : ""}
+                          </p>
+                        )}
+                      </div>
                     </div>
-                    {evt.startTime && (
-                      <span className="text-[10px] font-bold text-muted-foreground flex items-center gap-1 mt-0.5">
-                        <Clock size={10} /> {evt.startTime}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="flex items-center gap-1 shrink-0">
                     <button
-                      onClick={() => downloadIcsFile([evt], `${evt.title}.ics`)}
-                      className="p-1 rounded text-muted-foreground hover:text-foreground"
-                      title="Baixar para celular (.ics)"
+                      onClick={() => handleDeleteEvent(evt.id)}
+                      className="text-muted-foreground hover:text-red-500 p-1.5 rounded-xl hover:bg-red-500/10"
                     >
-                      <Download size={13} />
-                    </button>
-                    <button onClick={() => handleDeleteEvent(evt.id)} className="p-1 text-muted-foreground hover:text-red-500">
-                      <Trash2 size={13} />
+                      <Trash2 size={14} />
                     </button>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
-              {selectedItems.tasksDue.map((t) => (
-                <div key={t.id} className="p-3 rounded-2xl bg-muted/40 border border-border/60">
-                  <div className="flex items-center gap-2">
-                    <CheckSquare size={13} className="text-muted-foreground shrink-0" />
-                    <span className="text-xs font-black text-foreground truncate">{t.title}</span>
+      {/* ── 5. FAB Flutuante de Criação Rápida no Canto Inferior ───────────────── */}
+      <button
+        onClick={() => openNew(selectedDateIso)}
+        className="fixed bottom-24 right-5 md:bottom-8 md:right-8 w-14 h-14 rounded-full bg-red-600 hover:bg-red-700 text-white shadow-2xl flex items-center justify-center transition-all hover:scale-110 active:scale-95 z-[150]"
+        title="Novo Evento Rápido"
+      >
+        <Plus size={26} strokeWidth={2.5} />
+      </button>
+
+      {/* ── Modal de Criação de Evento ───────────────────────────────────────── */}
+      {showModal && (
+        <ModalPortal>
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[300] flex items-center justify-center p-4 fade-in">
+            <div className="bg-card border border-border rounded-3xl p-5 max-w-md w-full shadow-2xl space-y-4 slide-up">
+              <div className="flex items-center justify-between pb-3 border-b border-border/50">
+                <h3 className="text-sm font-black text-foreground flex items-center gap-2">
+                  <CalendarIcon size={16} className="text-red-500" /> Agendar Novo Compromisso
+                </h3>
+                <button
+                  onClick={() => setShowModal(false)}
+                  className="w-7 h-7 rounded-full bg-muted text-muted-foreground hover:text-foreground flex items-center justify-center"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <form onSubmit={handleCreateEvent} className="space-y-3.5">
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-foreground">Título do Evento</label>
+                  <input
+                    type="text"
+                    autoFocus
+                    placeholder="Ex: Reunião de equipe, Consulta médica..."
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-background border border-input text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-red-500"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-foreground">Data</label>
+                    <input
+                      type="date"
+                      value={eventDate}
+                      onChange={(e) => setEventDate(e.target.value)}
+                      className="w-full px-3 py-2 rounded-xl bg-background border border-input text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-red-500"
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-foreground">Categoria / Tag</label>
+                    <input
+                      type="text"
+                      placeholder="Ex: Trabalho, Saúde"
+                      value={labelText}
+                      onChange={(e) => setLabelText(e.target.value)}
+                      className="w-full px-3 py-2 rounded-xl bg-background border border-input text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-red-500"
+                    />
                   </div>
                 </div>
-              ))}
 
-              {selectedItems.txs.map((l) => (
-                <div key={l.id} className="p-3 rounded-2xl bg-muted/40 border border-border/60">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Wallet size={13} className={l.tipo === "entrada" ? "text-emerald-500" : "text-red-500"} />
-                      <span className="text-xs font-black text-foreground truncate">{l.descricao}</span>
-                    </div>
-                    <span className={cn("text-xs font-black", l.tipo === "entrada" ? "text-emerald-500" : "text-red-500")}>
-                      {formatBRL(l.valor)}
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-foreground">Início</label>
+                    <input
+                      type="time"
+                      value={startTime}
+                      onChange={(e) => setStartTime(e.target.value)}
+                      className="w-full px-3 py-2 rounded-xl bg-background border border-input text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-red-500"
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-foreground">Término</label>
+                    <input
+                      type="time"
+                      value={endTime}
+                      onChange={(e) => setEndTime(e.target.value)}
+                      className="w-full px-3 py-2 rounded-xl bg-background border border-input text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-red-500"
+                    />
+                  </div>
+                </div>
+
+                {/* Paleta de Cores Estilo iOS */}
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-foreground">Cor de Destaque</label>
+                  <div className="flex items-center gap-2 pt-1">
+                    {COLOR_PALETTE.map((c) => (
+                      <button
+                        key={c.hex}
+                        type="button"
+                        onClick={() => setColor(c.hex)}
+                        className={cn(
+                          "w-7 h-7 rounded-full transition-transform flex items-center justify-center",
+                          color === c.hex ? "scale-110 ring-2 ring-offset-2 ring-foreground" : "hover:scale-105"
+                        )}
+                        style={{ backgroundColor: c.hex }}
+                      >
+                        {color === c.hex && <Check size={14} className="text-white" />}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-foreground">Observações / Detalhes</label>
+                  <textarea
+                    rows={2}
+                    placeholder="Adicionar notas ou local do compromisso..."
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-background border border-input text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-red-500 resize-none"
+                  />
+                </div>
+
+                <div className="flex gap-2 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowModal(false)}
+                    className="flex-1 py-2.5 rounded-xl bg-muted text-xs font-semibold text-muted-foreground"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={!title.trim()}
+                    className="flex-1 py-2.5 rounded-xl bg-red-600 text-xs font-bold text-white flex items-center justify-center gap-1 disabled:opacity-50"
+                  >
+                    <Check size={14} /> Salvar Evento
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </ModalPortal>
+      )}
+
+      {/* ── Modal de Sincronização / Exportação ICS ─────────────────────────── */}
+      {syncModalOpen && (
+        <ModalPortal>
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[300] flex items-center justify-center p-4 fade-in">
+            <div className="bg-card border border-border rounded-3xl p-5 max-w-md w-full shadow-2xl space-y-4 slide-up">
+              <div className="flex items-center justify-between pb-3 border-b border-border/50">
+                <h3 className="text-sm font-black text-foreground flex items-center gap-2">
+                  <Download size={16} className="text-red-500" /> Exportar / Sincronizar Agenda
+                </h3>
+                <button
+                  onClick={() => setSyncModalOpen(false)}
+                  className="w-7 h-7 rounded-full bg-muted text-muted-foreground hover:text-foreground flex items-center justify-center"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div className="space-y-3">
+                <button
+                  onClick={() => {
+                    downloadIcsFile(events);
+                    toast.success("Arquivo .ics baixado com sucesso!");
+                  }}
+                  className="w-full p-3 rounded-2xl bg-muted/60 hover:bg-muted border border-border text-left flex items-center justify-between transition-colors"
+                >
+                  <div>
+                    <span className="text-xs font-bold text-foreground block">Baixar Arquivo .ICS</span>
+                    <span className="text-[11px] text-muted-foreground font-medium">
+                      Importar no Google Agenda, Apple Calendar ou Outlook
                     </span>
                   </div>
-                </div>
-              ))}
-
-              {selectedItems.customEvents.length === 0 && selectedItems.tasksDue.length === 0 && selectedItems.txs.length === 0 && (
-                <div className="py-8 text-center text-xs text-muted-foreground font-medium border border-dashed border-border/60 rounded-2xl">
-                  Sem eventos. Clique em "+ Add" para agendar.
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* ── MODAL NOVO EVENTO ─────────────────────────────────────────── */}
-      <ModalPortal open={showModal} onClose={() => setShowModal(false)} title="Agendar Compromisso">
-        <form onSubmit={handleCreateEvent} className="space-y-4">
-          <div>
-            <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">
-              Título do Evento
-            </label>
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Ex: Treino de Academia, Reunião com Cliente..."
-              className="input-ios text-xs font-bold"
-              required
-              autoFocus
-            />
-          </div>
-
-          <div className="grid grid-cols-3 gap-3">
-            <div>
-              <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">Data</label>
-              <input type="date" value={eventDate} onChange={(e) => setEventDate(e.target.value)} className="input-ios text-xs font-bold" required />
-            </div>
-            <div>
-              <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">Início</label>
-              <input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} className="input-ios text-xs font-bold" />
-            </div>
-            <div>
-              <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">Fim</label>
-              <input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} className="input-ios text-xs font-bold" />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">
-                Cor do Evento
-              </label>
-              <div className="relative" ref={colorPickerRef}>
-                <button
-                  type="button"
-                  onClick={() => setShowColorPicker((v) => !v)}
-                  className="input-ios text-xs font-bold flex items-center gap-2 w-full"
-                >
-                  <span className="w-4 h-4 rounded-full shrink-0 border border-white/20" style={{ background: color }} />
-                  <span>{COLOR_PALETTE.find((c) => c.hex === color)?.name ?? "Personalizada"}</span>
-                  <Palette size={13} className="ml-auto text-muted-foreground" />
-                </button>
-                {showColorPicker && (
-                  <div className="absolute top-full mt-1 left-0 right-0 bg-card border border-border rounded-2xl shadow-xl z-50 p-3">
-                    <div className="grid grid-cols-6 gap-2">
-                      {COLOR_PALETTE.map((c) => (
-                        <button
-                          key={c.hex}
-                          type="button"
-                          title={c.name}
-                          onClick={() => { setColor(c.hex); setShowColorPicker(false); }}
-                          className={cn(
-                            "w-7 h-7 rounded-full transition-all hover:scale-110",
-                            color === c.hex && "ring-2 ring-offset-1 ring-foreground scale-110"
-                          )}
-                          style={{ background: c.hex }}
-                        />
-                      ))}
-                    </div>
-                    <div className="mt-3 flex items-center gap-2">
-                      <input
-                        type="color"
-                        value={color}
-                        onChange={(e) => setColor(e.target.value)}
-                        className="w-8 h-8 rounded-full cursor-pointer border-0 bg-transparent"
-                        title="Escolha qualquer cor"
-                      />
-                      <span className="text-[10px] text-muted-foreground font-bold">Cor personalizada</span>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div>
-              <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">
-                Categoria / Legenda
-              </label>
-              <input
-                type="text"
-                value={labelText}
-                onChange={(e) => setLabelText(e.target.value)}
-                placeholder="Ex: Trabalho, Saúde..."
-                className="input-ios text-xs font-bold"
-              />
-            </div>
-          </div>
-
-          {title && (
-            <div
-              className="px-3 py-2 rounded-xl text-xs font-bold border"
-              style={{ background: hexToRgba(color, 0.15), borderColor: hexToRgba(color, 0.4), color }}
-            >
-              <span className="w-2 h-2 rounded-full inline-block mr-1.5" style={{ background: color }} />
-              {startTime && `${startTime} · `}{title}
-              {labelText && <span className="ml-2 opacity-70">#{labelText}</span>}
-            </div>
-          )}
-
-          <div>
-            <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">Notas</label>
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Detalhes do compromisso..."
-              className="input-ios text-xs font-medium min-h-[60px] resize-none"
-            />
-          </div>
-
-          <button type="submit" className="btn-ios w-full py-3.5 text-xs font-black uppercase tracking-wider">
-            Confirmar Agendamento
-          </button>
-        </form>
-      </ModalPortal>
-
-      {/* ── MODAL DE SINCRONIZAÇÃO iOS & ANDROID ───────────────────────── */}
-      <ModalPortal
-        open={syncModalOpen}
-        onClose={() => setSyncModalOpen(false)}
-        title="📲 Sincronizar Calendário (iOS & Android)"
-      >
-        <div className="space-y-5">
-          <p className="text-xs text-muted-foreground font-medium leading-relaxed">
-            Exporte seus compromissos diretamente para o aplicativo de calendário nativo do seu smartphone (Apple Calendar no iPhone ou Google Calendar no Android).
-          </p>
-
-          <div className="space-y-3">
-            {/* Sincronizar iOS (iPhone) */}
-            <div className="p-4 rounded-2xl bg-muted/40 border border-border/60 space-y-2">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-xl bg-foreground text-background flex items-center justify-center text-xs font-black">
-                    🍏
-                  </div>
-                  <div>
-                    <h4 className="text-xs font-extrabold text-foreground">iPhone / Apple Calendar</h4>
-                    <p className="text-[10px] text-muted-foreground font-medium">Exporta arquivo .ics com alarmes nativos de 15 min</p>
-                  </div>
-                </div>
-                <button
-                  onClick={() => {
-                    downloadIcsFile(events, `lifeos-agenda-iphone.ics`);
-                    toast.success("Arquivo .ics baixado! Toque nele para adicionar ao Calendário do iPhone.");
-                  }}
-                  className="btn-ios text-xs py-2 px-3 flex items-center gap-1.5 shrink-0"
-                >
-                  <Download size={13} />
-                  <span>Baixar .ics</span>
+                  <Download size={16} className="text-red-500" />
                 </button>
               </div>
-            </div>
 
-            {/* Sincronizar Android / Google */}
-            <div className="p-4 rounded-2xl bg-muted/40 border border-border/60 space-y-2">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-xl bg-blue-500 text-white flex items-center justify-center text-xs font-black">
-                    🤖
-                  </div>
-                  <div>
-                    <h4 className="text-xs font-extrabold text-foreground">Android / Google Calendar</h4>
-                    <p className="text-[10px] text-muted-foreground font-medium">Exporta todos os eventos para o Google/Samsung Calendar</p>
-                  </div>
-                </div>
-                <button
-                  onClick={() => {
-                    downloadIcsFile(events, `lifeos-agenda-android.ics`);
-                    toast.success("Arquivo .ics baixado! Abra no celular para sincronizar.");
-                  }}
-                  className="btn-ios text-xs py-2 px-3 flex items-center gap-1.5 shrink-0"
-                >
-                  <Download size={13} />
-                  <span>Baixar .ics</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Notificações do Navegador / PWA */}
-            <div className="p-4 rounded-2xl bg-muted/40 border border-border/60 space-y-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-xl bg-purple-500/15 text-purple-500 flex items-center justify-center">
-                    <Bell size={16} />
-                  </div>
-                  <div>
-                    <h4 className="text-xs font-extrabold text-foreground">Lembretes & Notificações Push</h4>
-                    <p className="text-[10px] text-muted-foreground font-medium">Alertas do sistema no computador e celular antes do evento</p>
-                  </div>
-                </div>
-                <button
-                  onClick={toggleCalendarNotifications}
-                  className={cn(
-                    "px-3 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-1 shrink-0",
-                    notifSettings.calendarReminder
-                      ? "bg-emerald-500 text-white shadow-xs"
-                      : "bg-muted text-foreground border border-border"
-                  )}
-                >
-                  {notifSettings.calendarReminder ? <Check size={13} /> : <Bell size={13} />}
-                  <span>{notifSettings.calendarReminder ? "Ativado" : "Ativar Lembretes"}</span>
-                </button>
-              </div>
+              <button
+                onClick={() => setSyncModalOpen(false)}
+                className="w-full py-2.5 rounded-xl bg-muted text-xs font-semibold text-muted-foreground"
+              >
+                Fechar
+              </button>
             </div>
           </div>
-        </div>
-      </ModalPortal>
+        </ModalPortal>
+      )}
     </div>
   );
 }
