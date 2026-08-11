@@ -114,14 +114,29 @@ export function CalendarModule() {
   const [viewMode, setViewMode] = useState<ViewMode>("month");
   const [selectedDateIso, setSelectedDateIso] = useState(new Date().toISOString().slice(0, 10));
 
+  const userId = user?.id || "guest";
+  const storageKey = `lifeos_${userId}_calendar_events`;
+
   // Custom events
   const [events, setEvents] = useState<CustomEvent[]>(() => {
     try {
-      const saved = localStorage.getItem("lifeos_calendar_events");
+      const saved = localStorage.getItem(storageKey);
       if (saved) return JSON.parse(saved);
     } catch {}
-    return DEFAULT_EVENTS;
+    return [];
   });
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(storageKey);
+      if (saved) setEvents(JSON.parse(saved));
+      else setEvents([]);
+    } catch {}
+  }, [storageKey]);
+
+  useEffect(() => {
+    localStorage.setItem(storageKey, JSON.stringify(events));
+  }, [events, storageKey]);
 
   // Modal State
   const [showModal, setShowModal] = useState(false);
@@ -131,10 +146,6 @@ export function CalendarModule() {
   const [endTime, setEndTime] = useState("10:00");
   const [colorTag, setColorTag] = useState<CustomEvent["colorTag"]>("lavender");
   const [description, setDescription] = useState("");
-
-  useEffect(() => {
-    localStorage.setItem("lifeos_calendar_events", JSON.stringify(events));
-  }, [events]);
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
