@@ -68,6 +68,8 @@ const COLOR_PALETTE = [
 
 type ViewMode = "month" | "day";
 
+import { useCalendarEvents } from "@/hooks/useCalendarEvents";
+
 // ── Component ─────────────────────────────────────────────────────────────────
 export function CalendarModule() {
   const { user } = useAuthContext();
@@ -75,34 +77,12 @@ export function CalendarModule() {
   const { tasks } = useTasks(activeUserId);
   const { lancamentos } = useLancamentos(activeUserId);
   const { goals } = useGoals(activeUserId);
+  const { events, addEvent, removeEvent } = useCalendarEvents(activeUserId || user?.id);
 
   const [currentDate, setCurrentDate] = useState(new Date());
   const [viewMode, setViewMode] = useState<ViewMode>("month");
   const [selectedDateIso, setSelectedDateIso] = useState(new Date().toISOString().slice(0, 10));
 
-  const userId = activeUserId || user?.id || "guest";
-  const storageKey = `lifeos_${userId}_calendar_events_v2`;
-
-  // Events
-  const [events, setEvents] = useState<CustomEvent[]>(() => {
-    try {
-      const saved = localStorage.getItem(storageKey);
-      if (saved) return JSON.parse(saved);
-    } catch {}
-    return [];
-  });
-
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem(storageKey);
-      if (saved) setEvents(JSON.parse(saved));
-      else setEvents([]);
-    } catch {}
-  }, [storageKey]);
-
-  useEffect(() => {
-    localStorage.setItem(storageKey, JSON.stringify(events));
-  }, [events, storageKey]);
 
   // Modals state
   const [showModal, setShowModal] = useState(false);
@@ -206,11 +186,10 @@ export function CalendarModule() {
     setShowModal(true);
   };
 
-  const handleCreateEvent = (e: React.FormEvent) => {
+  const handleCreateEvent = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim()) return;
-    const newEvt: CustomEvent = {
-      id: crypto.randomUUID(),
+    await addEvent({
       title: title.trim(),
       date: eventDate,
       startTime,
@@ -218,14 +197,13 @@ export function CalendarModule() {
       color,
       label: labelText.trim() || undefined,
       description: description.trim() || undefined,
-    };
-    setEvents((prev) => [...prev, newEvt]);
+    });
     setShowModal(false);
     toast.success("Compromisso agendado!");
   };
 
-  const handleDeleteEvent = (id: string) => {
-    setEvents((prev) => prev.filter((e) => e.id !== id));
+  const handleDeleteEvent = async (id: string) => {
+    await removeEvent(id);
     toast.success("Compromisso removido.");
   };
 
