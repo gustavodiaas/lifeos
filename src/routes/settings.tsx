@@ -33,7 +33,10 @@ import {
   Briefcase,
   CheckCircle2,
   Lock,
+  Users,
+  UserPlus,
 } from "lucide-react";
+import { SharedAccessModal } from "@/components/modals/SharedAccessModal";
 
 export const Route = createFileRoute("/settings")({
   head: () => ({
@@ -51,6 +54,7 @@ function SettingsPage() {
   const fileRef = useRef<HTMLInputElement>(null);
   const { user, signOut } = useAuthContext();
   const [theme, setTheme] = useState<Theme>("system");
+  const [sharedModalOpen, setSharedModalOpen] = useState(false);
 
   // Perfil State
   const [username, setUsername] = useState("");
@@ -474,6 +478,32 @@ function SettingsPage() {
               </button>
             </div>
           </section>
+
+          {/* ── 2.2 Acessos Simultâneos & Compartilhamento de Conta ────── */}
+          <section className="glass-card p-6 md:p-8 space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border/60 pb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-foreground text-background flex items-center justify-center shrink-0 shadow-md">
+                  <Users size={20} />
+                </div>
+                <div>
+                  <h2 className="text-lg font-extrabold text-foreground">Acessos Simultâneos & Permissões</h2>
+                  <p className="text-xs text-muted-foreground font-medium">
+                    Convide parceiros ou membros para visualizar ou gerenciar sua agenda, finanças e tarefas.
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setSharedModalOpen(true)}
+                className="btn-ios text-xs py-3 px-4 shrink-0"
+              >
+                <UserPlus size={15} />
+                <span>Gerenciar Acessos & Convites</span>
+              </button>
+            </div>
+          </section>
           {/* ── 2.5 Notificações PWA & Lembretes ────────────────────────── */}
           <section className="glass-card p-6 md:p-8 space-y-6">
             <div className="flex items-center justify-between border-b border-border/60 pb-4">
@@ -721,6 +751,7 @@ function SettingsPage() {
             </p>
           </div>
 
+          <SharedAccessModal open={sharedModalOpen} onClose={() => setSharedModalOpen(false)} />
         </div>
       </PageBody>
     </AppShell>
