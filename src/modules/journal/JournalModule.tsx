@@ -22,9 +22,12 @@ import { cn } from "@/lib/utils";
 
 import { MoodTrendChart } from "./components/MoodTrendChart";
 
+import { useWorkspace } from "@/context/WorkspaceContext";
+
 export function JournalModule() {
   const { user } = useAuthContext();
-  const { entries, loading, saveEntry, removeEntry } = useJournal(user?.id);
+  const { activeUserId } = useWorkspace();
+  const { entries, loading, saveEntry, removeEntry } = useJournal(activeUserId);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedMoodFilter, setSelectedMoodFilter] = useState<number | "all">("all");
