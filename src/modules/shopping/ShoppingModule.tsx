@@ -25,11 +25,14 @@ import {
   Package,
   Layers,
   ArrowUpRight,
+  List,
+  LayoutGrid,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 export type ItemType = "shopping" | "wishlist";
+export type ViewMode = "list" | "cards";
 
 export interface ShoppingSegment {
   id: string;
@@ -136,6 +139,8 @@ export function ShoppingModule() {
   const [activeTab, setActiveTab] = useState<MainTab>("shopping");
   const [selectedSegmentId, setSelectedSegmentId] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [viewMode, setViewMode] = useState<ViewMode>("list");
+  const [quickInput, setQuickInput] = useState("");
 
   // Segments State
   const [segments, setSegments] = useState<ShoppingSegment[]>(() => {
@@ -209,6 +214,25 @@ export function ShoppingModule() {
     segments.forEach((s) => { map[s.id] = s; });
     return map;
   }, [segments]);
+
+  // Quick Add To-Do Item for Market / Active Shopping List
+  const handleQuickAdd = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!quickInput.trim()) return;
+
+    const newItem: ShoppingItem = {
+      id: crypto.randomUUID(),
+      name: quickInput.trim(),
+      segmentId: selectedSegmentId !== "all" ? selectedSegmentId : segments[0]?.id || "seg-1",
+      type: "shopping",
+      isPurchased: false,
+      createdAt: new Date().toISOString(),
+    };
+
+    setItems((prev) => [newItem, ...prev]);
+    setQuickInput("");
+    toast.success(`"${newItem.name}" adicionado à Lista de Compras!`);
+  };
 
   // Helper open item modal
   const handleOpenItemModal = (itemToEdit?: ShoppingItem, defaultType: ItemType = "shopping") => {
@@ -308,6 +332,15 @@ export function ShoppingModule() {
     setConfirmPurchaseDate(new Date().toISOString().slice(0, 10));
   };
 
+  // Quick toggle purchased without modal prompt
+  const handleQuickTogglePurchase = (item: ShoppingItem) => {
+    if (item.isPurchased) {
+      setItems((prev) => prev.map((i) => (i.id === item.id ? { ...i, isPurchased: false } : i)));
+    } else {
+      handleStartPurchase(item);
+    }
+  };
+
   // Confirm Purchase (Moves to History)
   const handleConfirmPurchase = (e: React.FormEvent) => {
     e.preventDefault();
@@ -403,7 +436,7 @@ export function ShoppingModule() {
   };
 
   return (
-    <div className="space-y-6 fade-in select-none pb-12">
+    <div className="space-y-6 fade-in select-none pb-12 w-full">
 
       {/* ── 1. Top Header Banner ────────────────────────────────────────── */}
       <div className="glass-card p-6 md:p-7 rounded-3xl border border-border/80 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xl">
@@ -478,14 +511,14 @@ export function ShoppingModule() {
         })}
       </div>
 
-      {/* ── 3. Tabs Principais & Barra de Pesquisa ─────────────────────── */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+      {/* ── 3. Tabs Principais, Alternador de Visão & Barra de Pesquisa ─── */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         {/* Main Tabs */}
-        <div className="flex items-center gap-1 p-1 bg-muted/60 rounded-2xl border border-border/50 w-full sm:w-auto">
+        <div className="flex items-center gap-1 p-1 bg-muted/60 rounded-2xl border border-border/50 w-full md:w-auto">
           <button
             onClick={() => setActiveTab("shopping")}
             className={cn(
-              "flex-1 sm:flex-initial px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-2",
+              "flex-1 md:flex-initial px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-2",
               activeTab === "shopping"
                 ? "bg-foreground text-background shadow-xs"
                 : "text-muted-foreground hover:text-foreground"
@@ -501,7 +534,7 @@ export function ShoppingModule() {
           <button
             onClick={() => setActiveTab("wishlist")}
             className={cn(
-              "flex-1 sm:flex-initial px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-2",
+              "flex-1 md:flex-initial px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-2",
               activeTab === "wishlist"
                 ? "bg-foreground text-background shadow-xs"
                 : "text-muted-foreground hover:text-foreground"
@@ -517,7 +550,7 @@ export function ShoppingModule() {
           <button
             onClick={() => setActiveTab("history")}
             className={cn(
-              "flex-1 sm:flex-initial px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-2",
+              "flex-1 md:flex-initial px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-2",
               activeTab === "history"
                 ? "bg-foreground text-background shadow-xs"
                 : "text-muted-foreground hover:text-foreground"
@@ -531,20 +564,68 @@ export function ShoppingModule() {
           </button>
         </div>
 
-        {/* Search Bar */}
-        <div className="relative w-full sm:w-64">
-          <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Pesquisar itens ou notas..."
-            className="input-ios pl-9 py-2 text-xs w-full font-bold"
-          />
+        {/* View Mode Toggle & Search */}
+        <div className="flex items-center gap-3 w-full md:w-auto">
+          {/* Alternador de Visão (Modo Lista vs Modo Cards) */}
+          <div className="flex items-center gap-1 bg-muted/60 p-1 rounded-2xl border border-border/50 shrink-0">
+            <button
+              onClick={() => setViewMode("list")}
+              className={cn(
+                "px-3 py-1.5 rounded-xl text-xs font-black transition-all flex items-center gap-1.5",
+                viewMode === "list" ? "bg-foreground text-background shadow-xs" : "text-muted-foreground hover:text-foreground"
+              )}
+              title="Modo Lista To-Do Rápida"
+            >
+              <List size={14} />
+              <span className="hidden sm:inline">Lista</span>
+            </button>
+            <button
+              onClick={() => setViewMode("cards")}
+              className={cn(
+                "px-3 py-1.5 rounded-xl text-xs font-black transition-all flex items-center gap-1.5",
+                viewMode === "cards" ? "bg-foreground text-background shadow-xs" : "text-muted-foreground hover:text-foreground"
+              )}
+              title="Modo Cards Grid"
+            >
+              <LayoutGrid size={14} />
+              <span className="hidden sm:inline">Cards</span>
+            </button>
+          </div>
+
+          {/* Search Bar */}
+          <div className="relative flex-1 md:w-64">
+            <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Pesquisar itens ou notas..."
+              className="input-ios pl-9 py-2 text-xs w-full font-bold"
+            />
+          </div>
         </div>
       </div>
 
-      {/* ── 4. CONTEÚDO DAS TABS ────────────────────────────────────────── */}
+      {/* ── 4. BARRA DE ADIÇÃO RÁPIDA ESTILO TO-DO (PARA MERCADO) ────────── */}
+      {activeTab === "shopping" && (
+        <form onSubmit={handleQuickAdd} className="flex items-center gap-2">
+          <div className="relative flex-1">
+            <Plus size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+            <input
+              type="text"
+              value={quickInput}
+              onChange={(e) => setQuickInput(e.target.value)}
+              placeholder="🛒 Digite um item rápido para o mercado (ex: Leite 1L, Pão de Forma, Ovos) e pressione Enter..."
+              className="input-ios pl-10 pr-4 py-3 text-xs font-bold w-full border-foreground/30 focus:border-foreground"
+            />
+          </div>
+          <button type="submit" className="btn-ios text-xs py-3 px-5 font-black shrink-0 shadow-sm">
+            Adicionar Rápido
+          </button>
+        </form>
+      )}
+
+      {/* ── 5. CONTEÚDO DAS TABS ────────────────────────────────────────── */}
 
       {/* ── TAB 1: LISTA DE COMPRAS ATIVA ───────────────────────────────── */}
       {activeTab === "shopping" && (
@@ -552,7 +633,7 @@ export function ShoppingModule() {
           {/* Summary Box */}
           <div className="glass-card p-4 rounded-2xl border border-border/70 flex items-center justify-between text-xs">
             <span className="font-extrabold text-muted-foreground uppercase tracking-wider">
-              Total Estimado da Lista de Compras:
+              Total Estimado da Lista de Compras ({activeShoppingItems.length} itens):
             </span>
             <span className="text-sm font-black text-emerald-500">
               {formatBRL(totalShoppingEst)}
@@ -563,25 +644,88 @@ export function ShoppingModule() {
             <div className="glass-card p-12 text-center text-xs text-muted-foreground font-medium rounded-3xl border border-dashed border-border flex flex-col items-center gap-3">
               <ShoppingCart size={36} className="opacity-30" />
               Sua Lista de Compras está vazia no momento.
-              <button
-                onClick={() => handleOpenItemModal(undefined, "shopping")}
-                className="btn-ios text-xs py-2 px-4 mt-1"
-              >
-                <Plus size={14} /> Adicionar Item de Mercado
-              </button>
+              <p className="text-xs font-medium">Use a barra de adição rápida acima para incluir seus itens do mercado!</p>
+            </div>
+          ) : viewMode === "list" ? (
+            /* ── MODO LISTA COMPACTA TO-DO ───────────────────────────── */
+            <div className="glass-card rounded-3xl border border-border/70 overflow-hidden shadow-lg">
+              <div className="divide-y divide-border/40">
+                {activeShoppingItems.map((item) => {
+                  const seg = segmentMap[item.segmentId];
+                  return (
+                    <div
+                      key={item.id}
+                      className="p-3.5 sm:px-5 flex items-center justify-between gap-3 hover:bg-muted/40 transition-colors group"
+                    >
+                      <div className="flex items-center gap-3 min-w-0 flex-1">
+                        {/* Checkbox para marcar compra */}
+                        <button
+                          onClick={() => handleQuickTogglePurchase(item)}
+                          className="w-5 h-5 rounded-lg border-2 border-border hover:border-emerald-500 hover:bg-emerald-500/10 transition-all flex items-center justify-center shrink-0"
+                          title="Marcar como Comprado"
+                        >
+                          <Check size={13} className="opacity-0 hover:opacity-100 text-emerald-500 transition-opacity" />
+                        </button>
+
+                        <span className="text-xs font-black text-foreground truncate">
+                          {item.name}
+                        </span>
+
+                        {item.quantity && (
+                          <span className="text-[10px] font-extrabold text-muted-foreground bg-muted px-2 py-0.5 rounded-full shrink-0">
+                            {item.quantity}
+                          </span>
+                        )}
+
+                        {seg && (
+                          <span
+                            className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-extrabold shrink-0 border"
+                            style={{
+                              backgroundColor: hexToRgba(seg.color, 0.15),
+                              color: seg.color,
+                              borderColor: hexToRgba(seg.color, 0.3),
+                            }}
+                          >
+                            <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: seg.color }} />
+                            {seg.name}
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Right Price & Actions */}
+                      <div className="flex items-center gap-3 shrink-0">
+                        {item.estimatedPrice !== undefined && (
+                          <span className="text-xs font-black text-foreground">
+                            {formatBRL(item.estimatedPrice)}
+                          </span>
+                        )}
+
+                        <div className="flex items-center gap-1 opacity-70 group-hover:opacity-100 transition-opacity">
+                          <button onClick={() => handleOpenItemModal(item)} className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground">
+                            <Edit3 size={13} />
+                          </button>
+                          <button onClick={() => handleDeleteItem(item.id)} className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground hover:text-red-500">
+                            <Trash2 size={13} />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            /* ── MODO CARDS GRID ──────────────────────────────────────── */
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
               {activeShoppingItems.map((item) => {
                 const seg = segmentMap[item.segmentId];
                 return (
                   <div
                     key={item.id}
-                    className="glass-card p-4 rounded-3xl border border-border/70 flex flex-col justify-between space-y-3 relative group transition-all hover:border-foreground/30 shadow-xs"
+                    className="glass-card p-5 rounded-3xl border border-border/70 flex flex-col justify-between space-y-3 relative group transition-all hover:border-foreground/30 shadow-xs"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex items-start gap-3 min-w-0">
-                        {/* Interactive Checkbox for purchasing */}
                         <button
                           onClick={() => handleStartPurchase(item)}
                           className="w-6 h-6 rounded-xl border-2 border-border hover:border-emerald-500 hover:bg-emerald-500/10 transition-all flex items-center justify-center shrink-0 mt-0.5"
@@ -610,7 +754,6 @@ export function ShoppingModule() {
                         </div>
                       </div>
 
-                      {/* Edit / Delete actions */}
                       <div className="flex items-center gap-1 opacity-70 group-hover:opacity-100 transition-opacity">
                         <button onClick={() => handleOpenItemModal(item)} className="p-1 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground">
                           <Edit3 size={13} />
@@ -621,7 +764,6 @@ export function ShoppingModule() {
                       </div>
                     </div>
 
-                    {/* Details row */}
                     <div className="flex items-center justify-between text-xs border-t border-border/40 pt-2.5">
                       <span className="text-[10px] font-extrabold text-muted-foreground">
                         {item.quantity || "1 unidade"}
@@ -664,7 +806,7 @@ export function ShoppingModule() {
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
               {wishlistItems.map((item) => {
                 const seg = segmentMap[item.segmentId];
                 return (
@@ -672,7 +814,6 @@ export function ShoppingModule() {
                     key={item.id}
                     className="glass-card p-5 rounded-3xl border border-border/70 flex flex-col justify-between space-y-4 relative group transition-all hover:border-foreground/30 shadow-md"
                   >
-                    {/* Top image or Segment badge */}
                     <div className="flex items-start gap-3">
                       {item.imageUrl ? (
                         <img
@@ -715,14 +856,12 @@ export function ShoppingModule() {
                       </div>
                     </div>
 
-                    {/* Notes & Price */}
                     {item.notes && (
                       <p className="text-xs text-muted-foreground font-medium line-clamp-2 bg-muted/30 p-2.5 rounded-xl border border-border/40">
                         {item.notes}
                       </p>
                     )}
 
-                    {/* Footer Actions */}
                     <div className="flex items-center justify-between border-t border-border/50 pt-3">
                       <div>
                         <span className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block">
