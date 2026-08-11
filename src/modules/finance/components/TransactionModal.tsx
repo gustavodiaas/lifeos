@@ -84,8 +84,8 @@ export function TransactionModal({ open, onClose, onSave, defaultDate, editingTr
 
   return (
     <ModalPortal open={open} onClose={onClose}>
-      <div className="bg-card w-full max-w-sm rounded-t-[28px] sm:rounded-[28px] shadow-2xl border border-border overflow-hidden slide-up">
-        <div className="flex items-center justify-between p-6 border-b border-border/60">
+      <div className="bg-card w-full max-w-sm rounded-t-[28px] sm:rounded-[28px] shadow-2xl border border-border overflow-hidden flex flex-col max-h-[90vh] slide-up">
+        <div className="flex items-center justify-between p-6 border-b border-border/60 shrink-0">
           <h2 className="text-base font-extrabold text-foreground tracking-tight">
             {editingTransaction ? 'Editar Lançamento' : 'Novo Lançamento'}
           </h2>
@@ -98,7 +98,7 @@ export function TransactionModal({ open, onClose, onSave, defaultDate, editingTr
         </div>
 
         {showRecChoice ? (
-          <div className="p-6 space-y-4">
+          <div className="p-6 space-y-4 overflow-y-auto">
             <p className="text-sm font-bold text-foreground text-center">
               Este lançamento é recorrente. Deseja alterar apenas este mês ou todos os futuros?
             </p>
@@ -116,7 +116,7 @@ export function TransactionModal({ open, onClose, onSave, defaultDate, editingTr
             </button>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="p-6 space-y-4">
+          <form onSubmit={handleSubmit} className="p-6 space-y-4 flex-1 overflow-y-auto custom-scrollbar">
             <div className="grid grid-cols-2 gap-2 p-1 bg-muted rounded-2xl border border-border/50">
               <button
                 type="button"
