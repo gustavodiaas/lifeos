@@ -86,6 +86,7 @@ export function useLancamentos(userId: string | undefined) {
       categoria: lancamento.categoria,
       tipo: lancamento.tipo,
       is_recorrente: Boolean(lancamento.is_recorrente),
+      grupo_recorrencia_id: lancamento.grupo_recorrencia_id || null,
     };
     const { data, error: insertError } = await supabase.from('lancamentos').insert([payload]).select();
     if (insertError) {
@@ -99,7 +100,7 @@ export function useLancamentos(userId: string | undefined) {
   const update = async (id: string, lancamento: Partial<Lancamento>): Promise<boolean> => {
     if (!userId) return false;
     setError(null);
-    const payload = {
+    const payload: any = {
       descricao: lancamento.descricao,
       valor: Number(lancamento.valor),
       data: lancamento.data,
@@ -107,6 +108,9 @@ export function useLancamentos(userId: string | undefined) {
       tipo: lancamento.tipo,
       is_recorrente: Boolean(lancamento.is_recorrente),
     };
+    if (lancamento.grupo_recorrencia_id !== undefined) {
+      payload.grupo_recorrencia_id = lancamento.grupo_recorrencia_id;
+    }
     const { data, error: updateError } = await supabase.from('lancamentos').update(payload).eq('id', id).select();
     if (updateError) {
       setError('Erro ao atualizar lançamento.');
