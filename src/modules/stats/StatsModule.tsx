@@ -10,6 +10,9 @@ import { todayIso, monthIso, formatBRL } from "@/lib/date";
 import { ActivityRing } from "./components/ActivityRing";
 import { MetricLoggerModal } from "./components/MetricLoggerModal";
 import { MetricTrendChart } from "./components/WeightTrendChart";
+import { QuickMetricLoggerGrid } from "./components/QuickMetricLoggerGrid";
+import { HealthWeightWidget } from "./components/HealthWeightWidget";
+import { SleepTrackerWidget } from "./components/SleepTrackerWidget";
 import { toast } from "@/lib/toast";
 import {
   Repeat, CheckSquare, Wallet, Target, NotebookPen,
@@ -120,21 +123,39 @@ export function StatsModule() {
     } catch { toast.error("Erro ao salvar medição."); }
   };
 
+  const handleQuickAdd = async (key: string, value: number, unit: string) => {
+    try {
+      const ok = await addMetric({ key, value, unit, date: today });
+      if (ok) toast.success(`+${value}${unit} registrado com sucesso!`);
+    } catch {
+      toast.error("Erro ao registrar.");
+    }
+  };
+
   const openLogger = (key: string) => { setDefaultMetricKey(key); setLoggerOpen(true); };
 
+  const weightLogs = useMemo(() => metrics.filter((m) => m.key === "weight"), [metrics]);
+  const sleepLogs  = useMemo(() => metrics.filter((m) => m.key === "sleep_hours"), [metrics]);
+
   return (
-    <div className="space-y-5 fade-in px-4 md:px-6 py-4 pb-12">
+    <div className="space-y-6 fade-in px-4 md:px-6 py-4 pb-12">
 
       {/* Cabeçalho */}
       <div className="flex items-center justify-between">
         <div>
           <span className="badge-ios text-[10px]">Tempo Real</span>
-          <h2 className="text-xl font-extrabold text-foreground tracking-tight mt-1">Estatísticas</h2>
+          <h2 className="text-xl font-extrabold text-foreground tracking-tight mt-1">Estatísticas & Saúde</h2>
         </div>
         <button onClick={() => openLogger("weight")} className="btn-ios text-xs py-2 px-4">
-          <Plus size={14} strokeWidth={2.5} /><span>Registrar</span>
+          <Plus size={14} strokeWidth={2.5} /><span>Registrar Métrica</span>
         </button>
       </div>
+
+      {/* ── 1. MÉTRICAS SOLTAS PARA REGISTRO RÁPIDO DEDICADO ────────────── */}
+      <QuickMetricLoggerGrid
+        onOpenLogger={openLogger}
+        onQuickAdd={handleQuickAdd}
+      />
 
       {/* Score Geral */}
       <div className="glass-card p-4 flex items-center gap-5 border border-border">
@@ -236,6 +257,18 @@ export function StatsModule() {
           </div>
         </div>
       </div>
+
+      {/* ── 2. SAÚDE CORPORAL, IMC & DICAS FIT ───────────────────────────── */}
+      <HealthWeightWidget
+        weightLogs={weightLogs}
+        onOpenLogger={() => openLogger("weight")}
+      />
+
+      {/* ── 3. ANÁLISE DE SONO, HEATMAP (365D) & HIGIENE ─────────────────── */}
+      <SleepTrackerWidget
+        sleepLogs={sleepLogs}
+        onOpenLogger={() => openLogger("sleep_hours")}
+      />
 
       {/* Métricas manuais com dados */}
       {metricGroups.length > 0 && (
