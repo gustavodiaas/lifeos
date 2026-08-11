@@ -64,8 +64,14 @@ export function AuthScreen() {
         options: { redirectTo: window.location.origin },
       });
       if (error) throw error;
-    } catch {
-      setError('Erro ao conectar com o Google.');
+    } catch (err: any) {
+      console.error('Erro no Login Google:', err);
+      const msg = err.message || '';
+      if (msg.includes('provider is not enabled') || msg.includes('validation_failed') || err.status === 400) {
+        setError('O login com Google precisa ser ativado no painel do Supabase (Authentication > Providers > Google). Use o cadastro com e-mail e senha abaixo por enquanto.');
+      } else {
+        setError('Erro ao conectar com o Google. Tente novamente.');
+      }
     }
   };
 
