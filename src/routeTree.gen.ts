@@ -236,9 +236,18 @@ declare module '@tanstack/react-router' {
   }
 }
 
+import { Route as BooksRouteImport } from './routes/books'
+
+const BooksRoute = BooksRouteImport.update({
+  id: '/books',
+  path: '/books',
+  getParentRoute: () => rootRouteImport,
+} as any)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRoute,
+  BooksRoute: BooksRoute,
   FinanceRoute: FinanceRoute,
   GoalsRoute: GoalsRoute,
   HabitsRoute: HabitsRoute,
