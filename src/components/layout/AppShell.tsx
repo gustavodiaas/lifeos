@@ -19,6 +19,7 @@ import {
   Eye,
   ChevronDown,
   Check,
+  ShoppingCart,
 } from "lucide-react";
 import { useEffect, useState, useRef, type ReactNode } from "react";
 import { CommandPalette } from "./CommandPalette";
@@ -56,6 +57,7 @@ const NAV_ITEMS = [
   { to: "/tasks", label: "Tarefas", icon: CheckSquare },
   { to: "/goals", label: "Metas", icon: Target },
   { to: "/finance", label: "Finanças", icon: Wallet },
+  { to: "/shopping", label: "Compras", icon: ShoppingCart },
   { to: "/books", label: "Livros", icon: Library },
   { to: "/notes", label: "Conhecimento", icon: BookOpen },
   { to: "/journal", label: "Diário", icon: NotebookPen },
@@ -65,6 +67,7 @@ const NAV_ITEMS = [
 const PAGE_TITLES: Record<string, string> = {
   "/": "LifeOS",
   "/calendar": "Calendário",
+  "/shopping": "Compras & Desejos",
   "/books": "Estante Virtual",
   "/notes": "Conhecimento",
   "/habits": "Hábitos",
