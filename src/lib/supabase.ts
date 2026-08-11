@@ -121,15 +121,42 @@ export interface Goal {
   title: string;
   description?: string;
   scope: GoalScope;
-  targetDate: string;
+  targetDate?: string;
   target_date?: string;
+  period?: string;
   progress: number;
   target: number;
+  unit?: string | null;
   linkedHabitId?: string | null;
   linked_habit_id?: string | null;
-  createdAt: string;
+  linkedMetric?: string | null;
+  linked_metric?: string | null;
+  createdAt?: string;
   created_at?: string;
-  updatedAt: string;
+  updatedAt?: string;
+  updated_at?: string;
+}
+
+export interface Lancamento {
+  id: string;
+  user_id?: string;
+  descricao: string;
+  valor: number;
+  data: string;
+  categoria?: string | null;
+  tipo: 'entrada' | 'saida';
+  is_recorrente?: boolean;
+  grupo_recorrencia_id?: string | null;
+  created_at?: string;
+}
+
+export interface Profile {
+  id: string;
+  user_id?: string;
+  username?: string;
+  avatar_url?: string;
+  monthly_income?: number;
+  created_at?: string;
   updated_at?: string;
 }
 
@@ -140,9 +167,9 @@ export interface JournalEntry {
   mood: 1 | 2 | 3 | 4 | 5;
   content: string;
   highlights: string[];
-  createdAt: string;
+  createdAt?: string;
   created_at?: string;
-  updatedAt: string;
+  updatedAt?: string;
   updated_at?: string;
 }
 
@@ -153,9 +180,9 @@ export interface Metric {
   value: number;
   unit: string;
   date: string;
-  createdAt: string;
+  createdAt?: string;
   created_at?: string;
-  updatedAt: string;
+  updatedAt?: string;
   updated_at?: string;
 }
 
@@ -165,16 +192,18 @@ export interface Book {
   title: string;
   author: string;
   cover?: string;
-  totalPages: number;
+  totalPages?: number;
   total_pages?: number;
-  currentPage: number;
+  currentPage?: number;
   current_page?: number;
   status: BookStatus;
   isbn?: string;
   publisher?: string;
   year?: string;
-  createdAt: string;
+  createdAt?: string;
   created_at?: string;
-  updatedAt: string;
+  updatedAt?: string;
   updated_at?: string;
 }
+
+
