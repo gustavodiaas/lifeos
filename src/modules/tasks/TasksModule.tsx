@@ -7,6 +7,7 @@ import { TaskModal } from "./components/TaskModal";
 import { ProjectModal } from "./components/ProjectModal";
 import { AlertModal } from "@/modules/finance/components/AlertModal";
 import { toast } from "@/lib/toast";
+import { useWorkspace } from "@/context/WorkspaceContext";
 import {
   Plus,
   CheckSquare,
@@ -28,6 +29,7 @@ import { FocusTimer } from "@/components/widgets/FocusTimer";
 
 export function TasksModule() {
   const { user } = useAuthContext();
+  const { activeUserId } = useWorkspace();
   const {
     tasks,
     projects,
@@ -36,7 +38,7 @@ export function TasksModule() {
     updateTask,
     removeTask,
     addProject,
-  } = useTasks(user?.id);
+  } = useTasks(activeUserId);
 
   const activeProjects = useMemo(() => projects.filter((p) => !p.archivedAt && !p.archived_at), [projects]);
 
