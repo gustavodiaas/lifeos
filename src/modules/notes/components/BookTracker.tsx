@@ -5,6 +5,7 @@ import { CustomSelect } from "@/components/ui/CustomSelect";
 import { ModalPortal } from "@/components/ui/ModalPortal";
 import { cn } from "@/lib/utils";
 import { toast } from "@/lib/toast";
+import { useAuthContext } from "@/context/AuthContext";
 
 export interface ExtendedBook extends Book {
   coverUrl?: string;
@@ -62,38 +63,29 @@ interface GoogleBookItem {
 }
 
 export function BookTracker() {
+  const { user } = useAuthContext();
+  const userId = user?.id || "guest";
+  const storageKey = `lifeos_${userId}_books`;
+
   const [books, setBooks] = useState<ExtendedBook[]>(() => {
     try {
-      const saved = localStorage.getItem("lifeos_books");
+      const saved = localStorage.getItem(storageKey);
       if (saved) return JSON.parse(saved);
     } catch {}
-    return DEFAULT_BOOKS;
+    return [];
   });
 
-  const [searchQuery, setSearchQuery] = useState("");
-  const [showModal, setShowModal] = useState(false);
-  const [editingBook, setEditingBook] = useState<ExtendedBook | null>(null);
-  const [modalMode, setModalMode] = useState<"search" | "form">("search");
-
-  // Google Books API search states inside modal
-  const [apiSearchQuery, setApiSearchQuery] = useState("");
-  const [apiResults, setApiResults] = useState<GoogleBookItem[]>([]);
-  const [loadingApi, setLoadingApi] = useState(false);
-
-  // Form states
-  const [title, setTitle] = useState("");
-  const [author, setAuthor] = useState("");
-  const [status, setStatus] = useState<ExtendedBook["status"]>("reading");
-  const [totalPages, setTotalPages] = useState("");
-  const [currentPage, setCurrentPage] = useState("");
-  const [coverUrl, setCoverUrl] = useState("");
-  const [description, setDescription] = useState("");
-  const [quoteInput, setQuoteInput] = useState("");
-  const [quotesList, setQuotesList] = useState<string[]>([]);
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(storageKey);
+      if (saved) setBooks(JSON.parse(saved));
+      else setBooks([]);
+    } catch {}
+  }, [storageKey]);
 
   useEffect(() => {
-    localStorage.setItem("lifeos_books", JSON.stringify(books));
-  }, [books]);
+    localStorage.setItem(storageKey, JSON.stringify(books));
+  }, [books, storageKey]);
 
   // Google Books API Fetch
   const handleSearchGoogleBooks = async (query: string) => {
