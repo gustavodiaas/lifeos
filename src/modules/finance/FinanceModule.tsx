@@ -7,6 +7,7 @@ import { SpreadsheetTable } from './components/SpreadsheetTable';
 import { MonthSummary } from './components/MonthSummary';
 import { HorizonView } from './components/HorizonView';
 import { TagsView } from './components/TagsView';
+import { InvestmentsView } from './components/InvestmentsView';
 import { TransactionModal } from './components/TransactionModal';
 import { AlertModal } from './components/AlertModal';
 import { FinanceChart } from './components/FinanceChart';
@@ -30,6 +31,7 @@ import {
   AlertCircle,
   X,
   Table,
+  TrendingUp,
 } from 'lucide-react';
 
 function ErrorToast({ message, onClose }: { message: string; onClose: () => void }) {
@@ -51,7 +53,7 @@ function ErrorToast({ message, onClose }: { message: string; onClose: () => void
   );
 }
 
-type Tab = 'extrato' | 'planilha' | 'totais' | 'tags' | 'horizon';
+type Tab = 'extrato' | 'investimentos' | 'planilha' | 'totais' | 'tags' | 'horizon';
 
 export function FinanceModule() {
   const { user } = useAuthContext();
@@ -237,6 +239,18 @@ export function FinanceModule() {
           </button>
 
           <button
+            onClick={() => setActiveTab('investimentos')}
+            className={`px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all flex items-center gap-1.5 shrink-0 ${
+              activeTab === 'investimentos'
+                ? 'bg-foreground text-background shadow-md font-extrabold scale-[1.02]'
+                : 'bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground'
+            }`}
+          >
+            <TrendingUp size={13} />
+            <span>Investimentos</span>
+          </button>
+
+          <button
             onClick={() => setActiveTab('totais')}
             className={`px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all flex items-center gap-1.5 shrink-0 ${
               activeTab === 'totais'
@@ -300,7 +314,7 @@ export function FinanceModule() {
 
       {/* Conteúdo Principal */}
       <div className="space-y-4">
-        {!loading && rawForMonth.length > 0 && activeTab !== 'extrato' && (
+        {!loading && rawForMonth.length > 0 && activeTab !== 'extrato' && activeTab !== 'investimentos' && (
           <FinanceChart transactions={rawForMonth} />
         )}
 
@@ -323,6 +337,7 @@ export function FinanceModule() {
                 onDeleteTransaction={handleRemoveClick}
               />
             )}
+            {activeTab === 'investimentos' && <InvestmentsView />}
             {activeTab === 'planilha' && (
               <SpreadsheetTable rows={rows} today={today} onDelete={handleRemoveClick} onEdit={handleOpenEdit} />
             )}
