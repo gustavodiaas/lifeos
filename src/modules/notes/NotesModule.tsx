@@ -13,10 +13,10 @@ import { FolderModal } from "./components/FolderModal";
 import { AtomicNotesView } from "./components/AtomicNotesView";
 import { AlertModal } from "@/modules/finance/components/AlertModal";
 import { toast } from "@/lib/toast";
-import { BookOpen, Atom, Library } from "lucide-react";
+import { BookOpen, Atom } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-type Tab = "conhecimento" | "estante" | "atomicas";
+type Tab = "conhecimento" | "atomicas";
 
 export function NotesModule() {
   const { user } = useAuthContext();
@@ -113,7 +113,6 @@ export function NotesModule() {
 
   const TABS: { id: Tab; label: string; Icon: React.FC<any>; count?: number }[] = [
     { id: "conhecimento", label: "Conhecimento", Icon: BookOpen, count: activeNotes.length },
-    { id: "estante",      label: "Estante de Livros", Icon: Library },
     { id: "atomicas",     label: "Atômicas",     Icon: Atom,     count: atomicNotes.length },
   ];
 
@@ -145,15 +144,11 @@ export function NotesModule() {
         ))}
       </div>
 
-      {/* ── Aba: Estante de Livros ────────────────────────────────────── */}
-      {tab === "estante" && <BookTracker />}
-
       {/* ── Aba: Conhecimento ─────────────────────────────────────────── */}
       {tab === "conhecimento" && (
         <>
           <FocusTimer onSessionComplete={refetchMetrics} />
           <StudyHeatmap metrics={metrics} />
-          <BookTracker />
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 min-h-[600px]">
             <div className="lg:col-span-3">
