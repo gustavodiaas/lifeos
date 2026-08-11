@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect } from "react";
 import type { Metric } from "@/lib/supabase";
 import { Moon, Sparkles, Sliders, ChevronDown, ChevronUp, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { CustomSelect } from "@/components/ui/CustomSelect";
 
 interface SleepTrackerWidgetProps {
   sleepLogs: Metric[];
@@ -90,19 +91,18 @@ export function SleepTrackerWidget({ sleepLogs, onOpenLogger }: SleepTrackerWidg
 
         <div className="flex items-center gap-2">
           {/* Configurar Meta de Sono */}
-          <div className="flex items-center gap-1.5 bg-muted/50 px-2.5 py-1 rounded-xl border border-border/60">
-            <Sliders size={13} className="text-muted-foreground" />
-            <span className="text-[10px] font-bold text-muted-foreground">Meta:</span>
-            <select
-              value={targetHours}
-              onChange={(e) => setTargetHours(parseInt(e.target.value, 10))}
-              className="bg-transparent text-xs font-black text-foreground outline-none cursor-pointer"
-            >
-              <option value={6} className="bg-card text-foreground">6 horas</option>
-              <option value={7} className="bg-card text-foreground">7 horas</option>
-              <option value={8} className="bg-card text-foreground">8 horas</option>
-              <option value={9} className="bg-card text-foreground">9 horas</option>
-            </select>
+          <div className="flex items-center gap-1.5 min-w-[140px]">
+            <CustomSelect
+              value={targetHours.toString()}
+              onChange={(val) => setTargetHours(parseInt(val, 10))}
+              options={[
+                { value: "6", label: "6h meta" },
+                { value: "7", label: "7h meta" },
+                { value: "8", label: "8h meta" },
+                { value: "9", label: "9h meta" },
+              ]}
+              className="text-xs font-black"
+            />
           </div>
 
           <button onClick={onOpenLogger} className="btn-ios text-xs py-2 px-3">
