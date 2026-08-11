@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import type { Lancamento } from '@/lib/supabase';
+import { isValidUuid } from '@/lib/utils';
 
 export function useLancamentos(userId: string | undefined) {
   const [lancamentos, setLancamentos] = useState<Lancamento[]>([]);
@@ -8,7 +9,8 @@ export function useLancamentos(userId: string | undefined) {
   const [error, setError] = useState<string | null>(null);
 
   const fetchDados = useCallback(async () => {
-    if (!userId) {
+    if (!isValidUuid(userId)) {
+      setLancamentos([]);
       setLoading(false);
       return;
     }
@@ -20,7 +22,7 @@ export function useLancamentos(userId: string | undefined) {
     const { data, error: fetchError } = await supabase
       .from('lancamentos')
       .select('*')
-      .eq('user_id', userId)
+      .eq('user_id', userId!)
       .order('data', { ascending: true });
 
     if (fetchError) {
@@ -39,10 +41,12 @@ export function useLancamentos(userId: string | undefined) {
 
   // Realtime sync entre dispositivos (filtrado por user_id)
   useEffect(() => {
-    if (!userId) return;
+    if (!isValidUuid(userId)) return;
+
+    const channelId = Math.random().toString(36).substring(2, 7);
 
     const channel = supabase
-      .channel('lancamentos-realtime')
+      .channel(`lancamentos-realtime-${userId}-${channelId}`)
       .on(
         'postgres_changes',
         {
