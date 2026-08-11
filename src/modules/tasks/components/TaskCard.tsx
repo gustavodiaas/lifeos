@@ -52,9 +52,10 @@ export function TaskCard({
   // Visual da Prioridade
   const priorityConfig = {
     high: { label: "Alta", color: "bg-red-500/15 text-red-500 border-red-500/30" },
+    medium: { label: "Média", color: "bg-muted text-foreground border-border" },
     med: { label: "Média", color: "bg-muted text-foreground border-border" },
     low: { label: "Baixa", color: "bg-emerald-500/15 text-emerald-500 border-emerald-500/30" },
-  }[task.priority || "med"];
+  }[(task.priority as string) || "medium"] || { label: "Média", color: "bg-muted text-foreground border-border" };
 
   return (
     <div
