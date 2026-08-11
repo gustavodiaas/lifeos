@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { toast } from "@/lib/toast";
 import { CustomSelect } from "@/components/ui/CustomSelect";
 import { useAuthContext } from "@/context/AuthContext";
+import { useWorkspace } from "@/context/WorkspaceContext";
 
 export interface SavingsBox {
   id: string;
@@ -54,7 +55,8 @@ const CATEGORY_META = {
 
 export function SavingsGoalsView() {
   const { user } = useAuthContext();
-  const userId = user?.id || "guest";
+  const { activeUserId } = useWorkspace();
+  const userId = activeUserId || user?.id || "guest";
   const storageKey = `lifeos_${userId}_savings_boxes`;
 
   const [boxes, setBoxes] = useState<SavingsBox[]>(() => {
