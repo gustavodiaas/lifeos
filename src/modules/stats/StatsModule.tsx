@@ -6,6 +6,7 @@ import { useTasks } from "@/hooks/useTasks";
 import { useGoals } from "@/hooks/useGoals";
 import { useJournal } from "@/hooks/useJournal";
 import { useLancamentos } from "@/hooks/useLancamentos";
+import { useWorkspace } from "@/context/WorkspaceContext";
 import { todayIso, monthIso, formatBRL } from "@/lib/date";
 import { ActivityRing } from "./components/ActivityRing";
 import { MetricLoggerModal } from "./components/MetricLoggerModal";
@@ -36,12 +37,13 @@ const ALL_MANUAL_KEYS = Object.keys(METRIC_META);
 
 export function StatsModule() {
   const { user } = useAuthContext();
-  const { metrics, addMetric }       = useMetrics(user?.id);
-  const { habits, logs }             = useHabits(user?.id);
-  const { tasks }                    = useTasks(user?.id);
-  const { goals }                    = useGoals(user?.id);
-  const { entries: journalEntries }  = useJournal(user?.id);
-  const { lancamentos }              = useLancamentos(user?.id);
+  const { activeUserId } = useWorkspace();
+  const { metrics, addMetric }       = useMetrics(activeUserId);
+  const { habits, logs }             = useHabits(activeUserId);
+  const { tasks }                    = useTasks(activeUserId);
+  const { goals }                    = useGoals(activeUserId);
+  const { entries: journalEntries }  = useJournal(activeUserId);
+  const { lancamentos }              = useLancamentos(activeUserId);
 
   const [loggerOpen, setLoggerOpen]             = useState(false);
   const [defaultMetricKey, setDefaultMetricKey] = useState("weight");
