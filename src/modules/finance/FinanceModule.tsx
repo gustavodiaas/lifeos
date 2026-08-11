@@ -10,6 +10,7 @@ import { TagsView } from './components/TagsView';
 import { TransactionModal } from './components/TransactionModal';
 import { AlertModal } from './components/AlertModal';
 import { FinanceChart } from './components/FinanceChart';
+import { SyncingLoader } from '@/components/ui/SyncingLoader';
 import {
   expandRecorrentes,
   buildDayRows,
@@ -304,10 +305,7 @@ export function FinanceModule() {
         )}
 
         {loading ? (
-          <div className="py-16 text-center">
-            <div className="w-6 h-6 border-2 border-foreground border-t-transparent rounded-full animate-spin mx-auto mb-2" />
-            <p className="text-xs text-muted-foreground font-semibold">Sincronizando finanças...</p>
-          </div>
+          <SyncingLoader message="Sincronizando dados financeiros..." fullScreen={false} />
         ) : (
           <>
             {activeTab === 'extrato' && (
