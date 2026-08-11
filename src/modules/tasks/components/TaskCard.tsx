@@ -57,11 +57,21 @@ export function TaskCard({
     low: { label: "Baixa", color: "bg-emerald-500/15 text-emerald-500 border-emerald-500/30" },
   }[(task.priority as string) || "medium"] || { label: "Média", color: "bg-muted text-foreground border-border" };
 
+  const [isDragging, setIsDragging] = useState(false);
+
   return (
     <div
+      draggable
+      onDragStart={(e) => {
+        setIsDragging(true);
+        e.dataTransfer.setData("text/plain", task.id);
+        e.dataTransfer.effectAllowed = "move";
+      }}
+      onDragEnd={() => setIsDragging(false)}
       className={cn(
-        "glass-card p-4 transition-all duration-200 relative group flex flex-col justify-between space-y-3",
-        task.status === "done" && "opacity-75 bg-muted/20"
+        "glass-card p-4 transition-all duration-200 relative group flex flex-col justify-between space-y-3 cursor-grab active:cursor-grabbing select-none",
+        task.status === "done" && "opacity-75 bg-muted/20",
+        isDragging && "opacity-40 scale-95 border-foreground shadow-2xl"
       )}
     >
       {/* ── Top Header ────────────────────────────────────────────── */}
