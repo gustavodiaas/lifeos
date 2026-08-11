@@ -136,6 +136,7 @@ export function SharedAccessModal({ open, onClose }: SharedAccessModalProps) {
                   { key: "calendar", label: "📅 Calendário & Agenda" },
                   { key: "finance", label: "💰 Finanças & Caixinhas" },
                   { key: "tasks", label: "📌 Tarefas & Quadro" },
+                  { key: "shopping", label: "🛒 Compras & Desejos" },
                   { key: "books", label: "📖 Livros & Conhecimento" },
                   { key: "habits", label: "🔁 Hábitos" },
                 ].map(({ key, label }) => (
