@@ -13,6 +13,7 @@ import { MetricTrendChart } from "./components/WeightTrendChart";
 import { QuickMetricLoggerGrid } from "./components/QuickMetricLoggerGrid";
 import { HealthWeightWidget } from "./components/HealthWeightWidget";
 import { SleepTrackerWidget } from "./components/SleepTrackerWidget";
+import { GamificationWidget } from "./components/GamificationWidget";
 import { toast } from "@/lib/toast";
 import {
   Repeat, CheckSquare, Wallet, Target, NotebookPen,
@@ -150,6 +151,15 @@ export function StatsModule() {
           <Plus size={14} strokeWidth={2.5} /><span>Registrar Métrica</span>
         </button>
       </div>
+
+      {/* ── 0. WIDGET DE GAMIFICAÇÃO, XP & CONQUISTAS ──────────────────── */}
+      <GamificationWidget
+        habitsDoneCount={moduleStats.habitsDoneToday}
+        tasksDoneCount={moduleStats.tasksDone}
+        journalCount={moduleStats.journalTotal}
+        metricsCount={metrics.length}
+        streakDays={moduleStats.streak}
+      />
 
       {/* ── 1. MÉTRICAS SOLTAS PARA REGISTRO RÁPIDO DEDICADO ────────────── */}
       <QuickMetricLoggerGrid
