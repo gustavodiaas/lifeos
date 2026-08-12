@@ -30,6 +30,7 @@ import { cn } from "@/lib/utils";
 import { useAuthContext } from "@/context/AuthContext";
 import { useWorkspace } from "@/context/WorkspaceContext";
 import { SharedAccessModal } from "@/components/modals/SharedAccessModal";
+import { OnboardingModal } from "@/components/modals/OnboardingModal";
 
 /** Returns greeting based on current hour */
 function getGreeting(): string {
@@ -422,6 +423,9 @@ export function AppShell({ children }: { children?: ReactNode }) {
 
       {/* Modal de Acessos Simultâneos & Convites */}
       <SharedAccessModal open={sharedModalOpen} onClose={() => setSharedModalOpen(false)} />
+
+      {/* Onboarding / Guia Interativo da Aplicação */}
+      <OnboardingModal />
     </div>
   );
 }
