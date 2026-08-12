@@ -300,6 +300,32 @@ function SettingsPage() {
       <PageBody>
         <div className="space-y-6 max-w-4xl fade-in">
 
+          {/* ── 0. Guia & Tutorial Interativo (Revisar Onboarding) ───────── */}
+          <section className="glass-card p-6 md:p-8 space-y-4 border border-primary/30 shadow-md">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                  <Sparkles size={20} />
+                </div>
+                <div>
+                  <h2 className="text-lg font-bold text-foreground">Guia & Tutorial Interativo</h2>
+                  <p className="text-xs text-muted-foreground font-medium">
+                    Aprenda a utilizar todos os recursos do LifeOS ou reveja o passo a passo inicial a qualquer momento.
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => window.dispatchEvent(new CustomEvent("open-lifeos-onboarding"))}
+                className="px-5 py-3 rounded-xl bg-primary text-primary-foreground font-black text-xs hover:bg-primary/90 transition-all flex items-center justify-center gap-2 shadow-md shrink-0 active:scale-95"
+              >
+                <Sparkles size={16} />
+                <span>Revisar Onboarding</span>
+              </button>
+            </div>
+          </section>
+
           {/* ── 1. Perfil do Usuário & Dados Pessoais ──────────────────── */}
           <section className="glass-card p-6 md:p-8 space-y-6">
             <div className="flex items-center gap-3 border-b border-border/60 pb-4">
