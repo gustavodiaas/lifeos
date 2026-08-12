@@ -127,7 +127,7 @@ export function QuickActionFab({ open, onClose }: QuickActionFabProps) {
               className="w-full flex items-center justify-between p-3 rounded-2xl bg-accent/40 hover:bg-accent border border-border/50 text-xs font-bold text-foreground active:scale-95 transition-all"
             >
               <span className="font-bold text-sm">Nova Tarefa</span>
-              <div className="w-8 h-8 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+              <div className="w-8 h-8 rounded-xl bg-muted text-foreground flex items-center justify-center border border-border">
                 <CheckSquare size={16} />
               </div>
             </button>
@@ -137,7 +137,7 @@ export function QuickActionFab({ open, onClose }: QuickActionFabProps) {
               className="w-full flex items-center justify-between p-3 rounded-2xl bg-accent/40 hover:bg-accent border border-border/50 text-xs font-bold text-foreground active:scale-95 transition-all"
             >
               <span className="font-bold text-sm">Novo Gasto / Receita</span>
-              <div className="w-8 h-8 rounded-xl bg-emerald-500/15 text-emerald-500 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-xl bg-muted text-foreground flex items-center justify-center border border-border">
                 <Wallet size={16} />
               </div>
             </button>
@@ -147,7 +147,7 @@ export function QuickActionFab({ open, onClose }: QuickActionFabProps) {
               className="w-full flex items-center justify-between p-3 rounded-2xl bg-accent/40 hover:bg-accent border border-border/50 text-xs font-bold text-foreground active:scale-95 transition-all"
             >
               <span className="font-bold text-sm">Nova Nota Rápida</span>
-              <div className="w-8 h-8 rounded-xl bg-purple-500/15 text-purple-500 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-xl bg-muted text-foreground flex items-center justify-center border border-border">
                 <BookOpen size={16} />
               </div>
             </button>
@@ -201,14 +201,14 @@ export function QuickActionFab({ open, onClose }: QuickActionFabProps) {
               <button
                 type="button"
                 onClick={handleClose}
-                className="flex-1 py-2 rounded-xl bg-muted text-xs font-semibold text-muted-foreground"
+                className="flex-1 py-2 rounded-xl bg-muted text-xs font-semibold text-muted-foreground hover:text-foreground"
               >
                 Cancelar
               </button>
               <button
                 type="submit"
                 disabled={loading || !taskTitle.trim()}
-                className="flex-1 py-2 rounded-xl bg-primary text-xs font-bold text-primary-foreground flex items-center justify-center gap-1 disabled:opacity-50"
+                className="flex-1 py-2 rounded-xl bg-primary text-xs font-bold text-primary-foreground flex items-center justify-center gap-1 disabled:opacity-50 hover:bg-primary/90"
               >
                 <Send size={12} /> Salvar
               </button>
@@ -220,7 +220,7 @@ export function QuickActionFab({ open, onClose }: QuickActionFabProps) {
           <form onSubmit={handleSaveFinance} className="space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
-                <Wallet size={14} className="text-emerald-500" /> Registro Financeiro
+                <Wallet size={14} className="text-primary" /> Registro Financeiro
               </span>
               <button
                 type="button"
@@ -236,7 +236,7 @@ export function QuickActionFab({ open, onClose }: QuickActionFabProps) {
                 type="button"
                 onClick={() => setFinTipo("saida")}
                 className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                  finTipo === "saida" ? "bg-card text-red-500 shadow-sm" : "text-muted-foreground"
+                  finTipo === "saida" ? "bg-card text-foreground border border-border shadow-xs" : "text-muted-foreground"
                 }`}
               >
                 Despesa
@@ -245,7 +245,7 @@ export function QuickActionFab({ open, onClose }: QuickActionFabProps) {
                 type="button"
                 onClick={() => setFinTipo("entrada")}
                 className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                  finTipo === "entrada" ? "bg-card text-emerald-500 shadow-sm" : "text-muted-foreground"
+                  finTipo === "entrada" ? "bg-card text-foreground border border-border shadow-xs" : "text-muted-foreground"
                 }`}
               >
                 Receita
@@ -274,14 +274,14 @@ export function QuickActionFab({ open, onClose }: QuickActionFabProps) {
               <button
                 type="button"
                 onClick={handleClose}
-                className="flex-1 py-2 rounded-xl bg-muted text-xs font-semibold text-muted-foreground"
+                className="flex-1 py-2 rounded-xl bg-muted text-xs font-semibold text-muted-foreground hover:text-foreground"
               >
                 Cancelar
               </button>
               <button
                 type="submit"
                 disabled={loading || !finDesc.trim() || !finValor}
-                className="flex-1 py-2 rounded-xl bg-emerald-600 text-xs font-bold text-white flex items-center justify-center gap-1 disabled:opacity-50"
+                className="flex-1 py-2 rounded-xl bg-primary text-xs font-bold text-primary-foreground flex items-center justify-center gap-1 disabled:opacity-50 hover:bg-primary/90"
               >
                 <Send size={12} /> Salvar
               </button>
@@ -293,7 +293,7 @@ export function QuickActionFab({ open, onClose }: QuickActionFabProps) {
           <form onSubmit={handleSaveNote} className="space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
-                <BookOpen size={14} className="text-purple-500" /> Nota Rápida
+                <BookOpen size={14} className="text-primary" /> Nota Rápida
               </span>
               <button
                 type="button"
@@ -315,14 +315,14 @@ export function QuickActionFab({ open, onClose }: QuickActionFabProps) {
               <button
                 type="button"
                 onClick={handleClose}
-                className="flex-1 py-2 rounded-xl bg-muted text-xs font-semibold text-muted-foreground"
+                className="flex-1 py-2 rounded-xl bg-muted text-xs font-semibold text-muted-foreground hover:text-foreground"
               >
                 Cancelar
               </button>
               <button
                 type="submit"
                 disabled={loading || !noteTitle.trim()}
-                className="flex-1 py-2 rounded-xl bg-purple-600 text-xs font-bold text-white flex items-center justify-center gap-1 disabled:opacity-50"
+                className="flex-1 py-2 rounded-xl bg-primary text-xs font-bold text-primary-foreground flex items-center justify-center gap-1 disabled:opacity-50 hover:bg-primary/90"
               >
                 <Send size={12} /> Criar Nota
               </button>
