@@ -798,179 +798,175 @@ export function CalendarModule() {
       </button>
 
       {/* ── Modal de Criação de Evento ───────────────────────────────────────── */}
-      {showModal && (
-        <ModalPortal>
-          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[300] flex items-center justify-center p-4 fade-in">
-            <div className="bg-card border border-border rounded-3xl p-5 max-w-md w-full shadow-2xl space-y-4 slide-up">
-              <div className="flex items-center justify-between pb-3 border-b border-border/50">
-                <h3 className="text-sm font-black text-foreground flex items-center gap-2">
-                  <CalendarIcon size={16} className="text-primary" /> Agendar Novo Compromisso
-                </h3>
-                <button
-                  onClick={() => setShowModal(false)}
-                  className="w-7 h-7 rounded-full bg-muted text-muted-foreground hover:text-foreground flex items-center justify-center"
-                >
-                  ✕
-                </button>
-              </div>
-
-              <form onSubmit={handleCreateEvent} className="space-y-3.5">
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-foreground">Título do Evento</label>
-                  <input
-                    type="text"
-                    autoFocus
-                    placeholder="Ex: Reunião de equipe, Consulta médica..."
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-background border border-input text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="space-y-1">
-                    <label className="text-xs font-bold text-foreground">Data</label>
-                    <input
-                      type="date"
-                      value={eventDate}
-                      onChange={(e) => setEventDate(e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl bg-background border border-input text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
-                    />
-                  </div>
-
-                  <div className="space-y-1">
-                    <label className="text-xs font-bold text-foreground">Categoria / Tag</label>
-                    <input
-                      type="text"
-                      placeholder="Ex: Trabalho, Saúde"
-                      value={labelText}
-                      onChange={(e) => setLabelText(e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl bg-background border border-input text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="space-y-1">
-                    <label className="text-xs font-bold text-foreground">Início</label>
-                    <input
-                      type="time"
-                      value={startTime}
-                      onChange={(e) => setStartTime(e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl bg-background border border-input text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
-                    />
-                  </div>
-
-                  <div className="space-y-1">
-                    <label className="text-xs font-bold text-foreground">Término</label>
-                    <input
-                      type="time"
-                      value={endTime}
-                      onChange={(e) => setEndTime(e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl bg-background border border-input text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
-                    />
-                  </div>
-                </div>
-
-                {/* Paleta Monocromática Neutral */}
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-foreground">Estilo do Destaque</label>
-                  <div className="flex items-center gap-2 pt-1">
-                    {COLOR_PALETTE.map((c) => (
-                      <button
-                        key={c.hex}
-                        type="button"
-                        onClick={() => setColor(c.hex)}
-                        className={cn(
-                          "w-7 h-7 rounded-full transition-transform flex items-center justify-center border border-border",
-                          color === c.hex ? "scale-110 ring-2 ring-offset-2 ring-foreground" : "hover:scale-105"
-                        )}
-                        style={{ backgroundColor: c.hex }}
-                      >
-                        {color === c.hex && <Check size={14} className="text-white" />}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-foreground">Observações / Detalhes</label>
-                  <textarea
-                    rows={2}
-                    placeholder="Adicionar notas ou local do compromisso..."
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-background border border-input text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary resize-none"
-                  />
-                </div>
-
-                <div className="flex gap-2 pt-2">
-                  <button
-                    type="button"
-                    onClick={() => setShowModal(false)}
-                    className="flex-1 py-2.5 rounded-xl bg-muted text-xs font-semibold text-muted-foreground hover:text-foreground"
-                  >
-                    Cancelar
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={!title.trim()}
-                    className="flex-1 py-2.5 rounded-xl bg-primary text-xs font-bold text-primary-foreground flex items-center justify-center gap-1 disabled:opacity-50 hover:bg-primary/90"
-                  >
-                    <Check size={14} /> Salvar Evento
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </ModalPortal>
-      )}
-
-      {/* ── Modal de Sincronização / Exportação ICS ─────────────────────────── */}
-      {syncModalOpen && (
-        <ModalPortal>
-          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[300] flex items-center justify-center p-4 fade-in">
-            <div className="bg-card border border-border rounded-3xl p-5 max-w-md w-full shadow-2xl space-y-4 slide-up">
-              <div className="flex items-center justify-between pb-3 border-b border-border/50">
-                <h3 className="text-sm font-black text-foreground flex items-center gap-2">
-                  <Download size={16} className="text-primary" /> Exportar / Sincronizar Agenda
-                </h3>
-                <button
-                  onClick={() => setSyncModalOpen(false)}
-                  className="w-7 h-7 rounded-full bg-muted text-muted-foreground hover:text-foreground flex items-center justify-center"
-                >
-                  ✕
-                </button>
-              </div>
-
-              <div className="space-y-3">
-                <button
-                  onClick={() => {
-                    downloadIcsFile(events);
-                    toast.success("Arquivo .ics baixado com sucesso!");
-                  }}
-                  className="w-full p-3 rounded-2xl bg-muted/60 hover:bg-muted border border-border text-left flex items-center justify-between transition-colors"
-                >
-                  <div>
-                    <span className="text-xs font-bold text-foreground block">Baixar Arquivo .ICS</span>
-                    <span className="text-[11px] text-muted-foreground font-medium">
-                      Importar no Google Agenda, Apple Calendar ou Outlook
-                    </span>
-                  </div>
-                  <Download size={16} className="text-primary" />
-                </button>
-              </div>
-
+      <ModalPortal open={showModal} onClose={() => setShowModal(false)} raw>
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[300] flex items-center justify-center p-4 fade-in">
+          <div className="bg-card border border-border rounded-3xl p-5 max-w-md w-full shadow-2xl space-y-4 slide-up">
+            <div className="flex items-center justify-between pb-3 border-b border-border/50">
+              <h3 className="text-sm font-black text-foreground flex items-center gap-2">
+                <CalendarIcon size={16} className="text-primary" /> Agendar Novo Compromisso
+              </h3>
               <button
-                onClick={() => setSyncModalOpen(false)}
-                className="w-full py-2.5 rounded-xl bg-muted text-xs font-semibold text-muted-foreground hover:text-foreground"
+                onClick={() => setShowModal(false)}
+                className="w-7 h-7 rounded-full bg-muted text-muted-foreground hover:text-foreground flex items-center justify-center"
               >
-                Fechar
+                ✕
               </button>
             </div>
+
+            <form onSubmit={handleCreateEvent} className="space-y-3.5">
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-foreground">Título do Evento</label>
+                <input
+                  type="text"
+                  autoFocus
+                  placeholder="Ex: Reunião de equipe, Consulta médica..."
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-background border border-input text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-foreground">Data</label>
+                  <input
+                    type="date"
+                    value={eventDate}
+                    onChange={(e) => setEventDate(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-background border border-input text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-foreground">Categoria / Tag</label>
+                  <input
+                    type="text"
+                    placeholder="Ex: Trabalho, Saúde"
+                    value={labelText}
+                    onChange={(e) => setLabelText(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-background border border-input text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-foreground">Início</label>
+                  <input
+                    type="time"
+                    value={startTime}
+                    onChange={(e) => setStartTime(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-background border border-input text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-foreground">Término</label>
+                  <input
+                    type="time"
+                    value={endTime}
+                    onChange={(e) => setEndTime(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-background border border-input text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+              </div>
+
+              {/* Paleta Monocromática Neutral */}
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-foreground">Estilo do Destaque</label>
+                <div className="flex items-center gap-2 pt-1">
+                  {COLOR_PALETTE.map((c) => (
+                    <button
+                      key={c.hex}
+                      type="button"
+                      onClick={() => setColor(c.hex)}
+                      className={cn(
+                        "w-7 h-7 rounded-full transition-transform flex items-center justify-center border border-border",
+                        color === c.hex ? "scale-110 ring-2 ring-offset-2 ring-foreground" : "hover:scale-105"
+                      )}
+                      style={{ backgroundColor: c.hex }}
+                    >
+                      {color === c.hex && <Check size={14} className="text-white" />}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-foreground">Observações / Detalhes</label>
+                <textarea
+                  rows={2}
+                  placeholder="Adicionar notas ou local do compromisso..."
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-background border border-input text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary resize-none"
+                />
+              </div>
+
+              <div className="flex gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowModal(false)}
+                  className="flex-1 py-2.5 rounded-xl bg-muted text-xs font-semibold text-muted-foreground hover:text-foreground"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  disabled={!title.trim()}
+                  className="flex-1 py-2.5 rounded-xl bg-primary text-xs font-bold text-primary-foreground flex items-center justify-center gap-1 disabled:opacity-50 hover:bg-primary/90"
+                >
+                  <Check size={14} /> Salvar Evento
+                </button>
+              </div>
+            </form>
           </div>
-        </ModalPortal>
-      )}
+        </div>
+      </ModalPortal>
+
+      {/* ── Modal de Sincronização / Exportação ICS ─────────────────────────── */}
+      <ModalPortal open={syncModalOpen} onClose={() => setSyncModalOpen(false)} raw>
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[300] flex items-center justify-center p-4 fade-in">
+          <div className="bg-card border border-border rounded-3xl p-5 max-w-md w-full shadow-2xl space-y-4 slide-up">
+            <div className="flex items-center justify-between pb-3 border-b border-border/50">
+              <h3 className="text-sm font-black text-foreground flex items-center gap-2">
+                <Download size={16} className="text-primary" /> Exportar / Sincronizar Agenda
+              </h3>
+              <button
+                onClick={() => setSyncModalOpen(false)}
+                className="w-7 h-7 rounded-full bg-muted text-muted-foreground hover:text-foreground flex items-center justify-center"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              <button
+                onClick={() => {
+                  downloadIcsFile(events);
+                  toast.success("Arquivo .ics baixado com sucesso!");
+                }}
+                className="w-full p-3 rounded-2xl bg-muted/60 hover:bg-muted border border-border text-left flex items-center justify-between transition-colors"
+              >
+                <div>
+                  <span className="text-xs font-bold text-foreground block">Baixar Arquivo .ICS</span>
+                  <span className="text-[11px] text-muted-foreground font-medium">
+                    Importar no Google Agenda, Apple Calendar ou Outlook
+                  </span>
+                </div>
+                <Download size={16} className="text-primary" />
+              </button>
+            </div>
+
+            <button
+              onClick={() => setSyncModalOpen(false)}
+              className="w-full py-2.5 rounded-xl bg-muted text-xs font-semibold text-muted-foreground hover:text-foreground"
+            >
+              Fechar
+            </button>
+          </div>
+        </div>
+      </ModalPortal>
     </div>
   );
 }
