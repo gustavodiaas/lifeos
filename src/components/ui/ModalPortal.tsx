@@ -74,7 +74,7 @@ export function ModalPortal({
   if (raw) {
     return createPortal(
       <div
-        className="fixed inset-0 bg-black/60 backdrop-blur-md z-[9999] flex items-center justify-center p-4 overflow-y-auto overscroll-contain fade-in"
+        className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[9999] flex items-center justify-center p-4 overflow-y-auto overscroll-contain fade-in"
         onClick={(e) => {
           if (e.target === e.currentTarget) onClose();
         }}
@@ -87,7 +87,7 @@ export function ModalPortal({
 
   return createPortal(
     <div
-      className="fixed inset-0 bg-black/60 backdrop-blur-md z-[9999] flex items-center justify-center p-4 overflow-y-auto overscroll-contain fade-in"
+      className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[9999] flex items-center justify-center p-4 overflow-y-auto overscroll-contain fade-in"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
