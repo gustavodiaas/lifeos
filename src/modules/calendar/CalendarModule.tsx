@@ -12,6 +12,7 @@ import {
   getGoogleCalendarUrl,
   getOutlookCalendarUrl,
 } from "@/lib/icsExporter";
+import { getHolidaysMap } from "@/lib/holidays";
 import {
   getNotificationSettings,
   saveNotificationSettings,
@@ -94,6 +95,14 @@ export function CalendarModule() {
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
+
+  const holidaysMap = useMemo(() => {
+    return {
+      ...getHolidaysMap(year - 1),
+      ...getHolidaysMap(year),
+      ...getHolidaysMap(year + 1),
+    };
+  }, [year]);
 
   const monthName = currentDate.toLocaleDateString("pt-BR", { month: "long" });
   const capitalizedMonth = monthName.charAt(0).toUpperCase() + monthName.slice(1);
@@ -465,6 +474,17 @@ export function CalendarModule() {
 
                   {/* Event Pills dentro da célula */}
                   <div className="space-y-1 flex-1 overflow-hidden">
+                    {/* Feriado Nacional */}
+                    {holidaysMap[cell.dateIso] && (
+                      <div
+                        className="px-1.5 py-0.5 rounded-md text-[10px] font-black truncate leading-tight flex items-center gap-1 bg-primary/10 text-primary border border-primary/20 shadow-2xs"
+                        title={`Feriado Nacional: ${holidaysMap[cell.dateIso].name}`}
+                      >
+                        <span className="text-[10px] shrink-0">🇧🇷</span>
+                        <span className="truncate">{holidaysMap[cell.dateIso].name}</span>
+                      </div>
+                    )}
+
                     {evts.slice(0, 2).map((evt) => (
                       <div
                         key={evt.id}
@@ -626,6 +646,17 @@ export function CalendarModule() {
                             </span>
                           )}
                         </div>
+
+                        {/* Banner de Feriado Nacional */}
+                        {holidaysMap[dateIso] && (
+                          <div className="p-3 rounded-2xl border border-primary/30 bg-primary/5 flex items-center gap-2.5 text-xs text-foreground font-extrabold shadow-2xs">
+                            <span className="text-base">🇧🇷</span>
+                            <div>
+                              <span className="font-black block text-primary text-[10px] uppercase tracking-wider">Feriado Nacional</span>
+                              <span className="text-xs">{holidaysMap[dateIso].name}</span>
+                            </div>
+                          </div>
+                        )}
 
                         {/* Lista de itens daquele dia */}
                         <div className="space-y-2.5 pl-2">
@@ -938,21 +969,59 @@ export function CalendarModule() {
           </div>
 
           <div className="space-y-3">
+            {/* Opção 1: Download .ICS Universal (Apple / Mac / Outlook / Google) */}
             <button
               onClick={() => {
                 downloadIcsFile(events);
                 toast.success("Arquivo .ics baixado com sucesso!");
               }}
-              className="w-full p-3 rounded-2xl bg-muted/60 hover:bg-muted border border-border text-left flex items-center justify-between transition-colors"
+              className="w-full p-3.5 rounded-2xl bg-muted/60 hover:bg-muted border border-border text-left flex items-start justify-between transition-colors group"
             >
-              <div>
-                <span className="text-xs font-bold text-foreground block">Baixar Arquivo .ICS</span>
-                <span className="text-[11px] text-muted-foreground font-medium">
-                  Importar no Google Agenda, Apple Calendar ou Outlook
+              <div className="space-y-0.5">
+                <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                  <Download size={14} className="text-primary" /> Baixar Arquivo .ICS (Universal)
+                </span>
+                <span className="text-[11px] text-muted-foreground block font-medium">
+                  Ideal para <b>Apple Calendar (iPhone/Mac)</b>, <b>Outlook Desktop</b> e <b>Google Agenda</b>.
+                </span>
+                <span className="text-[10px] text-primary font-bold block pt-1">
+                  💡 No iPhone / Mac: basta abrir o arquivo .ics baixado e clicar em "Adicionar Todos".
                 </span>
               </div>
-              <Download size={16} className="text-primary" />
+              <Download size={16} className="text-primary shrink-0 group-hover:scale-110 transition-transform" />
             </button>
+
+            {/* Opção 2: Google Agenda Web */}
+            <a
+              href="https://calendar.google.com/calendar/r/settings/export"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full p-3.5 rounded-2xl bg-muted/30 hover:bg-muted/70 border border-border text-left flex items-center justify-between transition-colors block"
+            >
+              <div>
+                <span className="text-xs font-bold text-foreground block">Abrir Importação no Google Agenda</span>
+                <span className="text-[11px] text-muted-foreground font-medium">
+                  Abre a página de importação do Google Agenda para subir seu arquivo .ics
+                </span>
+              </div>
+              <ExternalLink size={16} className="text-muted-foreground shrink-0" />
+            </a>
+
+            {/* Opção 3: Outlook Web */}
+            <a
+              href="https://outlook.live.com/calendar/0/addcalendar"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full p-3.5 rounded-2xl bg-muted/30 hover:bg-muted/70 border border-border text-left flex items-center justify-between transition-colors block"
+            >
+              <div>
+                <span className="text-xs font-bold text-foreground block">Abrir Importação no Outlook Web</span>
+                <span className="text-[11px] text-muted-foreground font-medium">
+                  Adicionar arquivo .ics no Outlook / Office 365
+                </span>
+              </div>
+              <ExternalLink size={16} className="text-muted-foreground shrink-0" />
+            </a>
           </div>
 
           <button
