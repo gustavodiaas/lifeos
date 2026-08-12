@@ -205,48 +205,48 @@ export function DashboardQuickActions({ userId }: DashboardQuickActionsProps) {
       label: "Nova Tarefa",
       desc: "Adicionar pendência",
       icon: CheckSquare,
-      color: "text-blue-500",
-      bgColor: "bg-blue-500/10 hover:bg-blue-500/20 border-blue-500/20",
+      color: "text-foreground",
+      bgColor: "bg-muted/40 hover:bg-muted border-border/60",
     },
     {
       id: "finance",
       label: "Novo Lançamento",
       desc: "Gasto ou receita",
       icon: Wallet,
-      color: "text-emerald-500",
-      bgColor: "bg-emerald-500/10 hover:bg-emerald-500/20 border-emerald-500/20",
+      color: "text-foreground",
+      bgColor: "bg-muted/40 hover:bg-muted border-border/60",
     },
     {
       id: "habit",
       label: "Novo Hábito",
       desc: "Rotina diária",
       icon: Repeat,
-      color: "text-purple-500",
-      bgColor: "bg-purple-500/10 hover:bg-purple-500/20 border-purple-500/20",
+      color: "text-foreground",
+      bgColor: "bg-muted/40 hover:bg-muted border-border/60",
     },
     {
       id: "calendar",
       label: "Novo Evento",
       desc: "Agenda & compromissos",
       icon: Calendar,
-      color: "text-amber-500",
-      bgColor: "bg-amber-500/10 hover:bg-amber-500/20 border-amber-500/20",
+      color: "text-foreground",
+      bgColor: "bg-muted/40 hover:bg-muted border-border/60",
     },
     {
       id: "note",
       label: "Nova Nota",
       desc: "Pensamento ou estudo",
       icon: BookOpen,
-      color: "text-pink-500",
-      bgColor: "bg-pink-500/10 hover:bg-pink-500/20 border-pink-500/20",
+      color: "text-foreground",
+      bgColor: "bg-muted/40 hover:bg-muted border-border/60",
     },
     {
       id: "goal",
       label: "Nova Meta",
       desc: "Objetivo de vida",
       icon: Target,
-      color: "text-indigo-500",
-      bgColor: "bg-indigo-500/10 hover:bg-indigo-500/20 border-indigo-500/20",
+      color: "text-foreground",
+      bgColor: "bg-muted/40 hover:bg-muted border-border/60",
     },
   ];
 
@@ -372,7 +372,7 @@ export function DashboardQuickActions({ userId }: DashboardQuickActionsProps) {
                       type="button"
                       onClick={() => setFinTipo("saida")}
                       className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${
-                        finTipo === "saida" ? "bg-card text-red-500 shadow-xs" : "text-muted-foreground"
+                        finTipo === "saida" ? "bg-card text-foreground shadow-xs border border-border" : "text-muted-foreground"
                       }`}
                     >
                       Despesa
@@ -381,7 +381,7 @@ export function DashboardQuickActions({ userId }: DashboardQuickActionsProps) {
                       type="button"
                       onClick={() => setFinTipo("entrada")}
                       className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${
-                        finTipo === "entrada" ? "bg-card text-emerald-500 shadow-xs" : "text-muted-foreground"
+                        finTipo === "entrada" ? "bg-card text-foreground shadow-xs border border-border" : "text-muted-foreground"
                       }`}
                     >
                       Receita
@@ -416,14 +416,14 @@ export function DashboardQuickActions({ userId }: DashboardQuickActionsProps) {
                     <button
                       type="button"
                       onClick={closeModal}
-                      className="flex-1 py-2.5 rounded-xl bg-muted text-xs font-semibold text-muted-foreground"
+                      className="flex-1 py-2.5 rounded-xl bg-muted text-xs font-semibold text-muted-foreground hover:text-foreground"
                     >
                       Cancelar
                     </button>
                     <button
                       type="submit"
                       disabled={loading || !finDesc.trim() || !finValor}
-                      className="flex-1 py-2.5 rounded-xl bg-emerald-600 text-xs font-bold text-white flex items-center justify-center gap-1.5 disabled:opacity-50"
+                      className="flex-1 py-2.5 rounded-xl bg-primary text-xs font-bold text-primary-foreground flex items-center justify-center gap-1.5 disabled:opacity-50 hover:bg-primary/90"
                     >
                       <Send size={13} /> Salvar Lançamento
                     </button>
@@ -450,14 +450,14 @@ export function DashboardQuickActions({ userId }: DashboardQuickActionsProps) {
                     <button
                       type="button"
                       onClick={closeModal}
-                      className="flex-1 py-2.5 rounded-xl bg-muted text-xs font-semibold text-muted-foreground"
+                      className="flex-1 py-2.5 rounded-xl bg-muted text-xs font-semibold text-muted-foreground hover:text-foreground"
                     >
                       Cancelar
                     </button>
                     <button
                       type="submit"
                       disabled={loading || !habitName.trim()}
-                      className="flex-1 py-2.5 rounded-xl bg-purple-600 text-xs font-bold text-white flex items-center justify-center gap-1.5 disabled:opacity-50"
+                      className="flex-1 py-2.5 rounded-xl bg-primary text-xs font-bold text-primary-foreground flex items-center justify-center gap-1.5 disabled:opacity-50 hover:bg-primary/90"
                     >
                       <Send size={13} /> Criar Hábito
                     </button>
@@ -506,14 +506,14 @@ export function DashboardQuickActions({ userId }: DashboardQuickActionsProps) {
                     <button
                       type="button"
                       onClick={closeModal}
-                      className="flex-1 py-2.5 rounded-xl bg-muted text-xs font-semibold text-muted-foreground"
+                      className="flex-1 py-2.5 rounded-xl bg-muted text-xs font-semibold text-muted-foreground hover:text-foreground"
                     >
                       Cancelar
                     </button>
                     <button
                       type="submit"
                       disabled={loading || !calTitle.trim()}
-                      className="flex-1 py-2.5 rounded-xl bg-amber-600 text-xs font-bold text-white flex items-center justify-center gap-1.5 disabled:opacity-50"
+                      className="flex-1 py-2.5 rounded-xl bg-primary text-xs font-bold text-primary-foreground flex items-center justify-center gap-1.5 disabled:opacity-50 hover:bg-primary/90"
                     >
                       <Send size={13} /> Agendar Evento
                     </button>
@@ -540,14 +540,14 @@ export function DashboardQuickActions({ userId }: DashboardQuickActionsProps) {
                     <button
                       type="button"
                       onClick={closeModal}
-                      className="flex-1 py-2.5 rounded-xl bg-muted text-xs font-semibold text-muted-foreground"
+                      className="flex-1 py-2.5 rounded-xl bg-muted text-xs font-semibold text-muted-foreground hover:text-foreground"
                     >
                       Cancelar
                     </button>
                     <button
                       type="submit"
                       disabled={loading || !noteTitle.trim()}
-                      className="flex-1 py-2.5 rounded-xl bg-pink-600 text-xs font-bold text-white flex items-center justify-center gap-1.5 disabled:opacity-50"
+                      className="flex-1 py-2.5 rounded-xl bg-primary text-xs font-bold text-primary-foreground flex items-center justify-center gap-1.5 disabled:opacity-50 hover:bg-primary/90"
                     >
                       <Send size={13} /> Salvar Nota
                     </button>
@@ -585,14 +585,14 @@ export function DashboardQuickActions({ userId }: DashboardQuickActionsProps) {
                     <button
                       type="button"
                       onClick={closeModal}
-                      className="flex-1 py-2.5 rounded-xl bg-muted text-xs font-semibold text-muted-foreground"
+                      className="flex-1 py-2.5 rounded-xl bg-muted text-xs font-semibold text-muted-foreground hover:text-foreground"
                     >
                       Cancelar
                     </button>
                     <button
                       type="submit"
                       disabled={loading || !goalTitle.trim()}
-                      className="flex-1 py-2.5 rounded-xl bg-indigo-600 text-xs font-bold text-white flex items-center justify-center gap-1.5 disabled:opacity-50"
+                      className="flex-1 py-2.5 rounded-xl bg-primary text-xs font-bold text-primary-foreground flex items-center justify-center gap-1.5 disabled:opacity-50 hover:bg-primary/90"
                     >
                       <Send size={13} /> Criar Meta
                     </button>
