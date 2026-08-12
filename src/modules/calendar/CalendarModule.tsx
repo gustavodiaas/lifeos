@@ -57,14 +57,10 @@ export interface CustomEvent {
 }
 
 const COLOR_PALETTE = [
-  { hex: "#ef4444", name: "Vermelho iOS" },
-  { hex: "#f97316", name: "Laranja" },
-  { hex: "#eab308", name: "Âmbar" },
-  { hex: "#10b981", name: "Esmeralda" },
-  { hex: "#06b6d4", name: "Ciano" },
-  { hex: "#3b82f6", name: "Azul" },
-  { hex: "#8b5cf6", name: "Roxo" },
-  { hex: "#ec4899", name: "Rosa" },
+  { hex: "#212121", name: "Monocromático Principal" },
+  { hex: "#616161", name: "Cinza Médio" },
+  { hex: "#9e9e9e", name: "Cinza Suave" },
+  { hex: "#424242", name: "Carvão" },
 ];
 
 type ViewMode = "grid" | "split" | "week";
@@ -278,7 +274,7 @@ export function CalendarModule() {
           <div className="flex items-center gap-3">
             <button
               onClick={handleToday}
-              className="w-10 h-10 rounded-2xl bg-red-500/10 text-red-500 border border-red-500/20 font-black text-sm flex items-center justify-center hover:bg-red-500 hover:text-white transition-all shadow-xs"
+              className="w-10 h-10 rounded-2xl bg-primary/10 text-primary border border-primary/20 font-black text-sm flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-all shadow-xs"
               title="Ir para Hoje"
             >
               {new Date().getDate()}
@@ -286,7 +282,7 @@ export function CalendarModule() {
             <div>
               <h2 className="text-2xl md:text-3xl font-black text-foreground tracking-tight flex items-center gap-2">
                 <span>{capitalizedMonth}</span>
-                <span className="text-red-500 font-extrabold">{year}</span>
+                <span className="text-muted-foreground font-extrabold">{year}</span>
               </h2>
             </div>
 
@@ -346,7 +342,7 @@ export function CalendarModule() {
               className={cn(
                 "p-2.5 rounded-2xl border transition-all text-xs font-bold flex items-center gap-1.5",
                 notifSettings.calendarReminder
-                  ? "bg-red-500/10 border-red-500/30 text-red-500"
+                  ? "bg-primary/10 border-primary/30 text-primary"
                   : "bg-card border-border text-muted-foreground hover:text-foreground"
               )}
               title="Notificações de Lembretes"
@@ -364,7 +360,7 @@ export function CalendarModule() {
 
             <button
               onClick={() => openNew(selectedDateIso)}
-              className="btn-ios text-xs py-2.5 px-4 shadow-md bg-red-600 hover:bg-red-700 text-white"
+              className="btn-ios text-xs py-2.5 px-4 shadow-md bg-primary hover:bg-primary/90 text-primary-foreground"
             >
               <Plus size={16} strokeWidth={2.5} />
               <span>Novo Evento</span>
@@ -380,12 +376,12 @@ export function CalendarModule() {
             placeholder="Buscar evento, tarefa ou categoria..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 rounded-2xl bg-background/80 border border-input text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-red-500"
+            className="w-full pl-10 pr-4 py-2 rounded-2xl bg-background/80 border border-input text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
           />
         </div>
       </div>
 
-      {/* ── 2. MODO GRID (TELA 1 - Mês Completo com Event Pills Estilo iOS) ──────── */}
+      {/* ── 2. MODO GRID (TELA 1 - Mês Completo em Estilo Monocromático) ──────── */}
       {viewMode === "grid" && (
         <div className="glass-card rounded-3xl border border-border/80 shadow-xl overflow-hidden">
           {/* Dias da semana */}
@@ -394,8 +390,7 @@ export function CalendarModule() {
               <div
                 key={d}
                 className={cn(
-                  "py-3 text-[11px] font-black uppercase tracking-wider",
-                  i === 0 || i === 6 ? "text-red-500" : "text-muted-foreground"
+                  "py-3 text-[11px] font-black uppercase tracking-wider text-muted-foreground"
                 )}
               >
                 {d}
@@ -419,36 +414,52 @@ export function CalendarModule() {
                 <div
                   key={cell.dateIso}
                   onClick={() => setSelectedDateIso(cell.dateIso)}
+                  onDoubleClick={() => openNew(cell.dateIso)}
                   className={cn(
-                    "min-h-[110px] md:min-h-[135px] p-1.5 md:p-2 text-left flex flex-col border-b border-r border-border/30 transition-all cursor-pointer group",
+                    "min-h-[110px] md:min-h-[135px] p-1.5 md:p-2 text-left flex flex-col border-b border-r border-border/30 transition-all cursor-pointer group relative",
                     isLastRow && "border-b-0",
                     (idx + 1) % 7 === 0 && "border-r-0",
                     cell.isCurrentMonth ? "bg-card/40 hover:bg-muted/30" : "bg-muted/10 opacity-40",
-                    isSelected && "bg-red-500/5 ring-2 ring-inset ring-red-500/40"
+                    isSelected && "bg-primary/5 ring-2 ring-inset ring-primary/40"
                   )}
                 >
-                  {/* Número do Dia */}
+                  {/* Número do Dia e Ação Rápida */}
                   <div className="flex items-center justify-between mb-1.5">
                     <span
                       className={cn(
                         "text-xs font-black w-6 h-6 rounded-full flex items-center justify-center transition-all",
                         isToday
-                          ? "bg-red-600 text-white font-bold shadow-sm"
+                          ? "bg-primary text-primary-foreground font-bold shadow-xs"
                           : isSelected
                           ? "bg-foreground text-background font-bold"
-                          : "text-foreground group-hover:text-red-500"
+                          : "text-foreground group-hover:text-primary"
                       )}
                     >
                       {cell.dayNum}
                     </span>
 
-                    {/* Indicador de Bolinhas coloridas */}
                     <div className="flex items-center gap-1">
-                      {evts.slice(0, 3).map((e) => (
-                        <span key={e.id} className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: e.color }} />
-                      ))}
-                      {tasksDue.length > 0 && <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />}
-                      {txs.length > 0 && <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />}
+                      {/* Botão de Adicionar no Dia ao passar o mouse */}
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedDateIso(cell.dateIso);
+                          openNew(cell.dateIso);
+                        }}
+                        className="w-5 h-5 rounded-md bg-muted hover:bg-primary hover:text-primary-foreground text-muted-foreground flex items-center justify-center transition-all opacity-0 group-hover:opacity-100"
+                        title="Adicionar evento neste dia"
+                      >
+                        <Plus size={12} />
+                      </button>
+
+                      {/* Indicadores neutros */}
+                      <div className="flex items-center gap-0.5">
+                        {evts.slice(0, 3).map((e) => (
+                          <span key={e.id} className="w-1.5 h-1.5 rounded-full bg-foreground/70" />
+                        ))}
+                        {tasksDue.length > 0 && <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground" />}
+                      </div>
                     </div>
                   </div>
 
@@ -457,14 +468,9 @@ export function CalendarModule() {
                     {evts.slice(0, 2).map((evt) => (
                       <div
                         key={evt.id}
-                        className="px-1.5 py-0.5 rounded-md text-[10px] font-bold truncate leading-tight flex items-center gap-1 shadow-2xs"
-                        style={{
-                          backgroundColor: hexToRgba(evt.color, 0.2),
-                          color: evt.color,
-                          borderLeft: `2.5 solid ${evt.color}`,
-                        }}
+                        className="px-1.5 py-0.5 rounded-md text-[10px] font-bold truncate leading-tight flex items-center gap-1 bg-muted/80 text-foreground border-l-2 border-primary shadow-2xs"
                       >
-                        <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: evt.color }} />
+                        <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
                         <span className="truncate">{evt.title}</span>
                       </div>
                     ))}
@@ -472,7 +478,7 @@ export function CalendarModule() {
                     {tasksDue.slice(0, 1).map((t) => (
                       <div
                         key={t.id}
-                        className="px-1.5 py-0.5 rounded-md text-[10px] font-bold truncate bg-blue-500/15 text-blue-500 border-l-2 border-blue-500 flex items-center gap-1"
+                        className="px-1.5 py-0.5 rounded-md text-[10px] font-bold truncate bg-secondary/70 text-secondary-foreground border-l-2 border-foreground/40 flex items-center gap-1"
                       >
                         <CheckSquare size={9} />
                         <span className="truncate">{t.title}</span>
@@ -515,7 +521,7 @@ export function CalendarModule() {
               {/* Grid Compacto */}
               <div className="grid grid-cols-7 text-center pt-2 gap-y-2">
                 {["D", "S", "T", "Q", "Q", "S", "S"].map((d, i) => (
-                  <span key={i} className={`text-[10px] font-black ${i === 0 || i === 6 ? "text-red-500" : "text-muted-foreground"}`}>
+                  <span key={i} className="text-[10px] font-black text-muted-foreground">
                     {d}
                   </span>
                 ))}
@@ -530,11 +536,12 @@ export function CalendarModule() {
                     <button
                       key={cell.dateIso}
                       onClick={() => setSelectedDateIso(cell.dateIso)}
+                      onDoubleClick={() => openNew(cell.dateIso)}
                       className={cn(
                         "h-9 rounded-2xl flex flex-col items-center justify-center relative transition-all text-xs font-bold",
                         !cell.isCurrentMonth && "opacity-30",
-                        isToday && !isSelected && "bg-red-500/10 text-red-500 border border-red-500/30",
-                        isSelected && "bg-red-600 text-white shadow-md font-extrabold"
+                        isToday && !isSelected && "bg-primary/10 text-primary border border-primary/30",
+                        isSelected && "bg-primary text-primary-foreground shadow-md font-extrabold"
                       )}
                     >
                       <span>{cell.dayNum}</span>
@@ -543,8 +550,7 @@ export function CalendarModule() {
                           {cellData.customEvents.slice(0, 2).map((e) => (
                             <span
                               key={e.id}
-                              className={cn("w-1 h-1 rounded-full", isSelected ? "bg-white" : "")}
-                              style={{ backgroundColor: isSelected ? "#fff" : e.color }}
+                              className={cn("w-1 h-1 rounded-full", isSelected ? "bg-primary-foreground" : "bg-foreground/70")}
                             />
                           ))}
                         </div>
@@ -559,7 +565,7 @@ export function CalendarModule() {
             <div className="glass-card p-4 rounded-3xl border border-border/80 space-y-2">
               <h4 className="text-xs font-black text-foreground uppercase tracking-wider flex items-center justify-between">
                 <span>Resumo da Seleção</span>
-                <span className="text-red-500">{selectedDateIso}</span>
+                <span className="text-primary">{selectedDateIso}</span>
               </h4>
               <p className="text-xs text-muted-foreground font-medium">
                 {(itemsByDate[selectedDateIso]?.customEvents.length || 0)} compromissos e{" "}
@@ -573,7 +579,7 @@ export function CalendarModule() {
             <div className="glass-card p-5 rounded-3xl border border-border/80 shadow-xl space-y-6">
               <div className="flex items-center justify-between pb-3 border-b border-border/50">
                 <h3 className="text-sm font-black text-foreground uppercase tracking-wider flex items-center gap-2">
-                  <Clock size={16} className="text-red-500" /> Agenda de Compromissos
+                  <Clock size={16} className="text-primary" /> Agenda de Compromissos
                 </h3>
                 <span className="text-xs font-bold text-muted-foreground bg-muted px-2.5 py-1 rounded-full">
                   {agendaDatesList.length} datas com registros
@@ -582,9 +588,9 @@ export function CalendarModule() {
 
               {agendaDatesList.length === 0 ? (
                 <div className="py-16 text-center text-xs text-muted-foreground font-medium flex flex-col items-center gap-3">
-                  <CalendarIcon size={36} className="opacity-30 text-red-500" />
+                  <CalendarIcon size={36} className="opacity-30 text-muted-foreground" />
                   Nenhum compromisso encontrado para os filtros selecionados.
-                  <button onClick={() => openNew(selectedDateIso)} className="btn-ios text-xs py-2 px-4 mt-2">
+                  <button onClick={() => openNew(selectedDateIso)} className="btn-ios text-xs py-2 px-4 mt-2 bg-primary text-primary-foreground">
                     <Plus size={14} /> Agendar Novo Evento
                   </button>
                 </div>
@@ -608,14 +614,14 @@ export function CalendarModule() {
                           <span
                             className={cn(
                               "text-xs font-black uppercase tracking-wider flex items-center gap-2",
-                              isToday ? "text-red-500" : "text-foreground"
+                              isToday ? "text-primary" : "text-foreground"
                             )}
                           >
                             {isToday ? "HOJE" : dateObj.toLocaleDateString("pt-BR", { weekday: "short" }).toUpperCase()} —{" "}
                             {dateFormatted}
                           </span>
                           {isToday && (
-                            <span className="px-2 py-0.5 rounded-full bg-red-500/15 text-red-500 text-[10px] font-black">
+                            <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-black">
                               HOJE
                             </span>
                           )}
@@ -626,22 +632,15 @@ export function CalendarModule() {
                           {data.customEvents.map((evt) => (
                             <div
                               key={evt.id}
-                              className="p-3.5 rounded-2xl border flex items-start justify-between gap-3 transition-all hover:scale-[1.01] shadow-xs"
-                              style={{
-                                backgroundColor: hexToRgba(evt.color, 0.08),
-                                borderColor: hexToRgba(evt.color, 0.3),
-                              }}
+                              className="p-3.5 rounded-2xl border border-border bg-card flex items-start justify-between gap-3 transition-all hover:scale-[1.01] shadow-xs"
                             >
                               <div className="flex items-start gap-3 min-w-0 flex-1">
-                                <span className="w-3 h-3 rounded-full mt-1 shrink-0" style={{ backgroundColor: evt.color }} />
+                                <span className="w-3 h-3 rounded-full mt-1 shrink-0 bg-primary" />
                                 <div className="space-y-1 min-w-0 flex-1">
                                   <div className="flex items-center gap-2 flex-wrap">
                                     <span className="text-xs font-black text-foreground">{evt.title}</span>
                                     {evt.label && (
-                                      <span
-                                        className="px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider"
-                                        style={{ backgroundColor: hexToRgba(evt.color, 0.2), color: evt.color }}
-                                      >
+                                      <span className="px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-muted text-muted-foreground border border-border">
                                         {evt.label}
                                       </span>
                                     )}
@@ -663,7 +662,7 @@ export function CalendarModule() {
 
                               <button
                                 onClick={() => handleDeleteEvent(evt.id)}
-                                className="text-muted-foreground hover:text-red-500 p-1.5 rounded-xl hover:bg-red-500/10 transition-colors shrink-0"
+                                className="text-muted-foreground hover:text-destructive p-1.5 rounded-xl hover:bg-destructive/10 transition-colors shrink-0"
                                 title="Apagar evento"
                               >
                                 <Trash2 size={14} />
@@ -674,13 +673,13 @@ export function CalendarModule() {
                           {data.tasksDue.map((t) => (
                             <div
                               key={t.id}
-                              className="p-3 rounded-2xl border border-blue-500/30 bg-blue-500/5 flex items-center justify-between gap-3 text-xs"
+                              className="p-3 rounded-2xl border border-border bg-muted/40 flex items-center justify-between gap-3 text-xs"
                             >
                               <div className="flex items-center gap-2.5 min-w-0">
-                                <CheckSquare size={16} className="text-blue-500 shrink-0" />
+                                <CheckSquare size={16} className="text-foreground shrink-0" />
                                 <span className="font-bold text-foreground truncate">{t.title}</span>
                               </div>
-                              <span className="text-[10px] font-black px-2 py-0.5 rounded-md bg-blue-500/15 text-blue-500 shrink-0">
+                              <span className="text-[10px] font-black px-2 py-0.5 rounded-md bg-secondary text-secondary-foreground shrink-0">
                                 TAREFA
                               </span>
                             </div>
@@ -705,7 +704,7 @@ export function CalendarModule() {
       {/* ── 4. MODO SEMANA (TELA 3 - Faixa de 7 dias + Lista Timeline) ──────────── */}
       {viewMode === "week" && (
         <div className="space-y-5">
-          {/* Strip Semanal Estilo iOS */}
+          {/* Strip Semanal Estilo Monocromático */}
           <div className="glass-card p-4 rounded-3xl border border-border/80 shadow-lg">
             <div className="grid grid-cols-7 gap-2 text-center">
               {weekDays.map((w) => {
@@ -717,18 +716,19 @@ export function CalendarModule() {
                   <button
                     key={w.dateIso}
                     onClick={() => setSelectedDateIso(w.dateIso)}
+                    onDoubleClick={() => openNew(w.dateIso)}
                     className={cn(
                       "py-3 rounded-2xl flex flex-col items-center justify-center gap-1 transition-all",
                       isSelected
-                        ? "bg-red-600 text-white font-extrabold shadow-md scale-105"
+                        ? "bg-primary text-primary-foreground font-extrabold shadow-md scale-105"
                         : isToday
-                        ? "bg-red-500/10 text-red-500 border border-red-500/30"
+                        ? "bg-primary/10 text-primary border border-primary/30"
                         : "bg-muted/30 text-foreground hover:bg-muted/60"
                     )}
                   >
                     <span className="text-[10px] font-black tracking-wider uppercase opacity-80">{w.dayShort}</span>
                     <span className="text-sm font-black">{w.dayNum}</span>
-                    {hasEvts && <span className={cn("w-1.5 h-1.5 rounded-full", isSelected ? "bg-white" : "bg-red-500")} />}
+                    {hasEvts && <span className={cn("w-1.5 h-1.5 rounded-full", isSelected ? "bg-primary-foreground" : "bg-primary")} />}
                   </button>
                 );
               })}
@@ -739,21 +739,21 @@ export function CalendarModule() {
           <div className="glass-card p-5 rounded-3xl border border-border/80 shadow-xl space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-border/50">
               <h3 className="text-sm font-black text-foreground uppercase tracking-wider flex items-center gap-2">
-                <CalendarIcon size={16} className="text-red-500" />
+                <CalendarIcon size={16} className="text-primary" />
                 {new Date(selectedDateIso + "T12:00:00").toLocaleDateString("pt-BR", {
                   weekday: "long",
                   day: "numeric",
                   month: "long",
                 })}
               </h3>
-              <button onClick={() => openNew(selectedDateIso)} className="btn-ios text-xs py-2 px-3">
+              <button onClick={() => openNew(selectedDateIso)} className="btn-ios text-xs py-2 px-3 bg-primary text-primary-foreground">
                 <Plus size={14} /> Novo Evento
               </button>
             </div>
 
             {!(itemsByDate[selectedDateIso]?.customEvents.length) && !(itemsByDate[selectedDateIso]?.tasksDue.length) ? (
               <div className="py-12 text-center text-xs text-muted-foreground font-medium flex flex-col items-center gap-2">
-                <Clock size={32} className="opacity-30 text-red-500" />
+                <Clock size={32} className="opacity-30 text-muted-foreground" />
                 Sem compromissos nesta data.
               </div>
             ) : (
@@ -761,11 +761,10 @@ export function CalendarModule() {
                 {itemsByDate[selectedDateIso]?.customEvents.map((evt) => (
                   <div
                     key={evt.id}
-                    className="p-4 rounded-2xl border flex items-center justify-between gap-3 shadow-xs"
-                    style={{ backgroundColor: hexToRgba(evt.color, 0.1), borderColor: hexToRgba(evt.color, 0.3) }}
+                    className="p-4 rounded-2xl border border-border bg-card flex items-center justify-between gap-3 shadow-xs"
                   >
                     <div className="flex items-center gap-3">
-                      <span className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: evt.color }} />
+                      <span className="w-3 h-3 rounded-full shrink-0 bg-primary" />
                       <div>
                         <h4 className="text-xs font-black text-foreground">{evt.title}</h4>
                         {evt.startTime && (
@@ -777,7 +776,7 @@ export function CalendarModule() {
                     </div>
                     <button
                       onClick={() => handleDeleteEvent(evt.id)}
-                      className="text-muted-foreground hover:text-red-500 p-1.5 rounded-xl hover:bg-red-500/10"
+                      className="text-muted-foreground hover:text-destructive p-1.5 rounded-xl hover:bg-destructive/10"
                     >
                       <Trash2 size={14} />
                     </button>
@@ -792,7 +791,7 @@ export function CalendarModule() {
       {/* ── 5. FAB Flutuante de Criação Rápida no Canto Inferior ───────────────── */}
       <button
         onClick={() => openNew(selectedDateIso)}
-        className="fixed bottom-24 right-5 md:bottom-8 md:right-8 w-14 h-14 rounded-full bg-red-600 hover:bg-red-700 text-white shadow-2xl flex items-center justify-center transition-all hover:scale-110 active:scale-95 z-[150]"
+        className="fixed bottom-24 right-5 md:bottom-8 md:right-8 w-14 h-14 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-2xl flex items-center justify-center transition-all hover:scale-110 active:scale-95 z-[150]"
         title="Novo Evento Rápido"
       >
         <Plus size={26} strokeWidth={2.5} />
@@ -805,7 +804,7 @@ export function CalendarModule() {
             <div className="bg-card border border-border rounded-3xl p-5 max-w-md w-full shadow-2xl space-y-4 slide-up">
               <div className="flex items-center justify-between pb-3 border-b border-border/50">
                 <h3 className="text-sm font-black text-foreground flex items-center gap-2">
-                  <CalendarIcon size={16} className="text-red-500" /> Agendar Novo Compromisso
+                  <CalendarIcon size={16} className="text-primary" /> Agendar Novo Compromisso
                 </h3>
                 <button
                   onClick={() => setShowModal(false)}
@@ -824,7 +823,7 @@ export function CalendarModule() {
                     placeholder="Ex: Reunião de equipe, Consulta médica..."
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-background border border-input text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-red-500"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-background border border-input text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
                   />
                 </div>
 
@@ -835,7 +834,7 @@ export function CalendarModule() {
                       type="date"
                       value={eventDate}
                       onChange={(e) => setEventDate(e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl bg-background border border-input text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-red-500"
+                      className="w-full px-3 py-2 rounded-xl bg-background border border-input text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
                     />
                   </div>
 
@@ -846,7 +845,7 @@ export function CalendarModule() {
                       placeholder="Ex: Trabalho, Saúde"
                       value={labelText}
                       onChange={(e) => setLabelText(e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl bg-background border border-input text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-red-500"
+                      className="w-full px-3 py-2 rounded-xl bg-background border border-input text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
                     />
                   </div>
                 </div>
@@ -858,7 +857,7 @@ export function CalendarModule() {
                       type="time"
                       value={startTime}
                       onChange={(e) => setStartTime(e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl bg-background border border-input text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-red-500"
+                      className="w-full px-3 py-2 rounded-xl bg-background border border-input text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
                     />
                   </div>
 
@@ -868,14 +867,14 @@ export function CalendarModule() {
                       type="time"
                       value={endTime}
                       onChange={(e) => setEndTime(e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl bg-background border border-input text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-red-500"
+                      className="w-full px-3 py-2 rounded-xl bg-background border border-input text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
                     />
                   </div>
                 </div>
 
-                {/* Paleta de Cores Estilo iOS */}
+                {/* Paleta Monocromática Neutral */}
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-foreground">Cor de Destaque</label>
+                  <label className="text-xs font-bold text-foreground">Estilo do Destaque</label>
                   <div className="flex items-center gap-2 pt-1">
                     {COLOR_PALETTE.map((c) => (
                       <button
@@ -883,7 +882,7 @@ export function CalendarModule() {
                         type="button"
                         onClick={() => setColor(c.hex)}
                         className={cn(
-                          "w-7 h-7 rounded-full transition-transform flex items-center justify-center",
+                          "w-7 h-7 rounded-full transition-transform flex items-center justify-center border border-border",
                           color === c.hex ? "scale-110 ring-2 ring-offset-2 ring-foreground" : "hover:scale-105"
                         )}
                         style={{ backgroundColor: c.hex }}
@@ -901,7 +900,7 @@ export function CalendarModule() {
                     placeholder="Adicionar notas ou local do compromisso..."
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-background border border-input text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-red-500 resize-none"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-background border border-input text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary resize-none"
                   />
                 </div>
 
@@ -909,14 +908,14 @@ export function CalendarModule() {
                   <button
                     type="button"
                     onClick={() => setShowModal(false)}
-                    className="flex-1 py-2.5 rounded-xl bg-muted text-xs font-semibold text-muted-foreground"
+                    className="flex-1 py-2.5 rounded-xl bg-muted text-xs font-semibold text-muted-foreground hover:text-foreground"
                   >
                     Cancelar
                   </button>
                   <button
                     type="submit"
                     disabled={!title.trim()}
-                    className="flex-1 py-2.5 rounded-xl bg-red-600 text-xs font-bold text-white flex items-center justify-center gap-1 disabled:opacity-50"
+                    className="flex-1 py-2.5 rounded-xl bg-primary text-xs font-bold text-primary-foreground flex items-center justify-center gap-1 disabled:opacity-50 hover:bg-primary/90"
                   >
                     <Check size={14} /> Salvar Evento
                   </button>
@@ -934,7 +933,7 @@ export function CalendarModule() {
             <div className="bg-card border border-border rounded-3xl p-5 max-w-md w-full shadow-2xl space-y-4 slide-up">
               <div className="flex items-center justify-between pb-3 border-b border-border/50">
                 <h3 className="text-sm font-black text-foreground flex items-center gap-2">
-                  <Download size={16} className="text-red-500" /> Exportar / Sincronizar Agenda
+                  <Download size={16} className="text-primary" /> Exportar / Sincronizar Agenda
                 </h3>
                 <button
                   onClick={() => setSyncModalOpen(false)}
@@ -958,13 +957,13 @@ export function CalendarModule() {
                       Importar no Google Agenda, Apple Calendar ou Outlook
                     </span>
                   </div>
-                  <Download size={16} className="text-red-500" />
+                  <Download size={16} className="text-primary" />
                 </button>
               </div>
 
               <button
                 onClick={() => setSyncModalOpen(false)}
-                className="w-full py-2.5 rounded-xl bg-muted text-xs font-semibold text-muted-foreground"
+                className="w-full py-2.5 rounded-xl bg-muted text-xs font-semibold text-muted-foreground hover:text-foreground"
               >
                 Fechar
               </button>
