@@ -1,0 +1,45 @@
+name: Feature request
+description: Propose a focused improvement to LifeOS
+title: "[Feature]: "
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What user problem would this solve?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed outcome
+      description: Describe the desired behavior without prescribing unnecessary implementation details.
+    validations:
+      required: true
+  - type: dropdown
+    id: workflow
+    attributes:
+      label: Core workflow
+      description: Which part of the primary workflow does this improve?
+      options:
+        - Goals and projects
+        - Tasks and daily execution
+        - Calendar and planning
+        - Habits and reflection
+        - Data, privacy, or security
+        - Accessibility or visual system
+        - Secondary or optional module
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: How is the problem handled today?
+  - type: textarea
+    id: data
+    attributes:
+      label: Data and privacy impact
+      description: Would this collect, synchronize, export, cache, or share personal data?
