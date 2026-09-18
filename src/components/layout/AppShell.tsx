@@ -1,75 +1,90 @@
 import { Link, Outlet, useRouterState } from "@tanstack/react-router";
+import type { User } from "@supabase/supabase-js";
 import {
-  LayoutDashboard,
-  BookOpen,
-  CheckSquare,
-  Repeat,
-  Target,
-  Wallet,
-  NotebookPen,
   BarChart3,
-  Settings,
-  Search,
-  Grid,
-  Plus,
-  Library,
+  BookOpen,
   Calendar,
-  Users,
-  UserPlus,
-  Eye,
-  ChevronDown,
   Check,
+  CheckSquare,
+  ChevronDown,
+  Eye,
+  Grid2X2,
+  LayoutDashboard,
+  Library,
+  NotebookPen,
+  Plus,
+  Repeat,
+  Search,
+  Settings,
   ShoppingCart,
+  Target,
+  UserPlus,
+  Users,
+  Wallet,
 } from "lucide-react";
-import { useEffect, useState, useRef, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { CommandPalette } from "./CommandPalette";
 import { MobileAppDrawer } from "./MobileAppDrawer";
 import { QuickActionFab } from "./QuickActionFab";
 import { NotificationManager } from "./NotificationManager";
+import { BrandMark } from "./BrandMark";
 import { cn } from "@/lib/utils";
 import { useAuthContext } from "@/context/AuthContext";
 import { useWorkspace } from "@/context/WorkspaceContext";
 import { SharedAccessModal } from "@/components/modals/SharedAccessModal";
 import { OnboardingModal } from "@/components/modals/OnboardingModal";
 
-/** Returns greeting based on current hour */
 function getGreeting(): string {
-  const h = new Date().getHours();
-  if (h >= 5 && h < 12) return "Bom dia";
-  if (h >= 12 && h < 18) return "Boa tarde";
+  const hour = new Date().getHours();
+  if (hour >= 5 && hour < 12) return "Bom dia";
+  if (hour >= 12 && hour < 18) return "Boa tarde";
   return "Boa noite";
 }
 
-/** Returns display name: username > full_name > email prefix */
-function getFirstName(user: any): string {
+function getFirstName(user: User | null): string {
   const name =
     user?.user_metadata?.username ||
     user?.user_metadata?.full_name ||
     user?.user_metadata?.name ||
     user?.email?.split("@")[0] ||
     "Você";
-  return name.split(/[\s.]/)[0];
+  return String(name).split(/[\s.]/)[0];
 }
 
-const NAV_ITEMS = [
-  { to: "/", label: "Painel", icon: LayoutDashboard },
-  { to: "/calendar", label: "Calendário", icon: Calendar },
-  { to: "/habits", label: "Hábitos", icon: Repeat },
-  { to: "/tasks", label: "Tarefas", icon: CheckSquare },
-  { to: "/goals", label: "Metas", icon: Target },
-  { to: "/finance", label: "Finanças", icon: Wallet },
-  { to: "/shopping", label: "Compras", icon: ShoppingCart },
-  { to: "/books", label: "Livros", icon: Library },
-  { to: "/notes", label: "Conhecimento", icon: BookOpen },
-  { to: "/journal", label: "Diário", icon: NotebookPen },
-  { to: "/stats", label: "Estatísticas", icon: BarChart3 },
+const NAV_GROUPS = [
+  {
+    label: "Organizar",
+    items: [
+      { to: "/", label: "Visão geral", icon: LayoutDashboard },
+      { to: "/calendar", label: "Calendário", icon: Calendar },
+      { to: "/tasks", label: "Tarefas", icon: CheckSquare },
+      { to: "/goals", label: "Metas", icon: Target },
+      { to: "/habits", label: "Hábitos", icon: Repeat },
+    ],
+  },
+  {
+    label: "Acompanhar",
+    items: [
+      { to: "/finance", label: "Finanças", icon: Wallet },
+      { to: "/stats", label: "Estatísticas", icon: BarChart3 },
+    ],
+  },
+  {
+    label: "Biblioteca",
+    items: [
+      { to: "/notes", label: "Conhecimento", icon: BookOpen },
+      { to: "/books", label: "Livros", icon: Library },
+      { to: "/journal", label: "Diário", icon: NotebookPen },
+      { to: "/shopping", label: "Compras", icon: ShoppingCart },
+    ],
+  },
 ] as const;
 
 const PAGE_TITLES: Record<string, string> = {
-  "/": "LifeOS",
+  "/": "Visão geral",
   "/calendar": "Calendário",
-  "/shopping": "Compras & Desejos",
-  "/books": "Estante Virtual",
+  "/shopping": "Compras",
+  "/books": "Livros",
   "/notes": "Conhecimento",
   "/habits": "Hábitos",
   "/tasks": "Tarefas",
@@ -86,346 +101,331 @@ export function AppShell({ children }: { children?: ReactNode }) {
   const [fabOpen, setFabOpen] = useState(false);
   const [sharedModalOpen, setSharedModalOpen] = useState(false);
   const [workspaceDropOpen, setWorkspaceDropOpen] = useState(false);
-  const wsDropRef = useRef<HTMLDivElement>(null);
+  const workspaceDropRef = useRef<HTMLDivElement>(null);
 
   const { user } = useAuthContext();
-  const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const { activeUserId, isSharedWorkspace, activeWorkspace, myWorkspaces, setActiveUserId, joinWorkspaceByToken } = useWorkspace();
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
+  const {
+    activeUserId,
+    isSharedWorkspace,
+    activeWorkspace,
+    myWorkspaces,
+    setActiveUserId,
+    joinWorkspaceByToken,
+  } = useWorkspace();
 
-  // Auto-join workspace if URL contains ?invite=TOKEN (Notion-style 1-click join)
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const urlParams = new URLSearchParams(window.location.search);
-      const inviteToken = urlParams.get("invite");
-      if (inviteToken) {
-        joinWorkspaceByToken(inviteToken).then(() => {
-          const cleanUrl = window.location.pathname;
-          window.history.replaceState({}, document.title, cleanUrl);
-        });
-      }
-    }
+    if (typeof window === "undefined") return;
+    const inviteToken = new URLSearchParams(window.location.search).get("invite");
+    if (!inviteToken) return;
+
+    joinWorkspaceByToken(inviteToken).then(() => {
+      window.history.replaceState({}, document.title, window.location.pathname);
+    });
   }, [joinWorkspaceByToken]);
 
-  const greeting = getGreeting();
-  const firstName = getFirstName(user);
-  const avatarUrl = user?.user_metadata?.avatar_url || (typeof window !== "undefined" ? localStorage.getItem("lifeos_avatar_url") : null) || "";
-
-  const pageTitle = Object.entries(PAGE_TITLES)
-    .sort((a, b) => b[0].length - a[0].length)
-    .find(([path]) => (path === "/" ? pathname === "/" : pathname.startsWith(path)))?.[1] ?? "LifeOS";
-
-  // Build option list for the workspace dropdown
-  const workspaceOptions = [
-    { id: user?.id || "guest", label: "Minha Conta Pessoal", isOwn: true },
-    ...myWorkspaces.map((ws) => ({ id: ws.ownerId, label: ws.ownerName, isOwn: false })),
-  ];
-  const activeOption = workspaceOptions.find((o) => o.id === activeUserId) ?? workspaceOptions[0];
-
-  // Close dropdown when clicking outside
   useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (wsDropRef.current && !wsDropRef.current.contains(e.target as Node)) {
+    const closeOnOutsideClick = (event: MouseEvent) => {
+      if (workspaceDropRef.current && !workspaceDropRef.current.contains(event.target as Node)) {
         setWorkspaceDropOpen(false);
       }
     };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
+    document.addEventListener("mousedown", closeOnOutsideClick);
+    return () => document.removeEventListener("mousedown", closeOnOutsideClick);
   }, []);
 
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
-        e.preventDefault();
-        setPaletteOpen((v) => !v);
+    const openSearch = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        setPaletteOpen((open) => !open);
       }
     };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    window.addEventListener("keydown", openSearch);
+    return () => window.removeEventListener("keydown", openSearch);
   }, []);
 
-  return (
-    <div className="flex h-[100dvh] w-full bg-background text-foreground">
+  const firstName = getFirstName(user);
+  const avatarUrl =
+    user?.user_metadata?.avatar_url ||
+    (typeof window !== "undefined" ? localStorage.getItem("lifeos_avatar_url") : null) ||
+    "";
+  const pageTitle =
+    Object.entries(PAGE_TITLES)
+      .sort((a, b) => b[0].length - a[0].length)
+      .find(([path]) => (path === "/" ? pathname === "/" : pathname.startsWith(path)))?.[1] ??
+    "LifeOS";
 
-      {/* ── Desktop Sidebar — macOS Style ───────────────────────────── */}
-      <aside className="hidden md:flex w-64 shrink-0 flex-col glass-panel border-r border-[var(--glass-border)] select-none">
-        {/* Header / Brand */}
-        <div className="px-5 pt-6 pb-3">
-          <Link to="/settings" className="flex items-center gap-3 group">
-            <div className="h-10 w-10 rounded-full bg-[#212121] dark:bg-foreground flex items-center justify-center shadow-lg shadow-black/10 dark:shadow-black/20 transition-transform group-hover:scale-105 overflow-hidden shrink-0 ring-2 ring-border">
-              {avatarUrl ? (
-                <img src={avatarUrl} alt={firstName} className="w-full h-full object-cover" />
-              ) : (
-                <span className="text-white dark:text-black text-base font-extrabold tracking-tight">
-                  {firstName[0]?.toUpperCase() ?? "L"}
-                </span>
-              )}
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="text-base font-extrabold text-foreground tracking-tight truncate">{firstName}</p>
-              <p className="text-[11px] text-muted-foreground font-medium truncate">{greeting} 👋</p>
+  const workspaceOptions = [
+    { id: user?.id || "guest", label: "Meu espaço", isOwn: true },
+    ...myWorkspaces.map((workspace) => ({
+      id: workspace.ownerId,
+      label: workspace.ownerName,
+      isOwn: false,
+    })),
+  ];
+  const activeOption =
+    workspaceOptions.find((option) => option.id === activeUserId) ?? workspaceOptions[0];
+
+  const isActive = (to: string) => (to === "/" ? pathname === "/" : pathname.startsWith(to));
+
+  return (
+    <div className="flex h-[100dvh] w-full overflow-hidden bg-background text-foreground">
+      <aside className="glass-panel hidden w-[272px] shrink-0 flex-col border-y-0 border-l-0 md:flex">
+        <div className="px-4 pb-3 pt-5">
+          <Link to="/" className="flex items-center gap-3 rounded-[14px] px-2 py-1.5">
+            <BrandMark className="size-10" />
+            <div className="min-w-0">
+              <p className="sf-display text-[17px] font-bold tracking-[-0.035em]">LifeOS</p>
+              <p className="text-[10px] font-medium text-muted-foreground">Seu sistema pessoal</p>
             </div>
           </Link>
+
+          <button
+            type="button"
+            onClick={() => setPaletteOpen(true)}
+            className="material-button mt-4 flex h-10 w-full items-center gap-2.5 px-3 text-left text-xs font-medium text-muted-foreground"
+          >
+            <Search className="size-4" />
+            <span className="flex-1">Buscar</span>
+            <kbd className="rounded-md border border-border bg-muted/60 px-1.5 py-0.5 text-[10px]">
+              ⌘ K
+            </kbd>
+          </button>
         </div>
 
-        {/* Navigation - Menu Único Unificado */}
-        <nav className="flex-1 px-3 space-y-1 overflow-y-auto pt-2">
-          {NAV_ITEMS.map(({ to, label, icon: Icon }) => {
-            const active = to === "/" ? pathname === "/" : pathname.startsWith(to);
-            return (
-              <Link
-                key={to}
-                to={to}
-                className={cn(
-                  "group flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-semibold transition-all",
-                  active ? "nav-pill-active shadow-sm" : "nav-pill-inactive"
-                )}
-              >
-                <Icon className={cn("h-4.5 w-4.5 shrink-0 transition-colors", active ? "text-foreground" : "")} />
-                <span>{label}</span>
-                {active && (
-                  <div className="ml-auto w-1.5 h-1.5 rounded-full bg-foreground" />
-                )}
-              </Link>
-            );
-          })}
-        </nav>
-
-        {/* Footer: Workspace Switcher + Settings + User */}
-        <div className="p-3 border-t border-[var(--glass-border)] bg-muted/20 space-y-2">
-
-          {/* Espaço Ativo — custom dropdown */}
-          <div className="p-2 rounded-2xl bg-muted/40 border border-border/50 space-y-1.5">
-            <div className="flex items-center justify-between px-1">
-              <span className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider">Espaço Ativo</span>
-              <button
-                onClick={() => setSharedModalOpen(true)}
-                className="text-[10px] font-extrabold text-foreground hover:underline flex items-center gap-1"
-                title="Convidar ou Acessar Outras Contas"
-              >
-                <UserPlus size={12} />
-                <span>Acessos</span>
-              </button>
-            </div>
-
-            {/* Custom dropdown — NOT a native select */}
-            <div className="relative" ref={wsDropRef}>
-              <button
-                onClick={() => setWorkspaceDropOpen((v) => !v)}
-                className="w-full flex items-center justify-between gap-2 py-2 px-3 rounded-xl bg-card border border-border text-xs font-bold text-foreground hover:bg-muted transition-colors"
-              >
-                <span className="flex items-center gap-1.5 truncate">
-                  <span>{activeOption.isOwn ? "👤" : "👥"}</span>
-                  <span className="truncate">{activeOption.label}</span>
-                </span>
-                <ChevronDown
-                  size={13}
-                  className={cn("shrink-0 transition-transform duration-200", workspaceDropOpen && "rotate-180")}
-                />
-              </button>
-
-              {workspaceDropOpen && (
-                <div className="absolute bottom-full mb-1 left-0 right-0 bg-card border border-border rounded-2xl shadow-xl z-50 overflow-hidden">
-                  {workspaceOptions.map((opt) => (
-                    <button
-                      key={opt.id}
-                      onClick={() => {
-                        setActiveUserId(opt.id);
-                        setWorkspaceDropOpen(false);
-                      }}
+        <nav className="flex-1 overflow-y-auto px-3 pb-3 pt-1">
+          {NAV_GROUPS.map((group, groupIndex) => (
+            <div key={group.label} className={cn(groupIndex > 0 && "mt-5")}>
+              <p className="mb-1.5 px-3 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground/70">
+                {group.label}
+              </p>
+              <div className="space-y-0.5">
+                {group.items.map(({ to, label, icon: Icon }) => {
+                  const active = isActive(to);
+                  return (
+                    <Link
+                      key={to}
+                      to={to}
                       className={cn(
-                        "w-full flex items-center gap-2 px-3 py-2.5 text-xs font-bold transition-colors text-left",
-                        opt.id === activeUserId
-                          ? "bg-foreground/10 text-foreground"
-                          : "hover:bg-muted text-foreground"
+                        "ios-spring group flex min-h-10 items-center gap-3 rounded-[12px] px-3 text-[13px] font-medium",
+                        active ? "nav-pill-active" : "nav-pill-inactive",
                       )}
                     >
-                      <span>{opt.isOwn ? "👤" : "👥"}</span>
-                      <span className="flex-1 truncate">{opt.label}</span>
-                      {opt.id === activeUserId && <Check size={12} className="shrink-0 text-foreground" />}
-                    </button>
-                  ))}
-                </div>
-              )}
+                      <Icon className="size-[17px] shrink-0" strokeWidth={active ? 2.25 : 1.85} />
+                      <span>{label}</span>
+                      {active && (
+                        <span className="ml-auto size-1.5 rounded-full bg-[var(--system-blue)]" />
+                      )}
+                    </Link>
+                  );
+                })}
+              </div>
             </div>
+          ))}
+        </nav>
+
+        <div className="border-t border-sidebar-border p-3">
+          <div className="relative" ref={workspaceDropRef}>
+            <button
+              type="button"
+              onClick={() => setWorkspaceDropOpen((open) => !open)}
+              className="ios-spring flex w-full items-center gap-2.5 rounded-[13px] px-3 py-2 text-left hover:bg-muted/60"
+            >
+              <div className="grid size-8 shrink-0 place-items-center rounded-[10px] bg-muted text-muted-foreground">
+                {activeOption.isOwn ? <Grid2X2 className="size-4" /> : <Users className="size-4" />}
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-xs font-semibold text-foreground">
+                  {activeOption.label}
+                </p>
+                <p className="text-[10px] text-muted-foreground">Espaço ativo</p>
+              </div>
+              <ChevronDown
+                className={cn(
+                  "size-3.5 text-muted-foreground transition-transform",
+                  workspaceDropOpen && "rotate-180",
+                )}
+              />
+            </button>
+
+            {workspaceDropOpen && (
+              <div className="thin-material absolute bottom-full left-0 right-0 z-50 mb-2 overflow-hidden rounded-[16px] p-1.5">
+                {workspaceOptions.map((option) => (
+                  <button
+                    type="button"
+                    key={option.id}
+                    onClick={() => {
+                      setActiveUserId(option.id);
+                      setWorkspaceDropOpen(false);
+                    }}
+                    className={cn(
+                      "flex w-full items-center gap-2 rounded-[10px] px-2.5 py-2 text-left text-xs font-medium",
+                      option.id === activeUserId
+                        ? "bg-accent text-accent-foreground"
+                        : "text-foreground hover:bg-muted/70",
+                    )}
+                  >
+                    {option.isOwn ? (
+                      <Grid2X2 className="size-3.5" />
+                    ) : (
+                      <Users className="size-3.5" />
+                    )}
+                    <span className="flex-1 truncate">{option.label}</span>
+                    {option.id === activeUserId && <Check className="size-3.5" />}
+                  </button>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setWorkspaceDropOpen(false);
+                    setSharedModalOpen(true);
+                  }}
+                  className="mt-1 flex w-full items-center gap-2 rounded-[10px] border-t border-border px-2.5 py-2.5 text-left text-xs font-medium text-[var(--system-blue)] hover:bg-muted/70"
+                >
+                  <UserPlus className="size-3.5" />
+                  Gerenciar acessos
+                </button>
+              </div>
+            )}
           </div>
 
-          {/* Ajustes */}
           <Link
             to="/settings"
             className={cn(
-              "flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-semibold transition-all",
-              pathname.startsWith("/settings") ? "nav-pill-active shadow-sm" : "nav-pill-inactive"
+              "ios-spring mt-1 flex items-center gap-3 rounded-[13px] px-3 py-2.5",
+              pathname.startsWith("/settings") ? "nav-pill-active" : "hover:bg-muted/60",
             )}
           >
-            <Settings className={cn("h-4.5 w-4.5 shrink-0", pathname.startsWith("/settings") ? "text-foreground" : "")} />
-            <span>Ajustes</span>
-          </Link>
-
-          {user && (
-            <div className="flex items-center gap-3 p-2.5 rounded-xl bg-card/60 border border-border/50">
-              <div className="w-8 h-8 rounded-full bg-foreground/20 ring-2 ring-foreground/40 flex items-center justify-center overflow-hidden shrink-0">
-                {avatarUrl ? (
-                  <img src={avatarUrl} className="w-full h-full object-cover" alt="" />
-                ) : (
-                  <span className="text-xs font-extrabold text-foreground">
-                    {(user.email?.[0] ?? "U").toUpperCase()}
-                  </span>
-                )}
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-[12px] font-bold text-foreground truncate leading-tight">
-                  {user.user_metadata?.username || user.email?.split("@")[0]}
-                </p>
-                <p className="text-[10px] text-muted-foreground truncate leading-tight">{user.email}</p>
-              </div>
+            <div className="grid size-8 shrink-0 place-items-center overflow-hidden rounded-[10px] bg-muted text-muted-foreground">
+              {avatarUrl ? (
+                <img src={avatarUrl} alt={firstName} className="size-full object-cover" />
+              ) : (
+                <span className="text-xs font-semibold">{firstName[0]?.toUpperCase() ?? "L"}</span>
+              )}
             </div>
-          )}
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-xs font-semibold text-foreground">{firstName}</p>
+              <p className="truncate text-[10px] text-muted-foreground">
+                {user?.email || "Ajustes da conta"}
+              </p>
+            </div>
+            <Settings className="size-4 text-muted-foreground" />
+          </Link>
         </div>
       </aside>
 
-      {/* ── Main content area ────────────────────────────────────────── */}
-      <main className="flex-1 min-w-0 flex flex-col overflow-hidden">
+      <main className="relative flex min-w-0 flex-1 flex-col overflow-hidden">
+        <div className="pointer-events-none absolute -right-40 -top-48 size-[34rem] rounded-full bg-[var(--system-blue)]/[0.055] blur-3xl" />
 
-        {/* Mobile top bar — Unificado com a Status Bar do iPhone */}
-        <header className="md:hidden flex items-center justify-between px-5 pt-[max(env(safe-area-inset-top),16px)] pb-3 bg-background z-30 select-none">
+        <header className="thin-material relative z-30 flex shrink-0 items-center justify-between border-x-0 border-t-0 px-5 pb-3 pt-[max(env(safe-area-inset-top),14px)] shadow-none md:hidden">
           <div>
-            <h1 className="text-xl font-extrabold text-foreground tracking-tight leading-tight">{pageTitle}</h1>
+            <p className="text-[10px] font-medium text-muted-foreground">
+              {getGreeting()}, {firstName}
+            </p>
+            <h1 className="sf-display text-xl font-semibold tracking-[-0.035em] text-foreground">
+              {pageTitle}
+            </h1>
           </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setPaletteOpen(true)}
-              aria-label="Pesquisar"
-              className="w-9 h-9 rounded-full flex items-center justify-center bg-muted text-muted-foreground hover:text-foreground transition-colors ios-spring"
-            >
-              <Search className="h-4.5 w-4.5" />
-            </button>
-            {user && (
-              <div className="w-9 h-9 rounded-full bg-foreground/20 ring-2 ring-foreground/40 flex items-center justify-center overflow-hidden">
-                {avatarUrl ? (
-                  <img src={avatarUrl} className="w-full h-full object-cover" alt="" />
-                ) : (
-                  <span className="text-[11px] font-extrabold text-foreground">
-                    {(user.email?.[0] ?? "U").toUpperCase()}
-                  </span>
-                )}
-              </div>
-            )}
-          </div>
+          <button
+            type="button"
+            onClick={() => setPaletteOpen(true)}
+            aria-label="Pesquisar"
+            className="material-button grid size-9 place-items-center rounded-full text-muted-foreground"
+          >
+            <Search className="size-4" />
+          </button>
         </header>
 
-        {/* Banner de Aviso de Espaço Compartilhado */}
         {isSharedWorkspace && (
-          <div className="bg-amber-500/15 border-b border-amber-500/30 px-5 py-2 flex items-center justify-between text-xs font-bold text-amber-700 dark:text-amber-300 z-20 shrink-0">
+          <div className="relative z-20 flex shrink-0 items-center justify-between border-b border-amber-500/20 bg-amber-500/10 px-5 py-2 text-xs font-medium text-amber-800 dark:text-amber-200">
             <div className="flex items-center gap-2">
-              <Eye size={15} className="text-amber-500" />
+              <Eye className="size-4" />
               <span>
-                Espaço Compartilhado: Visualizando a conta de <strong>{activeWorkspace.ownerName}</strong>
+                Visualizando o espaço de <strong>{activeWorkspace.ownerName}</strong>
               </span>
             </div>
             <button
+              type="button"
               onClick={() => setActiveUserId(user?.id || "guest")}
-              className="text-[11px] font-black underline hover:opacity-80"
+              className="font-semibold text-[var(--system-blue)]"
             >
-              Voltar para Minha Conta
+              Voltar
             </button>
           </div>
         )}
 
-        {/* Page body content */}
-        <div className="flex-1 min-w-0 overflow-y-auto pb-28 md:pb-0">
+        <div className="relative z-10 flex-1 min-w-0 overflow-y-auto pb-28 md:pb-0">
           {children ?? <Outlet />}
         </div>
       </main>
 
-      {/* ── iOS 26 Floating Glass Pill Bar no Mobile ────────────────── */}
-      <div className="md:hidden fixed bottom-3 inset-x-0 z-[100] px-4 pointer-events-none flex justify-center">
-        <nav className="pointer-events-auto w-full max-w-md bg-card/85 dark:bg-[#212121]/90 backdrop-blur-2xl border border-white/20 dark:border-white/10 shadow-2xl rounded-full px-3 py-1.5 flex items-center justify-between">
-          
-          {/* Painel */}
-          <Link
-            to="/"
-            className={cn(
-              "flex flex-col items-center gap-0.5 px-2 py-1 transition-all active:scale-95",
-              pathname === "/" ? "text-foreground font-bold" : "text-muted-foreground"
-            )}
-          >
-            <LayoutDashboard size={20} strokeWidth={pathname === "/" ? 2.5 : 1.75} />
-            <span className="text-[9px] tracking-tight">Painel</span>
-          </Link>
-
-          {/* Hábitos */}
-          <Link
-            to="/habits"
-            className={cn(
-              "flex flex-col items-center gap-0.5 px-2 py-1 transition-all active:scale-95",
-              pathname.startsWith("/habits") ? "text-foreground font-bold" : "text-muted-foreground"
-            )}
-          >
-            <Repeat size={20} strokeWidth={pathname.startsWith("/habits") ? 2.5 : 1.75} />
-            <span className="text-[9px] tracking-tight">Hábitos</span>
-          </Link>
-
-          {/* BOTÃO CENTRAL INTEGRADOR (+) DE AÇÃO RÁPIDA */}
-          <button
-            onClick={() => setFabOpen(true)}
-            className="w-12 h-12 rounded-full bg-foreground text-background shadow-lg shadow-black/20 flex items-center justify-center active:scale-90 transition-all mx-1 shrink-0"
-            title="Nova Ação"
-          >
-            <Plus size={24} strokeWidth={3} />
-          </button>
-
-          {/* Finanças */}
-          <Link
-            to="/finance"
-            className={cn(
-              "flex flex-col items-center gap-0.5 px-2 py-1 transition-all active:scale-95",
-              pathname.startsWith("/finance") ? "text-foreground font-bold" : "text-muted-foreground"
-            )}
-          >
-            <Wallet size={20} strokeWidth={pathname.startsWith("/finance") ? 2.5 : 1.75} />
-            <span className="text-[9px] tracking-tight">Finanças</span>
-          </Link>
-
-          {/* Tarefas */}
-          <Link
+      <div className="pointer-events-none fixed inset-x-0 bottom-[max(12px,env(safe-area-inset-bottom))] z-[100] flex justify-center px-4 md:hidden">
+        <nav className="thin-material pointer-events-auto grid w-full max-w-sm grid-cols-5 items-center rounded-[25px] p-1.5 shadow-[0_18px_55px_-18px_rgba(0,0,0,0.42)]">
+          <MobileNavItem to="/" label="Início" icon={LayoutDashboard} active={pathname === "/"} />
+          <MobileNavItem
             to="/tasks"
-            className={cn(
-              "flex flex-col items-center gap-0.5 px-2 py-1 transition-all active:scale-95",
-              pathname.startsWith("/tasks") ? "text-foreground font-bold" : "text-muted-foreground"
-            )}
-          >
-            <CheckSquare size={20} strokeWidth={pathname.startsWith("/tasks") ? 2.5 : 1.75} />
-            <span className="text-[9px] tracking-tight">Tarefas</span>
-          </Link>
-
-          {/* Mais (App Sheet) */}
+            label="Tarefas"
+            icon={CheckSquare}
+            active={pathname.startsWith("/tasks")}
+          />
           <button
-            onClick={() => setDrawerOpen(true)}
-            className="flex flex-col items-center gap-0.5 px-2 py-1 transition-all active:scale-95 text-muted-foreground hover:text-foreground"
+            type="button"
+            onClick={() => setFabOpen(true)}
+            className="mx-auto grid size-12 place-items-center rounded-[17px] bg-[var(--system-blue)] text-white shadow-[0_10px_24px_-10px_rgba(0,122,255,0.9)] transition-transform active:scale-95"
+            aria-label="Nova ação"
           >
-            <Grid size={20} strokeWidth={1.75} />
-            <span className="text-[9px] tracking-tight font-semibold">Mais</span>
+            <Plus className="size-6" strokeWidth={2.4} />
+          </button>
+          <MobileNavItem
+            to="/calendar"
+            label="Agenda"
+            icon={Calendar}
+            active={pathname.startsWith("/calendar")}
+          />
+          <button
+            type="button"
+            onClick={() => setDrawerOpen(true)}
+            className="ios-spring flex flex-col items-center gap-0.5 rounded-[17px] py-1.5 text-muted-foreground"
+            aria-label="Mais módulos"
+          >
+            <Grid2X2 className="size-5" strokeWidth={1.9} />
+            <span className="text-[9px] font-medium">Mais</span>
           </button>
         </nav>
       </div>
 
-      {/* Modal Speed Dial da Ação Rápida */}
       <QuickActionFab open={fabOpen} onClose={() => setFabOpen(false)} />
-
-      {/* Drawer de Todos os Apps */}
       <MobileAppDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
-
-      {/* Palette de Pesquisa Rápida */}
       <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} />
-
-      {/* Gerenciador Silencioso de Notificações PWA */}
       <NotificationManager />
-
-      {/* Modal de Acessos Simultâneos & Convites */}
       <SharedAccessModal open={sharedModalOpen} onClose={() => setSharedModalOpen(false)} />
-
-      {/* Onboarding / Guia Interativo da Aplicação */}
       <OnboardingModal />
     </div>
+  );
+}
+
+function MobileNavItem({
+  to,
+  label,
+  icon: Icon,
+  active,
+}: {
+  to: "/" | "/tasks" | "/calendar";
+  label: string;
+  icon: typeof LayoutDashboard;
+  active: boolean;
+}) {
+  return (
+    <Link
+      to={to}
+      className={cn(
+        "ios-spring flex flex-col items-center gap-0.5 rounded-[17px] py-1.5",
+        active ? "bg-accent text-accent-foreground" : "text-muted-foreground",
+      )}
+    >
+      <Icon className="size-5" strokeWidth={active ? 2.35 : 1.9} />
+      <span className="text-[9px] font-medium">{label}</span>
+    </Link>
   );
 }

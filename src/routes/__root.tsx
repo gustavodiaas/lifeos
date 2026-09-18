@@ -23,7 +23,7 @@ function NotFoundComponent() {
         <h1 className="text-7xl font-bold text-foreground">404</h1>
         <h2 className="mt-4 text-xl font-semibold text-foreground">Página não encontrada</h2>
         <p className="mt-2 text-sm text-muted-foreground">
-          A página que procuras não existe ou foi movida.
+          A página que você procura não existe ou foi movida.
         </p>
         <div className="mt-6">
           <Link
@@ -52,7 +52,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
           Esta página não carregou
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Ocorreu um erro do nosso lado. Podes tentar atualizar ou voltar ao início.
+          Ocorreu um erro do nosso lado. Você pode tentar novamente ou voltar ao início.
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <button
@@ -64,7 +64,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
           >
             Tentar novamente
           </button>
-          
+
           <a
             href="/"
             className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
@@ -81,20 +81,28 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" },
-      { title: "LifeOS — O teu sistema operativo pessoal" },
+      {
+        name: "viewport",
+        content:
+          "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover",
+      },
+      { title: "LifeOS — Seu sistema pessoal" },
       {
         name: "description",
         content:
-          "O LifeOS centraliza o teu conhecimento, hábitos, tarefas, metas e finanças num único espaço de trabalho local e focado.",
+          "O LifeOS reúne metas, tarefas, hábitos, agenda, conhecimento e finanças em um sistema pessoal integrado.",
       },
-      { name: "theme-color", content: "#212121" },
+      { name: "theme-color", content: "#f2f2f7", media: "(prefers-color-scheme: light)" },
+      { name: "theme-color", content: "#000000", media: "(prefers-color-scheme: dark)" },
       { name: "mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
       { name: "apple-mobile-web-app-title", content: "LifeOS" },
       { property: "og:title", content: "LifeOS" },
-      { property: "og:description", content: "O teu sistema operativo pessoal." },
+      {
+        property: "og:description",
+        content: "Seu sistema pessoal para planejar, executar e evoluir.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -105,12 +113,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "icon", href: "/icons/icon-192.png", type: "image/png" },
       { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
       { rel: "apple-touch-icon", href: "/icons/apple-touch-icon.png" },
-      { rel: "preconnect", href: "https://fonts.googleapis.com" },
-      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "" },
-      {
-        rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap",
-      },
     ],
   }),
   shellComponent: RootShell,
@@ -121,7 +123,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="pt">
+    <html lang="pt-BR" suppressHydrationWarning>
       <head>
         <HeadContent />
         <script
@@ -131,9 +133,11 @@ function RootShell({ children }: { children: ReactNode }) {
                 var theme = localStorage.getItem('lifeos-theme') || 'system';
                 if (theme === 'light' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: light)').matches)) {
                   document.documentElement.classList.add('light');
+                  document.documentElement.classList.remove('dark');
                   document.documentElement.style.colorScheme = 'light';
                 } else {
                   document.documentElement.classList.remove('light');
+                  document.documentElement.classList.add('dark');
                   document.documentElement.style.colorScheme = 'dark';
                 }
               } catch (e) {}
@@ -176,13 +180,13 @@ import { SyncingLoader } from "../components/ui/SyncingLoader";
 
 function AuthGuard() {
   const { user, loading } = useAuthContext();
-  const pathname = typeof window !== 'undefined' ? window.location.pathname : '/';
+  const pathname = typeof window !== "undefined" ? window.location.pathname : "/";
 
   if (loading) {
     return <SyncingLoader message="Sincronizando seus dados..." fullScreen />;
   }
 
-  if (!user && pathname !== '/auth') {
+  if (!user && pathname !== "/auth") {
     return <AuthScreen />;
   }
 

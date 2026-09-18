@@ -286,65 +286,61 @@ export function Dashboard() {
   const netSavings = stats.income - stats.expense;
 
   const username = user?.user_metadata?.username || user?.email?.split("@")[0] || "Pessoal";
+  const todayLabel = new Intl.DateTimeFormat("pt-BR", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+  }).format(new Date());
 
   return (
     <div className="space-y-6 fade-in select-none pb-12">
-      {/* ── 1. Banner da Central de Comando com Gamificação & Nível ────────────── */}
-      <div className="glass-card p-6 md:p-8 relative overflow-hidden border-border/80 shadow-xl space-y-6">
-        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-          {/* Saudação & Nível */}
-          <div className="space-y-2">
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-foreground text-background text-xs font-black tracking-wide shadow-xs">
-                <Zap size={14} fill="currentColor" />
-                Nível {stats.curLevel.level} — {stats.curLevel.name}
+      {/* ── Resumo do dia ─────────────────────────────────────────────── */}
+      <section className="relative overflow-hidden rounded-[28px] bg-[#111827] p-6 text-white shadow-[0_24px_70px_-36px_rgba(15,23,42,0.78)] md:p-8">
+        <div className="pointer-events-none absolute -right-24 -top-28 size-72 rounded-full bg-[#0a84ff]/25 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-28 left-1/4 size-64 rounded-full bg-[#64d2ff]/10 blur-3xl" />
+
+        <div className="relative z-10 flex flex-col justify-between gap-7 lg:flex-row lg:items-end">
+          <div>
+            <div className="mb-5 flex flex-wrap items-center gap-2">
+              <span className="vibrancy-label inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-medium text-white/75">
+                <Calendar className="size-3.5 text-[#64d2ff]" />
+                <span className="capitalize">{todayLabel}</span>
               </span>
               {stats.streak > 0 && (
-                <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-orange-500/15 text-orange-500 border border-orange-500/30 text-xs font-black">
-                  🔥 {stats.streak} dias em sequência!
+                <span className="vibrancy-label rounded-full px-3 py-1.5 text-[11px] font-medium text-white/75">
+                  {stats.streak} dias de constância
                 </span>
               )}
             </div>
 
-            <h2 className="text-2xl md:text-4xl font-black text-foreground tracking-tight">
-              Olá, {username} 👋
+            <h2 className="sf-display text-[34px] font-semibold leading-tight tracking-[-0.05em] md:text-[44px]">
+              Olá, {username}.
             </h2>
-            <p className="text-xs md:text-sm text-muted-foreground max-w-xl font-medium leading-relaxed">
-              Bem-vindo à sua Central de Comando LifeOS. Você acumulou <strong className="text-foreground">{stats.totalXp} XP</strong> até agora.
+            <p className="mt-3 max-w-xl text-sm leading-6 text-white/58 md:text-[15px]">
+              Você tem {stats.tasksOpen} tarefas abertas e concluiu {stats.habitsDone} de {stats.habitsDue} hábitos hoje.
             </p>
           </div>
 
-          {/* Atalhos Rápidos */}
-          <div className="flex flex-wrap items-center gap-2.5 shrink-0">
-            <Link to="/tasks" className="btn-ios text-xs py-3 px-4 shadow-sm">
-              <Plus size={15} strokeWidth={2.5} />
-              <span>Nova Tarefa</span>
+          <div className="flex flex-wrap items-center gap-2.5">
+            <Link to="/tasks" className="inline-flex h-11 items-center gap-2 rounded-[13px] bg-[#0a84ff] px-4 text-xs font-semibold text-white shadow-[0_10px_24px_-12px_rgba(10,132,255,0.95)] transition-transform active:scale-[0.97]">
+              <Plus className="size-4" />Nova tarefa
             </Link>
-            <Link to="/books" className="px-4 py-3 rounded-2xl bg-card border border-border text-xs font-bold text-foreground hover:bg-muted transition-colors flex items-center gap-2 shadow-xs">
-              <Library size={15} />
-              <span>Estante Virtual</span>
+            <Link to="/books" className="inline-flex h-11 items-center gap-2 rounded-[13px] border border-white/10 bg-white/[0.07] px-4 text-xs font-semibold text-white backdrop-blur-xl transition-colors hover:bg-white/10">
+              <Library className="size-4" />Livros
             </Link>
           </div>
         </div>
 
-        {/* Barra de Progresso XP do Nível */}
-        <div className="space-y-1 pt-2 border-t border-border/50">
-          <div className="flex items-center justify-between text-[11px] font-extrabold">
-            <span className="text-muted-foreground uppercase tracking-wider">
-              Progresso do Nível {stats.curLevel.level}
-            </span>
-            <span className="text-foreground">
-              {stats.xpInLevel} / {stats.levelRange} XP ({stats.levelPct}%)
-            </span>
+        <div className="relative z-10 mt-7 border-t border-white/10 pt-4">
+          <div className="mb-2 flex items-center justify-between text-[11px] text-white/50">
+            <span>Nível {stats.curLevel.level} · {stats.curLevel.name}</span>
+            <span>{stats.levelPct}%</span>
           </div>
-          <div className="h-2.5 bg-muted/60 rounded-full overflow-hidden border border-border/40">
-            <div
-              className="h-full bg-foreground rounded-full transition-all duration-700 ease-out"
-              style={{ width: `${stats.levelPct}%` }}
-            />
+          <div className="h-1.5 overflow-hidden rounded-full bg-white/10">
+            <div className="h-full rounded-full bg-[#64d2ff] transition-all duration-700" style={{ width: `${stats.levelPct}%` }} />
           </div>
         </div>
-      </div>
+      </section>
 
       {/* ── Pílula Noticiário de Eventos do Dia ────────────────────────── */}
       <TodayEventsTicker userId={userId} today={today} tasks={tasks} lancamentos={lancamentos} />

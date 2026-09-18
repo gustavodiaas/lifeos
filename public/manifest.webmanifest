@@ -1,12 +1,12 @@
 {
-  "name": "LifeOS — Sistema Operativo Pessoal",
+  "name": "LifeOS — Seu Sistema Pessoal",
   "short_name": "LifeOS",
-  "description": "O teu sistema operativo pessoal — conhecimento, hábitos, tarefas, metas, diário e finanças.",
+  "description": "Planeje, execute e acompanhe sua evolução em um sistema pessoal integrado.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#1a1d24",
-  "theme_color": "#1a1d24",
+  "background_color": "#f2f2f7",
+  "theme_color": "#007aff",
   "orientation": "any",
   "categories": ["productivity", "utilities", "lifestyle"],
   "icons": [
