@@ -25,14 +25,12 @@ export function StatCard({
   trend,
 }: StatCardProps) {
   return (
-    <div className="glass-card group relative flex min-h-[150px] flex-col justify-between overflow-hidden p-5">
-      <div className="pointer-events-none absolute -bottom-12 -right-10 size-28 rounded-full bg-[var(--system-blue)]/[0.045] blur-2xl transition-transform duration-500 group-hover:scale-125" />
-
+    <div className="glass-card relative flex min-h-[136px] flex-col justify-between p-5">
       <div>
-        <div className="mb-4 flex items-center justify-between">
+        <div className="mb-3 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             {Icon && (
-              <div className={cn("ios-squircle size-9 shrink-0", iconBg, iconColor)}>
+              <div className={cn("ios-squircle size-8 shrink-0", iconBg, iconColor)}>
                 <Icon size={17} strokeWidth={2} />
               </div>
             )}
@@ -40,7 +38,7 @@ export function StatCard({
           </div>
 
           {trend && (
-            <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400">
+            <span className="text-[10px] font-medium text-emerald-600 dark:text-emerald-400">
               {trend}
             </span>
           )}
@@ -49,7 +47,7 @@ export function StatCard({
         <div className="flex items-baseline justify-between gap-2">
           <div
             className={cn(
-              "sf-display text-[28px] font-semibold tracking-[-0.04em] text-foreground md:text-[32px]",
+              "sf-display text-[27px] font-semibold tracking-[-0.04em] text-foreground md:text-[30px]",
               tone === "positive" && "text-emerald-600 dark:text-emerald-400",
               tone === "negative" && "text-red-500 dark:text-red-400",
               tone === "warning" && "text-foreground dark:text-foreground",

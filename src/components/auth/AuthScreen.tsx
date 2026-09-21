@@ -1,20 +1,9 @@
 import { useState } from "react";
-import {
-  ArrowRight,
-  CalendarCheck2,
-  Check,
-  Eye,
-  EyeOff,
-  Layers3,
-  Loader2,
-  Lock,
-  Mail,
-  ShieldCheck,
-  User,
-} from "lucide-react";
+import { ArrowRight, Check, Eye, EyeOff, Loader2, Lock, Mail, User } from "lucide-react";
+
+import { BrandMark } from "@/components/layout/BrandMark";
 import { supabase } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
-import { BrandMark } from "@/components/layout/BrandMark";
 
 function readAuthError(error: unknown) {
   if (error instanceof Error) return { message: error.message, status: undefined };
@@ -49,24 +38,6 @@ function GoogleIcon() {
     </svg>
   );
 }
-
-const highlights = [
-  {
-    icon: CalendarCheck2,
-    title: "Planeje com clareza",
-    description: "Metas, agenda e tarefas conectadas ao seu dia.",
-  },
-  {
-    icon: Layers3,
-    title: "Um fluxo contínuo",
-    description: "Hábitos, notas e finanças sem perder o contexto.",
-  },
-  {
-    icon: ShieldCheck,
-    title: "Feito para ser seu",
-    description: "Uma base open source com privacidade em evolução.",
-  },
-];
 
 export function AuthScreen() {
   const [isLogin, setIsLogin] = useState(true);
@@ -159,231 +130,166 @@ export function AuthScreen() {
   };
 
   return (
-    <main className="auth-shell min-h-[100dvh] overflow-hidden bg-background text-foreground">
-      <div className="mx-auto grid min-h-[100dvh] w-full max-w-[1500px] lg:grid-cols-[1.06fr_0.94fr]">
-        <section className="auth-hero relative hidden overflow-hidden border-r border-white/10 px-12 py-12 text-white lg:flex lg:flex-col lg:justify-between xl:px-20 xl:py-16">
-          <div className="auth-orb auth-orb-one" />
-          <div className="auth-orb auth-orb-two" />
+    <main className="flex min-h-[100dvh] items-center justify-center bg-background px-5 py-10 text-foreground">
+      <div className="w-full max-w-[380px]">
+        <div className="mb-12 flex items-center gap-3">
+          <BrandMark className="size-9" />
+          <p className="sf-display text-lg font-semibold tracking-[-0.035em]">LifeOS</p>
+        </div>
 
-          <div className="relative z-10 flex items-center gap-3">
-            <BrandMark className="size-11 rounded-[15px]" />
-            <div>
-              <p className="sf-display text-lg font-bold tracking-[-0.035em]">LifeOS</p>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/45">
-                Sistema pessoal
-              </p>
-            </div>
-          </div>
-
-          <div className="relative z-10 max-w-2xl py-14">
-            <span className="vibrancy-label inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold text-white/75">
-              <span className="size-1.5 rounded-full bg-[#64d2ff] shadow-[0_0_12px_rgba(100,210,255,0.9)]" />
-              Seu dia começa com intenção
-            </span>
-            <h1 className="sf-display mt-7 max-w-xl text-5xl font-semibold leading-[1.04] tracking-[-0.055em] xl:text-6xl">
-              Menos ruído.
-              <br />
-              Mais direção.
-            </h1>
-            <p className="mt-6 max-w-lg text-base leading-7 text-white/60 xl:text-[17px]">
-              Organize o que importa, transforme objetivos em ações e acompanhe sua evolução em um
-              único espaço.
-            </p>
-
-            <div className="mt-10 grid max-w-xl gap-3">
-              {highlights.map(({ icon: Icon, title, description }) => (
-                <div
-                  key={title}
-                  className="thin-material flex items-center gap-4 rounded-[20px] p-4"
-                >
-                  <div className="grid size-10 shrink-0 place-items-center rounded-[13px] bg-white/[0.08] text-[#a7dcff]">
-                    <Icon className="size-5" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-white">{title}</p>
-                    <p className="mt-0.5 text-xs leading-5 text-white/45">{description}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <p className="relative z-10 text-xs text-white/32">
-            Open source · Feito para evoluir com você
+        <header className="mb-8">
+          <h1 className="sf-display text-[32px] font-semibold leading-tight tracking-[-0.045em]">
+            {isLogin ? "Entrar" : "Criar conta"}
+          </h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            {isLogin ? "Acesse seu espaço pessoal." : "Comece com o essencial."}
           </p>
-        </section>
+        </header>
 
-        <section className="relative flex items-center justify-center px-5 py-10 sm:px-8 lg:px-12">
-          <div className="auth-mobile-glow pointer-events-none absolute inset-0" />
-          <div className="relative z-10 w-full max-w-[430px] fade-in">
-            <div className="mb-10 flex items-center gap-3 lg:hidden">
-              <BrandMark className="size-11 rounded-[15px]" />
-              <div>
-                <p className="sf-display text-lg font-bold tracking-[-0.035em]">LifeOS</p>
-                <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-                  Sistema pessoal
-                </p>
-              </div>
+        <div className="mb-7 flex gap-5 border-b border-border">
+          <button
+            type="button"
+            onClick={() => selectMode(true)}
+            className={cn(
+              "-mb-px border-b-2 pb-2.5 text-sm transition-colors",
+              isLogin
+                ? "border-foreground font-medium text-foreground"
+                : "border-transparent text-muted-foreground",
+            )}
+          >
+            Entrar
+          </button>
+          <button
+            type="button"
+            onClick={() => selectMode(false)}
+            className={cn(
+              "-mb-px border-b-2 pb-2.5 text-sm transition-colors",
+              !isLogin
+                ? "border-foreground font-medium text-foreground"
+                : "border-transparent text-muted-foreground",
+            )}
+          >
+            Criar conta
+          </button>
+        </div>
+
+        <form onSubmit={handleAuth} className="space-y-4">
+          {error && (
+            <div
+              role="alert"
+              className="rounded-xl border border-red-500/20 bg-red-500/[0.06] px-4 py-3 text-sm text-red-600 dark:text-red-300"
+            >
+              {error}
             </div>
-
-            <div className="mb-8">
-              <p className="text-sm font-semibold text-[var(--system-blue)]">
-                {isLogin ? "Bem-vindo de volta" : "Comece por aqui"}
-              </p>
-              <h2 className="sf-display mt-2 text-[34px] font-semibold leading-tight tracking-[-0.045em] text-foreground sm:text-[40px]">
-                {isLogin ? "Entre no seu espaço" : "Crie seu LifeOS"}
-              </h2>
-              <p className="mt-3 text-sm leading-6 text-muted-foreground">
-                {isLogin
-                  ? "Continue de onde parou e organize as próximas ações."
-                  : "Uma conta para reunir seus planos, rotinas e aprendizados."}
-              </p>
+          )}
+          {successMsg && (
+            <div
+              role="status"
+              className="flex items-center gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/[0.06] px-4 py-3 text-sm text-emerald-700 dark:text-emerald-300"
+            >
+              <Check className="size-4" />
+              {successMsg}
             </div>
+          )}
 
-            <div className="segmented-control mb-6 grid grid-cols-2 gap-1 p-1">
-              <button
-                type="button"
-                onClick={() => selectMode(true)}
-                className={cn(
-                  "rounded-[10px] px-3 py-2 text-sm font-semibold transition-all",
-                  isLogin
-                    ? "segmented-control-active"
-                    : "text-muted-foreground hover:text-foreground",
-                )}
-              >
-                Entrar
-              </button>
-              <button
-                type="button"
-                onClick={() => selectMode(false)}
-                className={cn(
-                  "rounded-[10px] px-3 py-2 text-sm font-semibold transition-all",
-                  !isLogin
-                    ? "segmented-control-active"
-                    : "text-muted-foreground hover:text-foreground",
-                )}
-              >
-                Criar conta
-              </button>
-            </div>
+          {!isLogin && (
+            <AuthField label="Nome" icon={User}>
+              <input
+                type="text"
+                value={name}
+                onChange={(event) => setName(event.target.value)}
+                className="input-ios h-12 pl-10"
+                placeholder="Seu nome"
+                autoComplete="name"
+                required
+              />
+            </AuthField>
+          )}
 
-            <form onSubmit={handleAuth} className="space-y-4">
-              {error && (
-                <div
-                  role="alert"
-                  className="rounded-[14px] border border-red-500/20 bg-red-500/[0.08] px-4 py-3 text-sm font-medium text-red-600 dark:text-red-300"
-                >
-                  {error}
-                </div>
-              )}
-              {successMsg && (
-                <div
-                  role="status"
-                  className="flex items-center gap-2 rounded-[14px] border border-emerald-500/20 bg-emerald-500/[0.08] px-4 py-3 text-sm font-medium text-emerald-700 dark:text-emerald-300"
-                >
-                  <Check className="size-4" />
-                  {successMsg}
-                </div>
-              )}
+          <AuthField label="E-mail" icon={Mail}>
+            <input
+              type="email"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              className="input-ios h-12 pl-10"
+              placeholder="voce@exemplo.com"
+              autoComplete="email"
+              required
+            />
+          </AuthField>
 
-              {!isLogin && (
-                <label className="block space-y-2">
-                  <span className="text-xs font-semibold text-foreground">
-                    Como podemos chamar você?
-                  </span>
-                  <span className="relative block">
-                    <User className="absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-                    <input
-                      type="text"
-                      value={name}
-                      onChange={(event) => setName(event.target.value)}
-                      className="input-ios h-12 pl-10"
-                      placeholder="Seu nome"
-                      autoComplete="name"
-                      required
-                    />
-                  </span>
-                </label>
-              )}
-
-              <label className="block space-y-2">
-                <span className="text-xs font-semibold text-foreground">E-mail</span>
-                <span className="relative block">
-                  <Mail className="absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(event) => setEmail(event.target.value)}
-                    className="input-ios h-12 pl-10"
-                    placeholder="voce@exemplo.com"
-                    autoComplete="email"
-                    required
-                  />
-                </span>
-              </label>
-
-              <label className="block space-y-2">
-                <span className="text-xs font-semibold text-foreground">Senha</span>
-                <span className="relative block">
-                  <Lock className="absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-                  <input
-                    type={showPass ? "text" : "password"}
-                    value={password}
-                    onChange={(event) => setPassword(event.target.value)}
-                    className="input-ios h-12 px-10"
-                    placeholder="Mínimo de 6 caracteres"
-                    autoComplete={isLogin ? "current-password" : "new-password"}
-                    minLength={6}
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPass((visible) => !visible)}
-                    className="absolute right-3 top-1/2 grid size-7 -translate-y-1/2 place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-                    aria-label={showPass ? "Ocultar senha" : "Mostrar senha"}
-                  >
-                    {showPass ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
-                  </button>
-                </span>
-              </label>
-
-              <button
-                type="submit"
-                disabled={loading}
-                className="btn-ios h-12 w-full justify-center disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {loading ? (
-                  <Loader2 className="size-4 animate-spin" />
-                ) : (
-                  <>
-                    {isLogin ? "Entrar" : "Criar minha conta"}
-                    <ArrowRight className="size-4" />
-                  </>
-                )}
-              </button>
-            </form>
-
-            <div className="my-6 flex items-center gap-3 text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-              <span className="h-px flex-1 bg-border" />
-              ou continue com
-              <span className="h-px flex-1 bg-border" />
-            </div>
-
+          <AuthField label="Senha" icon={Lock}>
+            <input
+              type={showPass ? "text" : "password"}
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              className="input-ios h-12 px-10"
+              placeholder="Mínimo de 6 caracteres"
+              autoComplete={isLogin ? "current-password" : "new-password"}
+              minLength={6}
+              required
+            />
             <button
               type="button"
-              onClick={handleGoogleLogin}
-              className="material-button flex h-12 w-full items-center justify-center gap-2.5 text-sm font-semibold text-foreground"
+              onClick={() => setShowPass((visible) => !visible)}
+              className="absolute right-3 top-1/2 grid size-7 -translate-y-1/2 place-items-center text-muted-foreground"
+              aria-label={showPass ? "Ocultar senha" : "Mostrar senha"}
             >
-              <GoogleIcon />
-              Google
+              {showPass ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
             </button>
+          </AuthField>
 
-            <p className="mt-7 text-center text-[11px] leading-5 text-muted-foreground">
-              Ao continuar, você concorda em usar o LifeOS de forma responsável.
-            </p>
-          </div>
-        </section>
+          <button
+            type="submit"
+            disabled={loading}
+            className="btn-ios mt-2 h-12 w-full justify-center disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {loading ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              <>
+                {isLogin ? "Entrar" : "Criar conta"}
+                <ArrowRight className="size-4" />
+              </>
+            )}
+          </button>
+        </form>
+
+        <div className="my-6 flex items-center gap-3 text-xs text-muted-foreground">
+          <span className="h-px flex-1 bg-border" />
+          ou
+          <span className="h-px flex-1 bg-border" />
+        </div>
+
+        <button
+          type="button"
+          onClick={handleGoogleLogin}
+          className="material-button flex h-12 w-full items-center justify-center gap-2.5 text-sm font-medium"
+        >
+          <GoogleIcon />
+          Continuar com Google
+        </button>
       </div>
     </main>
+  );
+}
+
+function AuthField({
+  label,
+  icon: Icon,
+  children,
+}: {
+  label: string;
+  icon: typeof User;
+  children: React.ReactNode;
+}) {
+  return (
+    <label className="block space-y-2">
+      <span className="text-xs font-medium">{label}</span>
+      <span className="relative block">
+        <Icon className="absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+        {children}
+      </span>
+    </label>
   );
 }

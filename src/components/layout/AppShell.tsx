@@ -171,33 +171,29 @@ export function AppShell({ children }: { children?: ReactNode }) {
 
   return (
     <div className="flex h-[100dvh] w-full overflow-hidden bg-background text-foreground">
-      <aside className="glass-panel hidden w-[272px] shrink-0 flex-col border-y-0 border-l-0 md:flex">
-        <div className="px-4 pb-3 pt-5">
-          <Link to="/" className="flex items-center gap-3 rounded-[14px] px-2 py-1.5">
-            <BrandMark className="size-10" />
+      <aside className="glass-panel hidden w-[240px] shrink-0 flex-col border-y-0 border-l-0 md:flex">
+        <div className="px-4 pb-4 pt-5">
+          <Link to="/" className="flex items-center gap-2.5 px-2 py-1.5">
+            <BrandMark className="size-8" />
             <div className="min-w-0">
-              <p className="sf-display text-[17px] font-bold tracking-[-0.035em]">LifeOS</p>
-              <p className="text-[10px] font-medium text-muted-foreground">Seu sistema pessoal</p>
+              <p className="sf-display text-[16px] font-semibold tracking-[-0.035em]">LifeOS</p>
             </div>
           </Link>
 
           <button
             type="button"
             onClick={() => setPaletteOpen(true)}
-            className="material-button mt-4 flex h-10 w-full items-center gap-2.5 px-3 text-left text-xs font-medium text-muted-foreground"
+            className="mt-5 flex h-9 w-full items-center gap-2.5 rounded-[10px] bg-muted/60 px-3 text-left text-xs text-muted-foreground transition-colors hover:bg-muted"
           >
             <Search className="size-4" />
             <span className="flex-1">Buscar</span>
-            <kbd className="rounded-md border border-border bg-muted/60 px-1.5 py-0.5 text-[10px]">
-              ⌘ K
-            </kbd>
           </button>
         </div>
 
         <nav className="flex-1 overflow-y-auto px-3 pb-3 pt-1">
           {NAV_GROUPS.map((group, groupIndex) => (
-            <div key={group.label} className={cn(groupIndex > 0 && "mt-5")}>
-              <p className="mb-1.5 px-3 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground/70">
+            <div key={group.label} className={cn(groupIndex > 0 && "mt-4")}>
+              <p className="mb-1 px-3 text-[10px] font-medium text-muted-foreground/70">
                 {group.label}
               </p>
               <div className="space-y-0.5">
@@ -208,15 +204,12 @@ export function AppShell({ children }: { children?: ReactNode }) {
                       key={to}
                       to={to}
                       className={cn(
-                        "ios-spring group flex min-h-10 items-center gap-3 rounded-[12px] px-3 text-[13px] font-medium",
+                        "ios-spring group flex min-h-9 items-center gap-3 rounded-[10px] px-3 text-[13px]",
                         active ? "nav-pill-active" : "nav-pill-inactive",
                       )}
                     >
                       <Icon className="size-[17px] shrink-0" strokeWidth={active ? 2.25 : 1.85} />
                       <span>{label}</span>
-                      {active && (
-                        <span className="ml-auto size-1.5 rounded-full bg-[var(--system-blue)]" />
-                      )}
                     </Link>
                   );
                 })}
@@ -316,7 +309,6 @@ export function AppShell({ children }: { children?: ReactNode }) {
       </aside>
 
       <main className="relative flex min-w-0 flex-1 flex-col overflow-hidden">
-        <div className="pointer-events-none absolute -right-40 -top-48 size-[34rem] rounded-full bg-[var(--system-blue)]/[0.055] blur-3xl" />
 
         <header className="thin-material relative z-30 flex shrink-0 items-center justify-between border-x-0 border-t-0 px-5 pb-3 pt-[max(env(safe-area-inset-top),14px)] shadow-none md:hidden">
           <div>
@@ -361,7 +353,7 @@ export function AppShell({ children }: { children?: ReactNode }) {
       </main>
 
       <div className="pointer-events-none fixed inset-x-0 bottom-[max(12px,env(safe-area-inset-bottom))] z-[100] flex justify-center px-4 md:hidden">
-        <nav className="thin-material pointer-events-auto grid w-full max-w-sm grid-cols-5 items-center rounded-[25px] p-1.5 shadow-[0_18px_55px_-18px_rgba(0,0,0,0.42)]">
+        <nav className="thin-material pointer-events-auto grid w-full max-w-sm grid-cols-5 items-center rounded-[20px] p-1.5">
           <MobileNavItem to="/" label="Início" icon={LayoutDashboard} active={pathname === "/"} />
           <MobileNavItem
             to="/tasks"
@@ -372,10 +364,10 @@ export function AppShell({ children }: { children?: ReactNode }) {
           <button
             type="button"
             onClick={() => setFabOpen(true)}
-            className="mx-auto grid size-12 place-items-center rounded-[17px] bg-[var(--system-blue)] text-white shadow-[0_10px_24px_-10px_rgba(0,122,255,0.9)] transition-transform active:scale-95"
+            className="mx-auto grid size-10 place-items-center rounded-[13px] bg-[var(--system-blue)] text-white transition-transform active:scale-95"
             aria-label="Nova ação"
           >
-            <Plus className="size-6" strokeWidth={2.4} />
+            <Plus className="size-5" strokeWidth={2.2} />
           </button>
           <MobileNavItem
             to="/calendar"
