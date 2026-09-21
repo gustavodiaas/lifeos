@@ -53,7 +53,7 @@ export function FolderSidebar({
       <div className="flex items-center justify-between pb-2 border-b border-border/50">
         <div className="flex items-center gap-2">
           <FileText size={18} className="text-foreground" />
-          <h3 className="text-sm font-extrabold text-foreground tracking-tight">Conhecimento</h3>
+          <h3 className="text-sm font-semibold text-foreground tracking-tight">Conhecimento</h3>
         </div>
 
         <div className="flex items-center gap-1">
@@ -105,7 +105,7 @@ export function FolderSidebar({
 
         {/* Lista de Pastas */}
         <div className="space-y-1">
-          <p className="px-2 text-[10px] font-extrabold text-muted-foreground/70 uppercase tracking-widest mb-1">
+          <p className="px-2 text-[10px] font-semibold text-muted-foreground/70 uppercase tracking-normal mb-1">
             Pastas ({folders.length})
           </p>
 
@@ -137,7 +137,7 @@ export function FolderSidebar({
                     <span className="truncate">{folder.name}</span>
                   </div>
 
-                  <span className="text-[10px] font-extrabold px-1.5 py-0.5 rounded bg-muted/80 text-muted-foreground">
+                  <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-muted/80 text-muted-foreground">
                     {folderNotes.length}
                   </span>
                 </div>
@@ -154,7 +154,7 @@ export function FolderSidebar({
                           className={cn(
                             "w-full text-left flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all truncate",
                             isSelectedNote
-                              ? "bg-foreground text-background font-bold shadow-sm"
+                              ? "bg-foreground text-background font-bold shadow-none"
                               : "text-muted-foreground hover:bg-muted hover:text-foreground"
                           )}
                         >
@@ -173,7 +173,7 @@ export function FolderSidebar({
         {/* Notas da Raiz (Sem Pasta) */}
         {rootNotes.length > 0 && (
           <div className="space-y-1 pt-2 border-t border-border/40">
-            <p className="px-2 text-[10px] font-extrabold text-muted-foreground/70 uppercase tracking-widest mb-1">
+            <p className="px-2 text-[10px] font-semibold text-muted-foreground/70 uppercase tracking-normal mb-1">
               Notas Sem Pasta
             </p>
 
@@ -186,7 +186,7 @@ export function FolderSidebar({
                   className={cn(
                     "w-full text-left flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium transition-all truncate",
                     isSelectedNote
-                      ? "bg-foreground text-background font-bold shadow-sm"
+                      ? "bg-foreground text-background font-bold shadow-none"
                       : "text-muted-foreground hover:bg-muted hover:text-foreground"
                   )}
                 >

@@ -1,11 +1,7 @@
 import { useState, useMemo } from "react";
 import { useAuthContext } from "@/context/AuthContext";
 import { useNotes } from "@/hooks/useNotes";
-import { useMetrics } from "@/hooks/useMetrics";
 import type { Note } from "@/lib/supabase";
-import { FocusTimer } from "./components/FocusTimer";
-import { StudyHeatmap } from "./components/StudyHeatmap";
-import { BookTracker } from "./components/BookTracker";
 import { FolderSidebar } from "./components/FolderSidebar";
 import { NoteEditor } from "./components/NoteEditor";
 import { BacklinksPanel } from "./components/BacklinksPanel";
@@ -27,7 +23,6 @@ export function NotesModule() {
     notes, folders, loading,
     addNote, updateNote, removeNote, addFolder,
   } = useNotes(activeUserId);
-  const { metrics, refetch: refetchMetrics } = useMetrics(activeUserId);
 
   const [tab, setTab]                     = useState<Tab>("conhecimento");
   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
@@ -121,6 +116,10 @@ export function NotesModule() {
 
   return (
     <div className="space-y-5 fade-in pb-12 px-4 md:px-6 py-4">
+      <header>
+        <h1 className="sf-display text-3xl font-semibold tracking-[-0.04em]">Conhecimento</h1>
+        <p className="mt-1 text-sm text-muted-foreground">Notas e conexões importantes.</p>
+      </header>
 
       {/* ── Tabs ─────────────────────────────────────────────────────── */}
       <div className="flex items-center gap-1 p-1 bg-muted rounded-2xl border border-border w-fit">
@@ -131,7 +130,7 @@ export function NotesModule() {
             className={cn(
               "flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all",
               tab === id
-                ? "bg-card text-foreground shadow-sm"
+                ? "bg-card text-foreground shadow-none"
                 : "text-muted-foreground hover:text-foreground"
             )}
           >
@@ -139,7 +138,7 @@ export function NotesModule() {
             <span>{label}</span>
             {count !== undefined && (
               <span className={cn(
-                "text-[10px] font-extrabold px-1.5 py-0.5 rounded-full",
+                "text-[10px] font-semibold px-1.5 py-0.5 rounded-full",
                 tab === id ? "bg-muted text-muted-foreground" : "bg-muted/50 text-muted-foreground"
               )}>{count}</span>
             )}
@@ -150,9 +149,6 @@ export function NotesModule() {
       {/* ── Aba: Conhecimento ─────────────────────────────────────────── */}
       {tab === "conhecimento" && (
         <>
-          <FocusTimer onSessionComplete={refetchMetrics} />
-          <StudyHeatmap metrics={metrics} />
-
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 min-h-[600px]">
             <div className="lg:col-span-3">
               <FolderSidebar

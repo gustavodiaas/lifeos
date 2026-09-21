@@ -251,11 +251,11 @@ export function DashboardQuickActions({ userId }: DashboardQuickActionsProps) {
   ];
 
   return (
-    <div className="glass-card p-4 md:p-5 rounded-2xl border border-border/80 shadow-md space-y-3.5">
+    <div className="glass-card p-4 md:p-5 rounded-2xl border border-border/80 shadow-none space-y-3.5">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-          <h3 className="text-xs font-black uppercase tracking-wider text-foreground">
+          <h3 className="text-xs font-semibold tracking-normal text-foreground">
             Acessos Rápidos de Cadastro
           </h3>
         </div>
@@ -280,7 +280,7 @@ export function DashboardQuickActions({ userId }: DashboardQuickActionsProps) {
                 <Plus size={14} className="text-muted-foreground opacity-60 group-hover:opacity-100 transition-opacity" />
               </div>
               <div>
-                <span className="text-xs font-black text-foreground block truncate">
+                <span className="text-xs font-semibold text-foreground block truncate">
                   {act.label}
                 </span>
                 <span className="text-[10px] text-muted-foreground font-medium block truncate">

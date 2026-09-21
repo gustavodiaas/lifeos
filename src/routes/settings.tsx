@@ -301,7 +301,7 @@ function SettingsPage() {
         <div className="space-y-6 max-w-4xl fade-in">
 
           {/* ── 0. Guia & Tutorial Interativo (Revisar Onboarding) ───────── */}
-          <section className="glass-card p-6 md:p-8 space-y-4 border border-primary/30 shadow-md">
+          <section className="glass-card p-6 md:p-8 space-y-4 border border-primary/30 shadow-none">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
@@ -318,7 +318,7 @@ function SettingsPage() {
               <button
                 type="button"
                 onClick={() => window.dispatchEvent(new CustomEvent("open-lifeos-onboarding"))}
-                className="px-5 py-3 rounded-xl bg-primary text-primary-foreground font-black text-xs hover:bg-primary/90 transition-all flex items-center justify-center gap-2 shadow-md shrink-0 active:scale-95"
+                className="px-5 py-3 rounded-xl bg-primary text-primary-foreground font-semibold text-xs hover:bg-primary/90 transition-all flex items-center justify-center gap-2 shadow-none shrink-0 active:scale-95"
               >
                 <Sparkles size={16} />
                 <span>Revisar Onboarding</span>
@@ -344,14 +344,14 @@ function SettingsPage() {
               {/* Avatar + Status */}
               <div className="flex items-center gap-5">
                 <div className="relative group">
-                  <div className="w-20 h-20 rounded-full bg-muted border-2 border-border overflow-hidden flex items-center justify-center shadow-md">
+                  <div className="w-20 h-20 rounded-full bg-muted border-2 border-border overflow-hidden flex items-center justify-center shadow-none">
                     {avatarUrl ? (
                       <img src={avatarUrl} className="w-full h-full object-cover" alt="Avatar" />
                     ) : (
                       <User size={36} className="text-muted-foreground" />
                     )}
                   </div>
-                  <label className="absolute bottom-0 right-0 w-8 h-8 bg-foreground hover:opacity-80 border-2 border-background rounded-full flex items-center justify-center cursor-pointer shadow-md transition-transform active:scale-95">
+                  <label className="absolute bottom-0 right-0 w-8 h-8 bg-foreground hover:opacity-80 border-2 border-background rounded-full flex items-center justify-center cursor-pointer shadow-none transition-transform active:scale-95">
                     {uploadingAvatar ? (
                       <Loader2 size={14} className="text-black animate-spin" />
                     ) : (
@@ -368,7 +368,7 @@ function SettingsPage() {
                 </div>
 
                 <div>
-                  <h3 className="text-base font-extrabold text-foreground">{username || "Usuário LifeOS"}</h3>
+                  <h3 className="text-base font-semibold text-foreground">{username || "Usuário LifeOS"}</h3>
                   <div className="flex items-center gap-1.5 mt-0.5">
                     <CheckCircle2 size={13} className="text-muted-foreground" />
                     <span className="text-xs text-muted-foreground font-medium">{user?.email}</span>
@@ -380,7 +380,7 @@ function SettingsPage() {
               {/* Grid de Formulário */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5 block">
+                  <label className="text-xs font-bold text-muted-foreground tracking-normal mb-1.5 block">
                     Nome de Exibição
                   </label>
                   <input
@@ -393,7 +393,7 @@ function SettingsPage() {
                 </div>
 
                 <div>
-                  <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                  <label className="text-xs font-bold text-muted-foreground tracking-normal mb-1.5 flex items-center gap-1.5">
                     <Banknote size={14} className="text-muted-foreground" />
                     Renda Mensal (Referência para Finanças)
                   </label>
@@ -416,7 +416,7 @@ function SettingsPage() {
                 </div>
 
                 <div>
-                  <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                  <label className="text-xs font-bold text-muted-foreground tracking-normal mb-1.5 flex items-center gap-1.5">
                     <Briefcase size={14} className="text-muted-foreground" />
                     Profissão / Área de Atuação
                   </label>
@@ -469,7 +469,7 @@ function SettingsPage() {
                 onClick={() => handleThemeChange("light")}
                 className={`p-4 rounded-2xl border-2 flex flex-col items-center gap-2.5 transition-all ios-spring ${
                   theme === "light"
-                    ? "border-foreground bg-foreground/10 text-foreground font-bold shadow-sm"
+                    ? "border-foreground bg-foreground/10 text-foreground font-bold shadow-none"
                     : "border-border/60 bg-muted/30 text-muted-foreground hover:bg-muted"
                 }`}
               >
@@ -482,7 +482,7 @@ function SettingsPage() {
                 onClick={() => handleThemeChange("dark")}
                 className={`p-4 rounded-2xl border-2 flex flex-col items-center gap-2.5 transition-all ios-spring ${
                   theme === "dark"
-                    ? "border-foreground bg-foreground/10 text-foreground font-bold shadow-sm"
+                    ? "border-foreground bg-foreground/10 text-foreground font-bold shadow-none"
                     : "border-border/60 bg-muted/30 text-muted-foreground hover:bg-muted"
                 }`}
               >
@@ -495,7 +495,7 @@ function SettingsPage() {
                 onClick={() => handleThemeChange("system")}
                 className={`p-4 rounded-2xl border-2 flex flex-col items-center gap-2.5 transition-all ios-spring ${
                   theme === "system"
-                    ? "border-foreground bg-foreground/10 text-foreground font-bold shadow-sm"
+                    ? "border-foreground bg-foreground/10 text-foreground font-bold shadow-none"
                     : "border-border/60 bg-muted/30 text-muted-foreground hover:bg-muted"
                 }`}
               >
@@ -509,11 +509,11 @@ function SettingsPage() {
           <section className="glass-card p-6 md:p-8 space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border/60 pb-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-foreground text-background flex items-center justify-center shrink-0 shadow-md">
+                <div className="w-10 h-10 rounded-2xl bg-foreground text-background flex items-center justify-center shrink-0 shadow-none">
                   <Users size={20} />
                 </div>
                 <div>
-                  <h2 className="text-lg font-extrabold text-foreground">Acessos Simultâneos & Permissões</h2>
+                  <h2 className="text-lg font-semibold text-foreground">Acessos Simultâneos & Permissões</h2>
                   <p className="text-xs text-muted-foreground font-medium">
                     Convide parceiros ou membros para visualizar ou gerenciar sua agenda, finanças e tarefas.
                   </p>
@@ -562,9 +562,9 @@ function SettingsPage() {
                     toast.info("Notificações desativadas.");
                   }
                 }}
-                className={`px-4 py-2 rounded-xl text-xs font-black uppercase transition-all ${
+                className={`px-4 py-2 rounded-xl text-xs font-semibold uppercase transition-all ${
                   notifSettings.enabled
-                    ? "bg-foreground text-background shadow-sm"
+                    ? "bg-foreground text-background shadow-none"
                     : "bg-muted text-muted-foreground hover:text-foreground"
                 }`}
               >
@@ -668,7 +668,7 @@ function SettingsPage() {
             <form onSubmit={handleUpdatePassword} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5 block">
+                  <label className="text-xs font-bold text-muted-foreground tracking-normal mb-1.5 block">
                     Nova Senha
                   </label>
                   <input
@@ -681,7 +681,7 @@ function SettingsPage() {
                 </div>
 
                 <div>
-                  <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5 block">
+                  <label className="text-xs font-bold text-muted-foreground tracking-normal mb-1.5 block">
                     Confirmar Nova Senha
                   </label>
                   <input

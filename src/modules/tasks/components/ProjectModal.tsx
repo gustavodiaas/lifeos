@@ -34,7 +34,7 @@ export function ProjectModal({ open, onClose, onSave }: ProjectModalProps) {
 
   return (
     <ModalPortal open={open} onClose={onClose}>
-      <div className="bg-card w-full max-w-sm rounded-t-[28px] sm:rounded-[28px] shadow-2xl border border-border overflow-hidden flex flex-col slide-up">
+      <div className="bg-card w-full max-w-sm rounded-t-[28px] sm:rounded-2xl shadow-none border border-border overflow-hidden flex flex-col slide-up">
 
         {/* Header */}
         <div className="px-6 py-4 border-b border-border/60 flex items-center justify-between shrink-0">
@@ -42,7 +42,7 @@ export function ProjectModal({ open, onClose, onSave }: ProjectModalProps) {
             <div className="w-8 h-8 rounded-xl bg-foreground/15 text-foreground flex items-center justify-center">
               <FolderPlus size={18} />
             </div>
-            <h2 className="text-base font-extrabold text-foreground tracking-tight">Novo Projeto</h2>
+            <h2 className="text-base font-semibold text-foreground tracking-tight">Novo Projeto</h2>
           </div>
           <button
             onClick={onClose}
@@ -55,7 +55,7 @@ export function ProjectModal({ open, onClose, onSave }: ProjectModalProps) {
         {/* Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div>
-            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5 block">
+            <label className="text-xs font-bold text-muted-foreground tracking-normal mb-1.5 block">
               Nome do Projeto
             </label>
             <input
@@ -70,7 +70,7 @@ export function ProjectModal({ open, onClose, onSave }: ProjectModalProps) {
           </div>
 
           <div>
-            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5 block">
+            <label className="text-xs font-bold text-muted-foreground tracking-normal mb-1.5 block">
               Cor de Destaque
             </label>
             <div className="flex items-center gap-2">
@@ -80,7 +80,7 @@ export function ProjectModal({ open, onClose, onSave }: ProjectModalProps) {
                   type="button"
                   onClick={() => setColor(c)}
                   className={`w-7 h-7 rounded-full transition-transform border-2 ${
-                    color === c ? "scale-125 border-foreground shadow-md" : "border-transparent opacity-80"
+                    color === c ? "scale-125 border-foreground shadow-none" : "border-transparent opacity-80"
                   }`}
                   style={{ backgroundColor: c }}
                 />
@@ -88,7 +88,7 @@ export function ProjectModal({ open, onClose, onSave }: ProjectModalProps) {
             </div>
           </div>
 
-          <button type="submit" className="btn-ios w-full py-3.5 mt-2 text-xs font-black uppercase tracking-wider">
+          <button type="submit" className="btn-ios w-full py-3.5 mt-2 text-xs font-semibold tracking-normal">
             <Save size={16} />
             <span>Criar Projeto</span>
           </button>

@@ -277,22 +277,22 @@ export function CalendarModule() {
   return (
     <div className="space-y-5 fade-in select-none pb-24 max-w-7xl mx-auto">
       {/* ── 1. Header iOS Style (Fantastical / Apple Calendar) ──────────────── */}
-      <div className="glass-card p-4 md:p-6 rounded-3xl border border-border/80 shadow-xl space-y-4">
+      <div className="space-y-4 border-b border-border pb-5">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           {/* Título do Mês / Ano */}
           <div className="flex items-center gap-3">
             <button
               onClick={handleToday}
-              className="w-10 h-10 rounded-2xl bg-primary/10 text-primary border border-primary/20 font-black text-sm flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-all shadow-xs"
+              className="w-10 h-10 rounded-2xl bg-primary/10 text-primary border border-primary/20 font-semibold text-sm flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-all shadow-xs"
               title="Ir para Hoje"
             >
               {new Date().getDate()}
             </button>
             <div>
-              <h2 className="text-2xl md:text-3xl font-black text-foreground tracking-tight flex items-center gap-2">
+              <h1 className="sf-display text-3xl font-semibold tracking-[-0.04em] flex items-center gap-2">
                 <span>{capitalizedMonth}</span>
-                <span className="text-muted-foreground font-extrabold">{year}</span>
-              </h2>
+                <span className="text-muted-foreground font-semibold">{year}</span>
+              </h1>
             </div>
 
             {/* Navegação de Mês */}
@@ -369,7 +369,7 @@ export function CalendarModule() {
 
             <button
               onClick={() => openNew(selectedDateIso)}
-              className="btn-ios text-xs py-2.5 px-4 shadow-md bg-primary hover:bg-primary/90 text-primary-foreground"
+              className="btn-ios text-xs py-2.5 px-4 shadow-none bg-primary hover:bg-primary/90 text-primary-foreground"
             >
               <Plus size={16} strokeWidth={2.5} />
               <span>Novo Evento</span>
@@ -392,14 +392,14 @@ export function CalendarModule() {
 
       {/* ── 2. MODO GRID (TELA 1 - Mês Completo em Estilo Monocromático) ──────── */}
       {viewMode === "grid" && (
-        <div className="glass-card rounded-3xl border border-border/80 shadow-xl overflow-hidden">
+        <div className="glass-card rounded-2xl border border-border/80 shadow-none overflow-hidden">
           {/* Dias da semana */}
           <div className="grid grid-cols-7 border-b border-border/60 bg-muted/40 text-center">
             {["DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SÁB"].map((d, i) => (
               <div
                 key={d}
                 className={cn(
-                  "py-3 text-[11px] font-black uppercase tracking-wider text-muted-foreground"
+                  "py-3 text-[11px] font-semibold tracking-normal text-muted-foreground"
                 )}
               >
                 {d}
@@ -436,7 +436,7 @@ export function CalendarModule() {
                   <div className="flex items-center justify-between mb-1.5">
                     <span
                       className={cn(
-                        "text-xs font-black w-6 h-6 rounded-full flex items-center justify-center transition-all",
+                        "text-xs font-semibold w-6 h-6 rounded-full flex items-center justify-center transition-all",
                         isToday
                           ? "bg-primary text-primary-foreground font-bold shadow-xs"
                           : isSelected
@@ -477,7 +477,7 @@ export function CalendarModule() {
                     {/* Feriado Nacional */}
                     {holidaysMap[cell.dateIso] && (
                       <div
-                        className="px-1.5 py-0.5 rounded-md text-[10px] font-black truncate leading-tight flex items-center gap-1 bg-primary/10 text-primary border border-primary/20 shadow-2xs"
+                        className="px-1.5 py-0.5 rounded-md text-[10px] font-semibold truncate leading-tight flex items-center gap-1 bg-primary/10 text-primary border border-primary/20 shadow-2xs"
                         title={`Feriado Nacional: ${holidaysMap[cell.dateIso].name}`}
                       >
                         <span className="text-[10px] shrink-0">🇧🇷</span>
@@ -506,7 +506,7 @@ export function CalendarModule() {
                     ))}
 
                     {evts.length + tasksDue.length > 3 && (
-                      <span className="text-[9px] font-extrabold text-muted-foreground pl-1 block">
+                      <span className="text-[9px] font-semibold text-muted-foreground pl-1 block">
                         +{evts.length + tasksDue.length - 3} mais
                       </span>
                     )}
@@ -523,9 +523,9 @@ export function CalendarModule() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Lado Esquerdo: Mini Calendário de Seleção */}
           <div className="lg:col-span-5 space-y-4">
-            <div className="glass-card p-4 rounded-3xl border border-border/80 shadow-lg">
+            <div className="glass-card p-4 rounded-2xl border border-border/80 shadow-none">
               <div className="flex items-center justify-between pb-3 border-b border-border/50">
-                <span className="text-xs font-black uppercase tracking-wider text-muted-foreground">
+                <span className="text-xs font-semibold tracking-normal text-muted-foreground">
                   {capitalizedMonth} {year}
                 </span>
                 <div className="flex gap-1">
@@ -541,7 +541,7 @@ export function CalendarModule() {
               {/* Grid Compacto */}
               <div className="grid grid-cols-7 text-center pt-2 gap-y-2">
                 {["D", "S", "T", "Q", "Q", "S", "S"].map((d, i) => (
-                  <span key={i} className="text-[10px] font-black text-muted-foreground">
+                  <span key={i} className="text-[10px] font-semibold text-muted-foreground">
                     {d}
                   </span>
                 ))}
@@ -561,7 +561,7 @@ export function CalendarModule() {
                         "h-9 rounded-2xl flex flex-col items-center justify-center relative transition-all text-xs font-bold",
                         !cell.isCurrentMonth && "opacity-30",
                         isToday && !isSelected && "bg-primary/10 text-primary border border-primary/30",
-                        isSelected && "bg-primary text-primary-foreground shadow-md font-extrabold"
+                        isSelected && "bg-primary text-primary-foreground shadow-none font-semibold"
                       )}
                     >
                       <span>{cell.dayNum}</span>
@@ -582,8 +582,8 @@ export function CalendarModule() {
             </div>
 
             {/* Eventos selecionados resumo */}
-            <div className="glass-card p-4 rounded-3xl border border-border/80 space-y-2">
-              <h4 className="text-xs font-black text-foreground uppercase tracking-wider flex items-center justify-between">
+            <div className="glass-card p-4 rounded-2xl border border-border/80 space-y-2">
+              <h4 className="text-xs font-semibold text-foreground tracking-normal flex items-center justify-between">
                 <span>Resumo da Seleção</span>
                 <span className="text-primary">{selectedDateIso}</span>
               </h4>
@@ -596,9 +596,9 @@ export function CalendarModule() {
 
           {/* Lado Direito: Feed Continuo de Agenda por Data (Estilo Fantastical) */}
           <div className="lg:col-span-7 space-y-4">
-            <div className="glass-card p-5 rounded-3xl border border-border/80 shadow-xl space-y-6">
+            <div className="glass-card p-5 rounded-2xl border border-border/80 shadow-none space-y-6">
               <div className="flex items-center justify-between pb-3 border-b border-border/50">
-                <h3 className="text-sm font-black text-foreground uppercase tracking-wider flex items-center gap-2">
+                <h3 className="text-sm font-semibold text-foreground tracking-normal flex items-center gap-2">
                   <Clock size={16} className="text-primary" /> Agenda de Compromissos
                 </h3>
                 <span className="text-xs font-bold text-muted-foreground bg-muted px-2.5 py-1 rounded-full">
@@ -633,7 +633,7 @@ export function CalendarModule() {
                         <div className="flex items-center justify-between bg-muted/40 px-3.5 py-2 rounded-2xl border border-border/40">
                           <span
                             className={cn(
-                              "text-xs font-black uppercase tracking-wider flex items-center gap-2",
+                              "text-xs font-semibold tracking-normal flex items-center gap-2",
                               isToday ? "text-primary" : "text-foreground"
                             )}
                           >
@@ -641,7 +641,7 @@ export function CalendarModule() {
                             {dateFormatted}
                           </span>
                           {isToday && (
-                            <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-black">
+                            <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-semibold">
                               HOJE
                             </span>
                           )}
@@ -649,10 +649,10 @@ export function CalendarModule() {
 
                         {/* Banner de Feriado Nacional */}
                         {holidaysMap[dateIso] && (
-                          <div className="p-3 rounded-2xl border border-primary/30 bg-primary/5 flex items-center gap-2.5 text-xs text-foreground font-extrabold shadow-2xs">
+                          <div className="p-3 rounded-2xl border border-primary/30 bg-primary/5 flex items-center gap-2.5 text-xs text-foreground font-semibold shadow-2xs">
                             <span className="text-base">🇧🇷</span>
                             <div>
-                              <span className="font-black block text-primary text-[10px] uppercase tracking-wider">Feriado Nacional</span>
+                              <span className="font-semibold block text-primary text-[10px] tracking-normal">Feriado Nacional</span>
                               <span className="text-xs">{holidaysMap[dateIso].name}</span>
                             </div>
                           </div>
@@ -663,15 +663,15 @@ export function CalendarModule() {
                           {data.customEvents.map((evt) => (
                             <div
                               key={evt.id}
-                              className="p-3.5 rounded-2xl border border-border bg-card flex items-start justify-between gap-3 transition-all hover:scale-[1.01] shadow-xs"
+                              className="p-3.5 rounded-2xl border border-border bg-card flex items-start justify-between gap-3 transition-all  shadow-xs"
                             >
                               <div className="flex items-start gap-3 min-w-0 flex-1">
                                 <span className="w-3 h-3 rounded-full mt-1 shrink-0 bg-primary" />
                                 <div className="space-y-1 min-w-0 flex-1">
                                   <div className="flex items-center gap-2 flex-wrap">
-                                    <span className="text-xs font-black text-foreground">{evt.title}</span>
+                                    <span className="text-xs font-semibold text-foreground">{evt.title}</span>
                                     {evt.label && (
-                                      <span className="px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-muted text-muted-foreground border border-border">
+                                      <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold tracking-normal bg-muted text-muted-foreground border border-border">
                                         {evt.label}
                                       </span>
                                     )}
@@ -710,7 +710,7 @@ export function CalendarModule() {
                                 <CheckSquare size={16} className="text-foreground shrink-0" />
                                 <span className="font-bold text-foreground truncate">{t.title}</span>
                               </div>
-                              <span className="text-[10px] font-black px-2 py-0.5 rounded-md bg-secondary text-secondary-foreground shrink-0">
+                              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-secondary text-secondary-foreground shrink-0">
                                 TAREFA
                               </span>
                             </div>
@@ -736,7 +736,7 @@ export function CalendarModule() {
       {viewMode === "week" && (
         <div className="space-y-5">
           {/* Strip Semanal Estilo Monocromático */}
-          <div className="glass-card p-4 rounded-3xl border border-border/80 shadow-lg">
+          <div className="glass-card p-4 rounded-2xl border border-border/80 shadow-none">
             <div className="grid grid-cols-7 gap-2 text-center">
               {weekDays.map((w) => {
                 const isSelected = w.dateIso === selectedDateIso;
@@ -751,14 +751,14 @@ export function CalendarModule() {
                     className={cn(
                       "py-3 rounded-2xl flex flex-col items-center justify-center gap-1 transition-all",
                       isSelected
-                        ? "bg-primary text-primary-foreground font-extrabold shadow-md scale-105"
+                        ? "bg-primary text-primary-foreground font-semibold shadow-none "
                         : isToday
                         ? "bg-primary/10 text-primary border border-primary/30"
                         : "bg-muted/30 text-foreground hover:bg-muted/60"
                     )}
                   >
-                    <span className="text-[10px] font-black tracking-wider uppercase opacity-80">{w.dayShort}</span>
-                    <span className="text-sm font-black">{w.dayNum}</span>
+                    <span className="text-[10px] font-semibold tracking-wider uppercase opacity-80">{w.dayShort}</span>
+                    <span className="text-sm font-semibold">{w.dayNum}</span>
                     {hasEvts && <span className={cn("w-1.5 h-1.5 rounded-full", isSelected ? "bg-primary-foreground" : "bg-primary")} />}
                   </button>
                 );
@@ -767,9 +767,9 @@ export function CalendarModule() {
           </div>
 
           {/* Agenda da Data Selecionada na Semana */}
-          <div className="glass-card p-5 rounded-3xl border border-border/80 shadow-xl space-y-4">
+          <div className="glass-card p-5 rounded-2xl border border-border/80 shadow-none space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-border/50">
-              <h3 className="text-sm font-black text-foreground uppercase tracking-wider flex items-center gap-2">
+              <h3 className="text-sm font-semibold text-foreground tracking-normal flex items-center gap-2">
                 <CalendarIcon size={16} className="text-primary" />
                 {new Date(selectedDateIso + "T12:00:00").toLocaleDateString("pt-BR", {
                   weekday: "long",
@@ -797,7 +797,7 @@ export function CalendarModule() {
                     <div className="flex items-center gap-3">
                       <span className="w-3 h-3 rounded-full shrink-0 bg-primary" />
                       <div>
-                        <h4 className="text-xs font-black text-foreground">{evt.title}</h4>
+                        <h4 className="text-xs font-semibold text-foreground">{evt.title}</h4>
                         {evt.startTime && (
                           <p className="text-[11px] font-bold text-muted-foreground">
                             {evt.startTime} {evt.endTime ? `→ ${evt.endTime}` : ""}
@@ -822,7 +822,7 @@ export function CalendarModule() {
       {/* ── 5. FAB Flutuante de Criação Rápida no Canto Inferior ───────────────── */}
       <button
         onClick={() => openNew(selectedDateIso)}
-        className="fixed bottom-24 right-5 md:bottom-8 md:right-8 w-14 h-14 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-2xl flex items-center justify-center transition-all hover:scale-110 active:scale-95 z-[150]"
+        className="fixed bottom-24 right-5 md:bottom-8 md:right-8 w-14 h-14 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-none flex items-center justify-center transition-all  active:scale-95 z-[150]"
         title="Novo Evento Rápido"
       >
         <Plus size={26} strokeWidth={2.5} />
@@ -830,9 +830,9 @@ export function CalendarModule() {
 
       {/* ── Modal de Criação de Evento ───────────────────────────────────────── */}
       <ModalPortal open={showModal} onClose={() => setShowModal(false)} raw>
-        <div className="bg-card border border-border rounded-3xl p-5 md:p-6 max-w-md w-full shadow-2xl space-y-4 slide-up my-auto">
+        <div className="bg-card border border-border rounded-2xl p-5 md:p-6 max-w-md w-full shadow-none space-y-4 slide-up my-auto">
           <div className="flex items-center justify-between pb-3 border-b border-border/50">
-            <h3 className="text-sm font-black text-foreground flex items-center gap-2">
+            <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
               <CalendarIcon size={16} className="text-primary" /> Agendar Novo Compromisso
             </h3>
             <button
@@ -912,7 +912,7 @@ export function CalendarModule() {
                     onClick={() => setColor(c.hex)}
                     className={cn(
                       "w-7 h-7 rounded-full transition-transform flex items-center justify-center border border-border",
-                      color === c.hex ? "scale-110 ring-2 ring-offset-2 ring-foreground" : "hover:scale-105"
+                      color === c.hex ? "scale-110 ring-2 ring-offset-2 ring-foreground" : ""
                     )}
                     style={{ backgroundColor: c.hex }}
                   >
@@ -955,9 +955,9 @@ export function CalendarModule() {
 
       {/* ── Modal de Sincronização / Exportação ICS ─────────────────────────── */}
       <ModalPortal open={syncModalOpen} onClose={() => setSyncModalOpen(false)} raw>
-        <div className="bg-card border border-border rounded-3xl p-5 md:p-6 max-w-md w-full shadow-2xl space-y-4 slide-up my-auto">
+        <div className="bg-card border border-border rounded-2xl p-5 md:p-6 max-w-md w-full shadow-none space-y-4 slide-up my-auto">
           <div className="flex items-center justify-between pb-3 border-b border-border/50">
-            <h3 className="text-sm font-black text-foreground flex items-center gap-2">
+            <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
               <Download size={16} className="text-primary" /> Exportar / Sincronizar Agenda
             </h3>
             <button
@@ -988,7 +988,7 @@ export function CalendarModule() {
                   💡 No iPhone / Mac: basta abrir o arquivo .ics baixado e clicar em "Adicionar Todos".
                 </span>
               </div>
-              <Download size={16} className="text-primary shrink-0 group-hover:scale-110 transition-transform" />
+              <Download size={16} className="text-primary shrink-0 group- transition-transform" />
             </button>
 
             {/* Opção 2: Google Agenda Web */}

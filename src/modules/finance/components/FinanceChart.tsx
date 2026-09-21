@@ -47,7 +47,7 @@ export function FinanceChart({ transactions }: FinanceChartProps) {
             <Wallet size={18} />
           </div>
           <div>
-            <h3 className="text-base font-extrabold text-foreground">Fluxo de Caixa Mensal</h3>
+            <h3 className="text-base font-semibold text-foreground">Fluxo de Caixa Mensal</h3>
             <p className="text-xs text-muted-foreground font-medium">Comparativo de Receitas vs Despesas</p>
           </div>
         </div>
@@ -73,8 +73,8 @@ export function FinanceChart({ transactions }: FinanceChartProps) {
                 if (active && payload && payload.length) {
                   const data = payload[0].payload;
                   return (
-                    <div className="glass-card p-3 shadow-xl border border-border text-xs space-y-1">
-                      <p className="font-extrabold text-foreground uppercase">{data.month}</p>
+                    <div className="glass-card p-3 shadow-none border border-border text-xs space-y-1">
+                      <p className="font-semibold text-foreground uppercase">{data.month}</p>
                       <p className="text-emerald-500 font-bold">Receita: {formatBRL(data.receita)}</p>
                       <p className="text-red-500 font-bold">Despesa: {formatBRL(data.despesa)}</p>
                     </div>

@@ -16,7 +16,7 @@ export function AlertModal({ open, onClose, onConfirm, title, message, type = 'i
 
   return (
     <ModalPortal open={open} onClose={onClose}>
-      <div className="bg-white/90 dark:bg-[#212121]/90 backdrop-blur-xl w-full max-w-xs rounded-[28px] shadow-2xl overflow-hidden border border-black/5 dark:border-white/10 transition-colors slide-up">
+      <div className="bg-white/90 dark:bg-[#212121]/90 backdrop-blur-xl w-full max-w-xs rounded-2xl shadow-none overflow-hidden border border-black/5 dark:border-white/10 transition-colors slide-up">
         <div className="p-7 flex flex-col items-center text-center">
           <div
             className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-4 transition-colors ${
@@ -42,10 +42,10 @@ export function AlertModal({ open, onClose, onConfirm, title, message, type = 'i
                   onConfirm();
                   onClose();
                 }}
-                className={`w-full py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all ios-spring ${
+                className={`w-full py-3.5 rounded-xl font-bold text-xs tracking-normal transition-all ios-spring ${
                   type === 'danger'
-                    ? 'bg-red-500 text-white shadow-md shadow-red-500/20'
-                    : 'bg-foreground text-background shadow-md shadow-black/20'
+                    ? 'bg-red-500 text-white shadow-none shadow-red-500/20'
+                    : 'bg-foreground text-background shadow-none '
                 }`}
               >
                 {confirmText || 'Confirmar'}

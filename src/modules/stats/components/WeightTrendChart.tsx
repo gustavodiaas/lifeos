@@ -30,7 +30,7 @@ export function MetricTrendChart({ metrics, metricKey, title, unit, color }: Met
             {metricKey === "weight" ? <Scale size={18} /> : <Clock size={18} />}
           </div>
           <div>
-            <h3 className="text-base font-extrabold text-foreground">{title}</h3>
+            <h3 className="text-base font-semibold text-foreground">{title}</h3>
             <p className="text-xs text-muted-foreground font-medium">Evolução do histórico</p>
           </div>
         </div>
@@ -47,7 +47,7 @@ export function MetricTrendChart({ metrics, metricKey, title, unit, color }: Met
                 if (active && payload && payload.length) {
                   const data = payload[0].payload;
                   return (
-                    <div className="glass-card p-2.5 shadow-xl border border-border text-xs">
+                    <div className="glass-card p-2.5 shadow-none border border-border text-xs">
                       <p className="font-bold text-foreground">{data.date}: <span style={{ color }}>{data.valor} {unit}</span></p>
                     </div>
                   );

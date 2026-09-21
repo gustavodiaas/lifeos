@@ -80,7 +80,7 @@ export function JournalModal({
 
   return (
     <ModalPortal open={open} onClose={onClose}>
-      <div className="bg-card w-full max-w-lg rounded-t-[28px] sm:rounded-[28px] shadow-2xl border border-border overflow-hidden flex flex-col max-h-[92vh] slide-up">
+      <div className="bg-card w-full max-w-lg rounded-t-[28px] sm:rounded-2xl shadow-none border border-border overflow-hidden flex flex-col max-h-[92vh] slide-up">
 
         {/* Header */}
         <div className="px-6 py-4 border-b border-border/60 flex items-center justify-between shrink-0">
@@ -88,7 +88,7 @@ export function JournalModal({
             <div className="w-8 h-8 rounded-xl bg-muted text-foreground flex items-center justify-center">
               <NotebookPen size={18} />
             </div>
-            <h2 className="text-lg font-extrabold text-foreground tracking-tight">
+            <h2 className="text-lg font-semibold text-foreground tracking-tight">
               {editingEntry ? "Editar Registro do Diário" : "Novo Registro Diário"}
             </h2>
           </div>
@@ -111,7 +111,7 @@ export function JournalModal({
 
           {/* Seleção de Humor (Mood Tracker) */}
           <div>
-            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5 block ml-1">
+            <label className="text-xs font-bold text-muted-foreground tracking-normal mb-1.5 block ml-1">
               Como se sentiu neste dia? (Humor)
             </label>
             <div className="grid grid-cols-5 gap-2">
@@ -124,7 +124,7 @@ export function JournalModal({
                     onClick={() => setMood(item.value as any)}
                     className={`flex flex-col items-center justify-center p-2.5 rounded-2xl border-2 transition-all ios-spring ${
                       isSelected
-                        ? "border-foreground bg-foreground/15 scale-105 shadow-sm"
+                        ? "border-foreground bg-foreground/15  shadow-none"
                         : "border-border/50 bg-muted/30 hover:bg-muted opacity-70 hover:opacity-100"
                     }`}
                   >
@@ -141,7 +141,7 @@ export function JournalModal({
           {/* Reflexão / Texto do Diário */}
           <div>
             <div className="flex items-center justify-between mb-1.5 ml-1">
-              <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider block">
+              <label className="text-xs font-bold text-muted-foreground tracking-normal block">
                 Reflexão Diária
               </label>
               <button
@@ -150,7 +150,7 @@ export function JournalModal({
                   const promptText = `\n\n🙏 3 Coisas pelas quais sou grato hoje:\n1. \n2. \n3. `;
                   setContent((prev) => prev + promptText);
                 }}
-                className="text-[11px] font-extrabold text-foreground bg-muted/60 hover:bg-muted px-2.5 py-1 rounded-lg transition-colors flex items-center gap-1 border border-border/50"
+                className="text-[11px] font-semibold text-foreground bg-muted/60 hover:bg-muted px-2.5 py-1 rounded-lg transition-colors flex items-center gap-1 border border-border/50"
               >
                 <Sparkles size={12} className="text-amber-500" />
                 <span>+ Insert 3 Gratidões</span>
@@ -167,7 +167,7 @@ export function JournalModal({
 
           {/* Destaques / Highlights do Dia */}
           <div className="space-y-2 pt-1">
-            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider block ml-1 flex items-center gap-1">
+            <label className="text-xs font-bold text-muted-foreground tracking-normal block ml-1 flex items-center gap-1">
               <Sparkles size={13} className="text-foreground" />
               Destaques & Conquistas (Highlights)
             </label>
@@ -218,7 +218,7 @@ export function JournalModal({
 
           <button
             type="submit"
-            className="btn-ios w-full py-4 mt-3 text-sm font-black uppercase tracking-wider"
+            className="btn-ios w-full py-4 mt-3 text-sm font-semibold tracking-normal"
           >
             <Save size={18} />
             <span>{editingEntry ? "Salvar Alterações" : "Salvar Registro"}</span>

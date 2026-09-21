@@ -147,7 +147,7 @@ export function StatsModule() {
       <div className="flex items-center justify-between">
         <div>
           <span className="badge-ios text-[10px]">Tempo Real</span>
-          <h2 className="text-xl font-extrabold text-foreground tracking-tight mt-1">Estatísticas & Saúde</h2>
+          <h2 className="text-xl font-semibold text-foreground tracking-tight mt-1">Estatísticas & Saúde</h2>
         </div>
         <button onClick={() => openLogger("weight")} className="btn-ios text-xs py-2 px-4">
           <Plus size={14} strokeWidth={2.5} /><span>Registrar Métrica</span>
@@ -175,7 +175,7 @@ export function StatsModule() {
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5 mb-1">
             <Award size={13} className="text-muted-foreground shrink-0" />
-            <span className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider">
+            <span className="text-[10px] font-semibold text-muted-foreground tracking-normal">
               Performance Geral
             </span>
           </div>
@@ -255,16 +255,16 @@ export function StatsModule() {
             <div className="w-7 h-7 rounded-xl flex items-center justify-center bg-muted shrink-0">
               <TrendingUp size={14} className="text-muted-foreground" />
             </div>
-            <span className="text-xs font-extrabold text-foreground">Fluxo</span>
+            <span className="text-xs font-semibold text-foreground">Fluxo</span>
           </div>
           <div className="space-y-1">
             <div className="flex justify-between text-[11px]">
               <span className="text-muted-foreground">Receita</span>
-              <span className="font-extrabold text-emerald-500">{formatBRL(moduleStats.income)}</span>
+              <span className="font-semibold text-emerald-500">{formatBRL(moduleStats.income)}</span>
             </div>
             <div className="flex justify-between text-[11px]">
               <span className="text-muted-foreground">Despesa</span>
-              <span className="font-extrabold text-red-500">{formatBRL(moduleStats.expense)}</span>
+              <span className="font-semibold text-red-500">{formatBRL(moduleStats.expense)}</span>
             </div>
           </div>
         </div>
@@ -285,7 +285,7 @@ export function StatsModule() {
       {/* Métricas manuais com dados */}
       {metricGroups.length > 0 && (
         <section className="space-y-3">
-          <h3 className="text-xs font-extrabold text-muted-foreground uppercase tracking-widest">
+          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-normal">
             Métricas Pessoais
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -309,7 +309,7 @@ export function StatsModule() {
                         <Icon size={15} className="text-muted-foreground" />
                       </div>
                       <div>
-                        <p className="text-xs font-extrabold text-foreground">{meta.label}</p>
+                        <p className="text-xs font-semibold text-foreground">{meta.label}</p>
                         <p className="text-[10px] text-muted-foreground">{group.logs.length} medições</p>
                       </div>
                     </div>
@@ -326,7 +326,7 @@ export function StatsModule() {
                   </div>
 
                   <div className="flex items-baseline gap-1">
-                    <span className="text-2xl font-black text-foreground">{latest?.value ?? "—"}</span>
+                    <span className="text-2xl font-semibold text-foreground">{latest?.value ?? "—"}</span>
                     <span className="text-xs font-bold text-muted-foreground">{meta.unit}</span>
                     {prev && (
                       <span className="ml-auto text-[10px] font-bold text-muted-foreground">
@@ -339,7 +339,7 @@ export function StatsModule() {
                     {group.logs.slice(-6).map((log) => (
                       <div key={log.id} className="shrink-0 text-center p-1.5 rounded-xl bg-muted border border-border min-w-[52px]">
                         <span className="text-[9px] font-bold text-muted-foreground block">{log.date.slice(5)}</span>
-                        <span className="text-[11px] font-black text-foreground">{log.value}</span>
+                        <span className="text-[11px] font-semibold text-foreground">{log.value}</span>
                       </div>
                     ))}
                   </div>
@@ -372,7 +372,7 @@ export function StatsModule() {
       {/* CTAs para métricas sem dados */}
       {unloggedKeys.length > 0 && (
         <section className="space-y-2">
-          <h3 className="text-xs font-extrabold text-muted-foreground uppercase tracking-widest">
+          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-normal">
             Rastrear Também
           </h3>
           <div className="flex flex-wrap gap-2">
@@ -421,7 +421,7 @@ function ModuleCard({
         <div className="w-7 h-7 rounded-xl flex items-center justify-center bg-muted text-muted-foreground shrink-0">
           {icon}
         </div>
-        <span className="text-xs font-extrabold text-foreground">{title}</span>
+        <span className="text-xs font-semibold text-foreground">{title}</span>
       </div>
 
       {emptyMsg ? (
@@ -429,7 +429,7 @@ function ModuleCard({
       ) : (
         <>
           <div>
-            <span className="text-xl font-black text-foreground leading-none">{primary}</span>
+            <span className="text-xl font-semibold text-foreground leading-none">{primary}</span>
             <span className="text-[10px] text-muted-foreground font-semibold block mt-0.5">{primaryLabel}</span>
           </div>
           {secondary && (

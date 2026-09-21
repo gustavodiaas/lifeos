@@ -82,7 +82,7 @@ export function GoalModal({
 
   return (
     <ModalPortal open={open} onClose={onClose}>
-      <div className="bg-card w-full max-w-lg rounded-t-[28px] sm:rounded-[28px] shadow-2xl border border-border overflow-hidden flex flex-col max-h-[92vh] slide-up">
+      <div className="bg-card w-full max-w-lg rounded-t-[28px] sm:rounded-2xl shadow-none border border-border overflow-hidden flex flex-col max-h-[92vh] slide-up">
 
         {/* Header */}
         <div className="px-6 py-4 border-b border-border/60 flex items-center justify-between shrink-0">
@@ -90,7 +90,7 @@ export function GoalModal({
             <div className="w-8 h-8 rounded-xl bg-muted text-muted-foreground flex items-center justify-center">
               <Target size={18} />
             </div>
-            <h2 className="text-lg font-extrabold text-foreground tracking-tight">
+            <h2 className="text-lg font-semibold text-foreground tracking-tight">
               {editingGoal ? "Editar Meta" : "Nova Meta"}
             </h2>
           </div>
@@ -106,7 +106,7 @@ export function GoalModal({
         <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto">
           {/* Título */}
           <div>
-            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5 block ml-1">
+            <label className="text-xs font-bold text-muted-foreground tracking-normal mb-1.5 block ml-1">
               Título da Meta
             </label>
             <input
@@ -122,7 +122,7 @@ export function GoalModal({
 
           {/* Escopo (Ano / Trimestre / Mês) */}
           <div>
-            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5 block ml-1">
+            <label className="text-xs font-bold text-muted-foreground tracking-normal mb-1.5 block ml-1">
               Escopo Temporal
             </label>
             <div className="grid grid-cols-3 gap-2">
@@ -131,7 +131,7 @@ export function GoalModal({
                 onClick={() => { setScope("year"); setPeriod(`${currentYear}`); }}
                 className={`py-2.5 px-3 rounded-xl border-2 font-bold text-xs transition-all ${
                   scope === "year"
-                    ? "border-foreground bg-foreground/15 text-foreground font-extrabold"
+                    ? "border-foreground bg-foreground/15 text-foreground font-semibold"
                     : "border-border/60 bg-muted/30 text-muted-foreground hover:bg-muted"
                 }`}
               >
@@ -143,7 +143,7 @@ export function GoalModal({
                 onClick={() => { setScope("quarter"); setPeriod(`${currentYear}-Q1`); }}
                 className={`py-2.5 px-3 rounded-xl border-2 font-bold text-xs transition-all ${
                   scope === "quarter"
-                    ? "border-foreground bg-foreground/15 text-foreground font-extrabold"
+                    ? "border-foreground bg-foreground/15 text-foreground font-semibold"
                     : "border-border/60 bg-muted/30 text-muted-foreground hover:bg-muted"
                 }`}
               >
@@ -155,7 +155,7 @@ export function GoalModal({
                 onClick={() => { setScope("month"); setPeriod(`${currentYear}-08`); }}
                 className={`py-2.5 px-3 rounded-xl border-2 font-bold text-xs transition-all ${
                   scope === "month"
-                    ? "border-foreground bg-foreground/15 text-foreground font-extrabold"
+                    ? "border-foreground bg-foreground/15 text-foreground font-semibold"
                     : "border-border/60 bg-muted/30 text-muted-foreground hover:bg-muted"
                 }`}
               >
@@ -166,7 +166,7 @@ export function GoalModal({
 
           {/* Período Texto */}
           <div>
-            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5 flex items-center gap-1 ml-1">
+            <label className="text-xs font-bold text-muted-foreground tracking-normal mb-1.5 flex items-center gap-1 ml-1">
               <Calendar size={13} className="text-muted-foreground" />
               Identificador do Período
             </label>
@@ -183,7 +183,7 @@ export function GoalModal({
           {/* Grid de Meta Numérica & Unidade */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5 block ml-1">
+              <label className="text-xs font-bold text-muted-foreground tracking-normal mb-1.5 block ml-1">
                 Meta Alvo (Número)
               </label>
               <input
@@ -197,7 +197,7 @@ export function GoalModal({
             </div>
 
             <div>
-              <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5 block ml-1">
+              <label className="text-xs font-bold text-muted-foreground tracking-normal mb-1.5 block ml-1">
                 Unidade
               </label>
               <input
@@ -212,7 +212,7 @@ export function GoalModal({
 
           {/* Progresso Inicial / Atual */}
           <div>
-            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5 block ml-1">
+            <label className="text-xs font-bold text-muted-foreground tracking-normal mb-1.5 block ml-1">
               Progresso Atual ({progress} / {target})
             </label>
             <input
@@ -228,7 +228,7 @@ export function GoalModal({
           {/* Vínculo com Hábito (CustomSelect) */}
           {habits.length > 0 && (
             <div>
-              <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5 flex items-center gap-1 ml-1">
+              <label className="text-xs font-bold text-muted-foreground tracking-normal mb-1.5 flex items-center gap-1 ml-1">
                 <Repeat size={13} className="text-foreground" />
                 Vincular a um Hábito (Opcional)
               </label>
@@ -243,7 +243,7 @@ export function GoalModal({
 
           <button
             type="submit"
-            className="btn-ios w-full py-4 mt-3 text-sm font-black uppercase tracking-wider"
+            className="btn-ios w-full py-4 mt-3 text-sm font-semibold tracking-normal"
           >
             <Save size={18} />
             <span>{editingGoal ? "Salvar Alterações" : "Criar Meta"}</span>

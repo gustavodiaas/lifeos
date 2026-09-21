@@ -54,18 +54,18 @@ export function HabitHeatmap({ logs }: HabitHeatmapProps) {
     if (count === 0) return "bg-muted/40 border-border/40";
     if (count === 1) return "bg-emerald-500/30 border-emerald-500/40 text-emerald-300";
     if (count === 2) return "bg-emerald-500/60 border-emerald-500/70 text-white";
-    return "bg-emerald-500 border-emerald-400 font-bold shadow-sm shadow-emerald-500/20 text-white";
+    return "bg-emerald-500 border-emerald-400 font-bold shadow-none shadow-emerald-500/20 text-white";
   };
 
   return (
-    <div className="glass-card p-5 space-y-3 rounded-3xl border border-border/60">
+    <div className="glass-card p-5 space-y-3 rounded-2xl border border-border/60">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-xl bg-emerald-500/15 text-emerald-500 flex items-center justify-center">
             <Sparkles size={16} />
           </div>
           <div>
-            <h3 className="text-sm font-extrabold text-foreground tracking-tight">
+            <h3 className="text-sm font-semibold text-foreground tracking-tight">
               Matriz de Consistência (365 Dias)
             </h3>
             <p className="text-[11px] text-muted-foreground font-medium">

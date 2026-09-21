@@ -48,16 +48,16 @@ export function ActivityRing({
 
         {/* Texto Central */}
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-          <span className="text-3xl font-black text-foreground tracking-tighter">
+          <span className="text-3xl font-semibold text-foreground tracking-tighter">
             {normalizedScore}
           </span>
-          <span className="text-[10px] font-extrabold text-foreground uppercase tracking-wider">
+          <span className="text-[10px] font-semibold text-foreground tracking-normal">
             / 100
           </span>
         </div>
       </div>
 
-      <p className="mt-3 text-sm font-extrabold text-foreground">{label}</p>
+      <p className="mt-3 text-sm font-semibold text-foreground">{label}</p>
       <p className="text-xs text-muted-foreground font-medium">{sublabel}</p>
     </div>
   );

@@ -11,16 +11,12 @@ import {
   Plus,
   NotebookPen,
   Smile,
-  Sparkles,
   Search,
   Calendar,
   Heart,
   ChevronRight,
-  TrendingUp,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-import { MoodTrendChart } from "./components/MoodTrendChart";
 
 import { useWorkspace } from "@/context/WorkspaceContext";
 
@@ -89,19 +85,7 @@ export function JournalModule() {
     });
   }, [entries, searchQuery, selectedMoodFilter]);
 
-  // Estatísticas de humor
-  const totalEntriesCount = entries.length;
   const todayEntry = entries.find((e) => e.date === todayIso());
-
-  const averageMood = useMemo(() => {
-    if (entries.length === 0) return 0;
-    const sum = entries.reduce((s, e) => s + (e.mood || 3), 0);
-    return (sum / entries.length).toFixed(1);
-  }, [entries]);
-
-  const totalHighlightsCount = useMemo(() => {
-    return entries.reduce((sum, e) => sum + (e.highlights?.length || 0), 0);
-  }, [entries]);
 
   return (
     <div className="space-y-6 fade-in pb-12">
@@ -109,21 +93,10 @@ export function JournalModule() {
       {/* ── 1. Top Header & Ações ────────────────────────────────────────── */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2">
-            <span className="badge-ios">Reflexão Diária</span>
-            {todayEntry ? (
-              <span className="text-xs font-bold text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-full flex items-center gap-1">
-                <Smile size={12} /> Hoje Registrado
-              </span>
-            ) : (
-              <span className="text-xs font-bold text-foreground bg-muted px-2 py-0.5 rounded-full">
-                Pendente Hoje
-              </span>
-            )}
-          </div>
-          <h2 className="text-2xl md:text-3xl font-extrabold text-foreground tracking-tight mt-1">
-            Diário Pessoal
-          </h2>
+          <h1 className="sf-display text-3xl font-semibold tracking-[-0.04em]">Diário</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {todayEntry ? "Registro de hoje concluído" : "Nenhum registro hoje"}
+          </p>
         </div>
 
         <button
@@ -136,44 +109,6 @@ export function JournalModule() {
           <Plus size={16} strokeWidth={2.5} />
           <span>{todayEntry ? "Editar Hoje" : "Escrever Hoje"}</span>
         </button>
-      </div>
-
-      {/* ── Gráfico de Tendência de Humor (30 Dias) ────────────────────── */}
-      <MoodTrendChart entries={entries} />
-
-      {/* ── 2. Cards de Métricas do Diário ──────────────────────────────── */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="glass-card p-5 flex items-center gap-4">
-          <div className="w-11 h-11 rounded-2xl bg-muted text-foreground flex items-center justify-center shrink-0">
-            <NotebookPen size={22} />
-          </div>
-          <div>
-            <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Total de Páginas</p>
-            <p className="text-xl font-extrabold text-foreground">{totalEntriesCount} reflexões salvas</p>
-          </div>
-        </div>
-
-        <div className="glass-card p-5 flex items-center gap-4">
-          <div className="w-11 h-11 rounded-2xl bg-emerald-500/15 text-emerald-500 flex items-center justify-center shrink-0">
-            <Smile size={22} />
-          </div>
-          <div>
-            <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Média de Humor</p>
-            <p className="text-xl font-extrabold text-emerald-600 dark:text-emerald-400">
-              {averageMood > 0 ? `${averageMood} / 5.0` : "—"}
-            </p>
-          </div>
-        </div>
-
-        <div className="glass-card p-5 flex items-center gap-4">
-          <div className="w-11 h-11 rounded-2xl bg-muted text-muted-foreground flex items-center justify-center shrink-0">
-            <Sparkles size={22} />
-          </div>
-          <div>
-            <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Destaques Registrados</p>
-            <p className="text-xl font-extrabold text-foreground">{totalHighlightsCount} momentos</p>
-          </div>
-        </div>
       </div>
 
       {/* ── 3. Barra de Busca & Filtro de Humor ─────────────────────────── */}
@@ -196,7 +131,7 @@ export function JournalModule() {
             className={cn(
               "px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0",
               selectedMoodFilter === "all"
-                ? "bg-foreground text-background shadow-sm"
+                ? "bg-foreground text-background shadow-none"
                 : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground"
             )}
           >
@@ -216,7 +151,7 @@ export function JournalModule() {
               className={cn(
                 "px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 flex items-center gap-1",
                 selectedMoodFilter === m.value
-                  ? "bg-foreground text-background shadow-sm"
+                  ? "bg-foreground text-background shadow-none"
                   : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground"
               )}
             >
@@ -234,7 +169,7 @@ export function JournalModule() {
         </div>
       ) : filteredEntries.length === 0 ? (
         <div className="glass-card p-12 text-center space-y-4">
-          <div className="w-16 h-16 rounded-3xl bg-muted text-foreground flex items-center justify-center mx-auto">
+          <div className="w-16 h-16 rounded-2xl bg-muted text-foreground flex items-center justify-center mx-auto">
             <NotebookPen size={32} />
           </div>
           <div>

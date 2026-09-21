@@ -114,7 +114,7 @@ function DomainCombobox({
       </div>
 
       {open && filtered.length > 0 && (
-        <div className="absolute top-full left-0 right-0 mt-1 z-[200] glass-card border border-border rounded-xl shadow-xl overflow-hidden">
+        <div className="absolute top-full left-0 right-0 mt-1 z-[200] glass-card border border-border rounded-xl shadow-none overflow-hidden">
           {filtered.map((s) => (
             <button
               key={s}
@@ -228,11 +228,11 @@ export function AtomicNotesView({ notes, onSave, onDelete, onCreateNote }: Atomi
         <div className="flex p-0.5 bg-muted rounded-xl border border-border shrink-0">
           <button
             onClick={() => setViewMode("grid")}
-            className={cn("p-1.5 rounded-lg transition-all", viewMode === "grid" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground")}
+            className={cn("p-1.5 rounded-lg transition-all", viewMode === "grid" ? "bg-card text-foreground shadow-none" : "text-muted-foreground")}
           ><LayoutGrid size={14} /></button>
           <button
             onClick={() => setViewMode("graph")}
-            className={cn("p-1.5 rounded-lg transition-all", viewMode === "graph" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground")}
+            className={cn("p-1.5 rounded-lg transition-all", viewMode === "graph" ? "bg-card text-foreground shadow-none" : "text-muted-foreground")}
           ><GitBranch size={14} /></button>
         </div>
 
@@ -258,7 +258,7 @@ export function AtomicNotesView({ notes, onSave, onDelete, onCreateNote }: Atomi
             >
               <Icon size={12} />
               <span>{meta.label}</span>
-              <span className="font-extrabold opacity-70">{counts[m]}</span>
+              <span className="font-semibold opacity-70">{counts[m]}</span>
             </button>
           );
         })}
@@ -323,7 +323,7 @@ function AtomicGrid({ notes, onEdit, onDelete }: {
         <div key={domain} className="space-y-2">
           <div className="flex items-center gap-2">
             <Tag size={11} className="text-muted-foreground" />
-            <span className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-widest">{domain}</span>
+            <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-normal">{domain}</span>
             <span className="text-[10px] text-muted-foreground">({items.length})</span>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -348,12 +348,12 @@ function AtomicCard({ note, onEdit, onDelete }: {
     <div
       onClick={() => onEdit(note)}
       className={cn(
-        "glass-card p-4 rounded-2xl border flex flex-col gap-2.5 cursor-pointer transition-all group hover:shadow-md",
+        "glass-card p-4 rounded-2xl border flex flex-col gap-2.5 cursor-pointer transition-all group hover:shadow-none",
         meta.border
       )}
     >
       <div className="flex items-center justify-between">
-        <span className={cn("flex items-center gap-1 text-[10px] font-extrabold px-2 py-0.5 rounded-full border", meta.pill)}>
+        <span className={cn("flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full border", meta.pill)}>
           <Icon size={10} />{meta.label}
         </span>
         <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -368,7 +368,7 @@ function AtomicCard({ note, onEdit, onDelete }: {
         </div>
       </div>
 
-      <h3 className="text-sm font-extrabold text-foreground leading-tight line-clamp-2">{note.title}</h3>
+      <h3 className="text-sm font-semibold text-foreground leading-tight line-clamp-2">{note.title}</h3>
       {preview && <p className="text-[11px] text-muted-foreground leading-relaxed line-clamp-3">{preview}</p>}
 
       {note.tags && note.tags.length > 0 && (
@@ -559,12 +559,12 @@ function AtomicEditModal({ note, allDomains, onSave, onClose }: {
   return (
     <div className="fixed inset-0 z-[150] flex items-end sm:items-center justify-center p-0 sm:p-4">
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative bg-card w-full sm:max-w-lg rounded-t-[28px] sm:rounded-[28px] shadow-2xl border border-border flex flex-col max-h-[92dvh] z-10">
+      <div className="relative bg-card w-full sm:max-w-lg rounded-t-[28px] sm:rounded-2xl shadow-none border border-border flex flex-col max-h-[92dvh] z-10">
 
         <div className="px-5 py-4 border-b border-border flex items-center justify-between shrink-0">
           <div className="flex items-center gap-2">
             <Atom size={15} className="text-muted-foreground" />
-            <span className="text-sm font-extrabold text-foreground">Nota Atômica</span>
+            <span className="text-sm font-semibold text-foreground">Nota Atômica</span>
           </div>
           <button onClick={onClose} className="w-7 h-7 rounded-full bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground">
             <X size={13} />
@@ -574,16 +574,16 @@ function AtomicEditModal({ note, allDomains, onSave, onClose }: {
         <div className="flex-1 overflow-y-auto p-5 space-y-4">
           {/* Título */}
           <div>
-            <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">Título</label>
+            <label className="text-[10px] font-semibold text-muted-foreground tracking-normal block mb-1">Título</label>
             <input type="text" value={draft.title}
               onChange={(e) => setDraft((d) => ({ ...d, title: e.target.value }))}
-              className="input-ios text-sm font-extrabold w-full" placeholder="Uma ideia, um conceito" autoFocus />
+              className="input-ios text-sm font-semibold w-full" placeholder="Uma ideia, um conceito" autoFocus />
           </div>
 
           {/* Domínio + Maturidade */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">Domínio</label>
+              <label className="text-[10px] font-semibold text-muted-foreground tracking-normal block mb-1">Domínio</label>
               <DomainCombobox
                 value={draft.domain}
                 onChange={(v) => setDraft((d) => ({ ...d, domain: v }))}
@@ -592,7 +592,7 @@ function AtomicEditModal({ note, allDomains, onSave, onClose }: {
               />
             </div>
             <div>
-              <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">Maturidade</label>
+              <label className="text-[10px] font-semibold text-muted-foreground tracking-normal block mb-1">Maturidade</label>
               <CustomSelect
                 options={maturityOptions}
                 value={draft.maturity}
@@ -603,7 +603,7 @@ function AtomicEditModal({ note, allDomains, onSave, onClose }: {
 
           {/* Conteúdo */}
           <div>
-            <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">
+            <label className="text-[10px] font-semibold text-muted-foreground tracking-normal block mb-1">
               Conteúdo · use [[Título]] para conectar notas
             </label>
             <textarea value={draft.cleanContent}
@@ -614,7 +614,7 @@ function AtomicEditModal({ note, allDomains, onSave, onClose }: {
 
           {/* Tags */}
           <div>
-            <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">Tags</label>
+            <label className="text-[10px] font-semibold text-muted-foreground tracking-normal block mb-1">Tags</label>
             <input type="text" value={tagsInput} onChange={(e) => setTagsInput(e.target.value)}
               className="input-ios text-xs w-full" placeholder="lean, melhoria, processo..." />
           </div>

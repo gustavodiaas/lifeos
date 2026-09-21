@@ -248,7 +248,7 @@ export function BookTracker() {
       <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
         <div>
           <span className="badge-ios text-[10px]">Sua Biblioteca Pessoal</span>
-          <h2 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight mt-1">
+          <h2 className="text-2xl sm:text-3xl font-semibold text-foreground tracking-tight mt-1">
             Estante Virtual de Livros
           </h2>
         </div>
@@ -279,14 +279,14 @@ export function BookTracker() {
           <div className="flex items-center justify-between border-b border-border/60 pb-2">
             <div className="flex items-center gap-2">
               <BookOpen size={18} className="text-foreground" />
-              <h3 className="text-sm font-black text-foreground uppercase tracking-wider">
+              <h3 className="text-sm font-semibold text-foreground tracking-normal">
                 Lendo Atualmente ({readingBooks.length})
               </h3>
             </div>
           </div>
 
           {readingBooks.length === 0 ? (
-            <div className="glass-card p-8 text-center text-xs text-muted-foreground font-medium rounded-3xl border border-dashed border-border">
+            <div className="glass-card p-8 text-center text-xs text-muted-foreground font-medium rounded-2xl border border-dashed border-border">
               Nenhum livro sendo lido no momento. Clique em "+ Adicionar Livro" para incluir um novo título com busca automática de capa!
             </div>
           ) : (
@@ -303,14 +303,14 @@ export function BookTracker() {
           <div className="flex items-center justify-between border-b border-border/60 pb-2">
             <div className="flex items-center gap-2">
               <Bookmark size={18} className="text-muted-foreground" />
-              <h3 className="text-sm font-black text-foreground uppercase tracking-wider">
+              <h3 className="text-sm font-semibold text-foreground tracking-normal">
                 Lista de Desejos / Quero Ler ({wantBooks.length})
               </h3>
             </div>
           </div>
 
           {wantBooks.length === 0 ? (
-            <div className="glass-card p-6 text-center text-xs text-muted-foreground font-medium rounded-3xl border border-dashed border-border">
+            <div className="glass-card p-6 text-center text-xs text-muted-foreground font-medium rounded-2xl border border-dashed border-border">
               Sua lista de desejos de leitura está vazia.
             </div>
           ) : (
@@ -327,14 +327,14 @@ export function BookTracker() {
           <div className="flex items-center justify-between border-b border-border/60 pb-2">
             <div className="flex items-center gap-2">
               <CheckCircle2 size={18} className="text-emerald-500" />
-              <h3 className="text-sm font-black text-foreground uppercase tracking-wider">
+              <h3 className="text-sm font-semibold text-foreground tracking-normal">
                 Lidos & Concluídos ({completedBooks.length})
               </h3>
             </div>
           </div>
 
           {completedBooks.length === 0 ? (
-            <div className="glass-card p-6 text-center text-xs text-muted-foreground font-medium rounded-3xl border border-dashed border-border">
+            <div className="glass-card p-6 text-center text-xs text-muted-foreground font-medium rounded-2xl border border-dashed border-border">
               Nenhum livro concluído ainda.
             </div>
           ) : (
@@ -361,9 +361,9 @@ export function BookTracker() {
                 type="button"
                 onClick={() => setModalMode("search")}
                 className={cn(
-                  "py-2 rounded-xl text-xs font-extrabold transition-all flex items-center justify-center gap-1.5",
+                  "py-2 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-1.5",
                   modalMode === "search"
-                    ? "bg-foreground text-background shadow-sm"
+                    ? "bg-foreground text-background shadow-none"
                     : "text-muted-foreground hover:text-foreground"
                 )}
               >
@@ -375,9 +375,9 @@ export function BookTracker() {
                 type="button"
                 onClick={() => setModalMode("form")}
                 className={cn(
-                  "py-2 rounded-xl text-xs font-extrabold transition-all flex items-center justify-center gap-1.5",
+                  "py-2 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-1.5",
                   modalMode === "form"
-                    ? "bg-foreground text-background shadow-sm"
+                    ? "bg-foreground text-background shadow-none"
                     : "text-muted-foreground hover:text-foreground"
                 )}
               >
@@ -423,7 +423,7 @@ export function BookTracker() {
                           <img
                             src={img}
                             alt=""
-                            className="w-11 h-16 object-cover rounded-xl shadow-md shrink-0 border border-black/10 group-hover:scale-105 transition-transform"
+                            className="w-11 h-16 object-cover rounded-xl shadow-none shrink-0 border border-black/10 group- transition-transform"
                           />
                         ) : (
                           <div className="w-11 h-16 bg-muted rounded-xl border border-border flex items-center justify-center shrink-0 text-muted-foreground">
@@ -432,14 +432,14 @@ export function BookTracker() {
                         )}
 
                         <div className="min-w-0 flex-1">
-                          <span className="text-xs font-black text-foreground block truncate">
+                          <span className="text-xs font-semibold text-foreground block truncate">
                             {info.title}
                           </span>
                           <span className="text-[11px] font-semibold text-muted-foreground block truncate mt-0.5">
                             {info.authors?.join(", ") || "Autor não informado"}
                           </span>
                           <div className="flex items-center gap-2 mt-1">
-                            <span className="text-[10px] font-extrabold text-foreground bg-muted px-2 py-0.5 rounded-full border border-border">
+                            <span className="text-[10px] font-semibold text-foreground bg-muted px-2 py-0.5 rounded-full border border-border">
                               📖 {info.pageCount || "?"} páginas
                             </span>
                           </div>
@@ -466,7 +466,7 @@ export function BookTracker() {
               {/* Card de Live Preview se tiver dados */}
               {(title || coverUrl) && (
                 <div className="p-3.5 rounded-2xl bg-muted/40 border border-border/60 flex items-center gap-3">
-                  <div className="w-10 h-14 rounded-lg bg-muted overflow-hidden border border-black/10 shrink-0 shadow-sm flex items-center justify-center">
+                  <div className="w-10 h-14 rounded-lg bg-muted overflow-hidden border border-black/10 shrink-0 shadow-none flex items-center justify-center">
                     {coverUrl ? (
                       <img src={coverUrl} alt="" className="w-full h-full object-cover" />
                     ) : (
@@ -474,15 +474,15 @@ export function BookTracker() {
                     )}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <span className="text-[10px] font-extrabold text-muted-foreground uppercase block">Pré-visualização</span>
-                    <span className="text-xs font-black text-foreground truncate block">{title || "Sem título"}</span>
+                    <span className="text-[10px] font-semibold text-muted-foreground uppercase block">Pré-visualização</span>
+                    <span className="text-xs font-semibold text-foreground truncate block">{title || "Sem título"}</span>
                     <span className="text-[10px] font-semibold text-muted-foreground truncate block">{author || "Autor não informado"}</span>
                   </div>
                 </div>
               )}
 
               <div>
-                <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">
+                <label className="text-[10px] font-semibold text-muted-foreground tracking-normal block mb-1">
                   Título do Livro
                 </label>
                 <input
@@ -496,7 +496,7 @@ export function BookTracker() {
               </div>
 
               <div>
-                <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">
+                <label className="text-[10px] font-semibold text-muted-foreground tracking-normal block mb-1">
                   Autor
                 </label>
                 <input
@@ -509,7 +509,7 @@ export function BookTracker() {
               </div>
 
               <div>
-                <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">
+                <label className="text-[10px] font-semibold text-muted-foreground tracking-normal block mb-1">
                   URL da Capa da Imagem
                 </label>
                 <input
@@ -523,7 +523,7 @@ export function BookTracker() {
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
-                  <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">
+                  <label className="text-[10px] font-semibold text-muted-foreground tracking-normal block mb-1">
                     Status na Estante
                   </label>
                   <CustomSelect
@@ -539,7 +539,7 @@ export function BookTracker() {
                 </div>
 
                 <div>
-                  <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">
+                  <label className="text-[10px] font-semibold text-muted-foreground tracking-normal block mb-1">
                     Página Atual
                   </label>
                   <input
@@ -552,7 +552,7 @@ export function BookTracker() {
                 </div>
 
                 <div>
-                  <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">
+                  <label className="text-[10px] font-semibold text-muted-foreground tracking-normal block mb-1">
                     Total de Páginas
                   </label>
                   <input
@@ -567,7 +567,7 @@ export function BookTracker() {
 
               {/* Citações Favoritas */}
               <div className="space-y-2 pt-2 border-t border-border/50">
-                <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block flex items-center gap-1">
+                <label className="text-[10px] font-semibold text-muted-foreground tracking-normal block flex items-center gap-1">
                   <Quote size={12} />
                   <span>Citações & Trechos Favoritos</span>
                 </label>
@@ -603,7 +603,7 @@ export function BookTracker() {
                 )}
               </div>
 
-              <button type="submit" className="btn-ios w-full py-4 text-xs font-black uppercase tracking-wider shadow-md shadow-black/10 mt-2">
+              <button type="submit" className="btn-ios w-full py-4 text-xs font-semibold tracking-normal shadow-none  mt-2">
                 Salvar na Estante
               </button>
             </form>
@@ -620,15 +620,15 @@ function BookShelfCard({ book, onEdit, onDelete }: { book: ExtendedBook; onEdit:
   const pct = Math.min(100, Math.round((current / total) * 100));
 
   return (
-    <div className="glass-card p-4 rounded-3xl border border-border/70 flex gap-4 relative group transition-all hover:scale-[1.01] hover:shadow-xl">
+    <div className="glass-card p-4 rounded-2xl border border-border/70 flex gap-4 relative group transition-all  hover:shadow-none">
       {/* Capa de Livro 3D Estilo Estante */}
-      <div className="relative w-20 h-28 shrink-0 rounded-xl overflow-hidden shadow-lg border border-black/20 bg-muted flex items-center justify-center">
+      <div className="relative w-20 h-28 shrink-0 rounded-xl overflow-hidden shadow-none border border-black/20 bg-muted flex items-center justify-center">
         {book.coverUrl ? (
           <img src={book.coverUrl} alt={book.title} className="w-full h-full object-cover" />
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-foreground/10 to-foreground/30 flex flex-col items-center justify-center p-2 text-center">
             <BookOpen size={20} className="text-foreground mb-1" />
-            <span className="text-[9px] font-black text-foreground line-clamp-2 leading-tight">{book.title}</span>
+            <span className="text-[9px] font-semibold text-foreground line-clamp-2 leading-tight">{book.title}</span>
           </div>
         )}
       </div>
@@ -637,7 +637,7 @@ function BookShelfCard({ book, onEdit, onDelete }: { book: ExtendedBook; onEdit:
       <div className="flex-1 min-w-0 flex flex-col justify-between space-y-2">
         <div className="flex items-start justify-between gap-1">
           <div>
-            <h4 className="text-xs font-black text-foreground leading-tight line-clamp-2">{book.title}</h4>
+            <h4 className="text-xs font-semibold text-foreground leading-tight line-clamp-2">{book.title}</h4>
             <p className="text-[10px] font-medium text-muted-foreground mt-0.5 truncate">{book.author || "Autor não informado"}</p>
           </div>
 
@@ -655,7 +655,7 @@ function BookShelfCard({ book, onEdit, onDelete }: { book: ExtendedBook; onEdit:
         <div className="space-y-1">
           <div className="flex items-center justify-between text-[10px] font-bold">
             <span className="text-muted-foreground">{current} / {total} págs</span>
-            <span className="text-foreground font-black">{pct}%</span>
+            <span className="text-foreground font-semibold">{pct}%</span>
           </div>
           <div className="h-1.5 bg-muted/60 rounded-full overflow-hidden border border-border/40">
             <div

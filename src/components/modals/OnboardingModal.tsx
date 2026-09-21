@@ -190,10 +190,10 @@ export function OnboardingModal() {
 
   return (
     <ModalPortal open={open} onClose={handleClose} raw>
-      <div className="bg-card border border-border rounded-[32px] p-6 md:p-8 max-w-lg w-full shadow-2xl space-y-6 slide-up my-auto overflow-hidden relative">
+      <div className="bg-card border border-border rounded-2xl p-6 md:p-8 max-w-lg w-full shadow-none space-y-6 slide-up my-auto overflow-hidden relative">
         {/* Header com Botão de Pular e Fechar */}
         <div className="flex items-center justify-between border-b border-border/50 pb-4">
-          <span className="px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-black tracking-wider uppercase">
+          <span className="px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold tracking-wider uppercase">
             {currentStep.badge}
           </span>
 
@@ -225,11 +225,11 @@ export function OnboardingModal() {
         {/* Conteúdo do Slide */}
         <div className="space-y-4 py-2 fade-in key={currentStepIndex}">
           <div className="flex items-center gap-3.5">
-            <div className="w-12 h-12 rounded-2xl bg-primary text-primary-foreground flex items-center justify-center shrink-0 shadow-md">
+            <div className="w-12 h-12 rounded-2xl bg-primary text-primary-foreground flex items-center justify-center shrink-0 shadow-none">
               <StepIcon size={24} />
             </div>
             <div>
-              <h2 className="text-xl font-black text-foreground tracking-tight">{currentStep.title}</h2>
+              <h2 className="text-xl font-semibold text-foreground tracking-tight">{currentStep.title}</h2>
               <p className="text-xs font-medium text-muted-foreground">{currentStep.subtitle}</p>
             </div>
           </div>
@@ -237,7 +237,7 @@ export function OnboardingModal() {
           <div className="space-y-3 pt-2">
             {currentStep.points.map((pt, idx) => (
               <div key={idx} className="p-3.5 rounded-2xl bg-muted/40 border border-border/60 flex items-start gap-3">
-                <div className="w-6 h-6 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0 mt-0.5 font-black text-xs">
+                <div className="w-6 h-6 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0 mt-0.5 font-semibold text-xs">
                   {idx + 1}
                 </div>
                 <div className="space-y-0.5">
@@ -275,7 +275,7 @@ export function OnboardingModal() {
 
           <button
             onClick={handleNext}
-            className="px-5 py-2.5 rounded-xl bg-primary text-xs font-bold text-primary-foreground hover:bg-primary/90 transition-all flex items-center gap-1 shadow-md"
+            className="px-5 py-2.5 rounded-xl bg-primary text-xs font-bold text-primary-foreground hover:bg-primary/90 transition-all flex items-center gap-1 shadow-none"
           >
             {isLastStep ? (
               <>

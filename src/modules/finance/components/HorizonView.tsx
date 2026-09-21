@@ -3,11 +3,11 @@ import { formatCurrency, buildDayRows, expandRecorrentes, calcSaldoInicial } fro
 import type { Lancamento } from '@/lib/supabase';
 
 const getSaldoColor = (v: number) => {
-  if (v > 2000) return 'bg-emerald-500/20 text-emerald-500 font-extrabold';
+  if (v > 2000) return 'bg-emerald-500/20 text-emerald-500 font-semibold';
   if (v >= 1000) return 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-bold';
   if (v >= 0) return 'bg-muted/80 text-foreground font-semibold';
   if (v >= -499.99) return 'bg-muted text-foreground font-bold';
-  return 'bg-red-500/20 text-red-500 font-extrabold';
+  return 'bg-red-500/20 text-red-500 font-semibold';
 };
 
 interface Props {
@@ -43,14 +43,14 @@ export function HorizonView({ lancamentos, currentMonth, currentYear }: Props) {
   }, [lancamentos, currentMonth, currentYear]);
 
   return (
-    <div className="flex w-full overflow-x-auto snap-x snap-mandatory glass-card rounded-3xl border border-border/60 overflow-hidden shadow-sm fade-in max-h-[580px] overflow-y-auto custom-scrollbar">
+    <div className="flex w-full overflow-x-auto snap-x snap-mandatory glass-card rounded-2xl border border-border/60 overflow-hidden shadow-none fade-in max-h-[580px] overflow-y-auto custom-scrollbar">
       {mesesProjetados.map((m, idx) => (
         <div
           key={idx}
           className="w-1/3 min-w-[33.33%] border-r border-border flex flex-col snap-start snap-always shrink-0"
         >
-          <div className="bg-primary text-primary-foreground py-3 px-2 flex justify-center items-center sticky top-0 z-20 shadow-sm">
-            <span className="text-[10px] font-black uppercase tracking-tighter">
+          <div className="bg-primary text-primary-foreground py-3 px-2 flex justify-center items-center sticky top-0 z-20 shadow-none">
+            <span className="text-[10px] font-semibold tracking-normal">
               {m.nome}/{m.ano}
             </span>
           </div>
@@ -65,7 +65,7 @@ export function HorizonView({ lancamentos, currentMonth, currentYear }: Props) {
                   {row.day}
                 </div>
                 <div
-                  className={`text-[10px] font-black px-1.5 h-full flex items-center justify-end tracking-tighter ${getSaldoColor(row.saldoAcumulado)}`}
+                  className={`text-[10px] font-semibold px-1.5 h-full flex items-center justify-end tracking-tighter ${getSaldoColor(row.saldoAcumulado)}`}
                 >
                   {formatCurrency(row.saldoAcumulado).replace('R$', '').trim()}
                 </div>

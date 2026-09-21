@@ -18,7 +18,7 @@ export function QuickMetricLoggerGrid({ onOpenLogger, onQuickAdd }: QuickMetricL
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <h3 className="text-xs font-extrabold text-muted-foreground uppercase tracking-wider">
+        <h3 className="text-xs font-semibold text-muted-foreground tracking-normal">
           Registrar Métrica Rápida
         </h3>
         <span className="text-[10px] font-bold text-muted-foreground">Clique para abrir ou adicione com 1 clique</span>
@@ -30,7 +30,7 @@ export function QuickMetricLoggerGrid({ onOpenLogger, onQuickAdd }: QuickMetricL
           return (
             <div
               key={preset.key}
-              className={`glass-card p-3 rounded-2xl border border-border/70 flex flex-col justify-between space-y-2 transition-all duration-200 hover:scale-[1.02] shadow-sm ${preset.color}`}
+              className={`glass-card p-3 rounded-2xl border border-border/70 flex flex-col justify-between space-y-2 transition-all duration-200  shadow-none ${preset.color}`}
             >
               <button
                 type="button"
@@ -41,7 +41,7 @@ export function QuickMetricLoggerGrid({ onOpenLogger, onQuickAdd }: QuickMetricL
                   <Icon size={20} />
                 </div>
                 <div>
-                  <span className="text-xs font-extrabold text-foreground block">{preset.label}</span>
+                  <span className="text-xs font-semibold text-foreground block">{preset.label}</span>
                   <span className="text-[10px] text-muted-foreground font-semibold">({preset.unit})</span>
                 </div>
               </button>
@@ -50,7 +50,7 @@ export function QuickMetricLoggerGrid({ onOpenLogger, onQuickAdd }: QuickMetricL
                 <button
                   type="button"
                   onClick={() => onQuickAdd(preset.key, preset.quickVal!, preset.unit)}
-                  className="w-full py-1 px-2 rounded-lg bg-foreground/10 hover:bg-foreground hover:text-background text-foreground text-[10px] font-black transition-all flex items-center justify-center gap-1 border border-foreground/20"
+                  className="w-full py-1 px-2 rounded-lg bg-foreground/10 hover:bg-foreground hover:text-background text-foreground text-[10px] font-semibold transition-all flex items-center justify-center gap-1 border border-foreground/20"
                 >
                   <Plus size={11} />
                   <span>+{preset.quickVal}{preset.unit}</span>

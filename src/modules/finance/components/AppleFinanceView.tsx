@@ -96,7 +96,7 @@ export function AppleFinanceView({
       {/* ── Coluna Esquerda: Cartão Apple Wallet & Métricas Rápida (Desktop) ── */}
       <div className="md:col-span-5 lg:col-span-4 space-y-4">
         {/* Cartão de Saldo Apple Wallet */}
-        <div className="glass-card p-5 bg-[#212121] dark:bg-[#1A1A1A] text-white shadow-2xl relative overflow-hidden border border-white/10 rounded-3xl flex flex-col justify-between min-h-[200px]">
+        <div className="glass-card p-5 bg-[#212121] dark:bg-[#1A1A1A] text-white shadow-none relative overflow-hidden border border-white/10 rounded-2xl flex flex-col justify-between min-h-[200px]">
           {/* Sheen Decorativo */}
           <div className="absolute -top-12 -right-12 w-40 h-40 bg-foreground/10 rounded-full blur-2xl pointer-events-none" />
 
@@ -105,14 +105,14 @@ export function AppleFinanceView({
               <div className="w-8 h-8 rounded-xl bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/10">
                 <Wallet size={16} className="text-white" />
               </div>
-              <span className="text-[10px] font-extrabold text-white/70 uppercase tracking-widest">
+              <span className="text-[10px] font-semibold text-white/70 uppercase tracking-normal">
                 Balanço do Mês
               </span>
             </div>
 
             <button
               onClick={onNewTransaction}
-              className="px-3 py-1.5 rounded-xl text-xs font-extrabold text-[#212121] bg-white hover:bg-[#E0E0E0] shadow-lg active:scale-95 transition-all flex items-center gap-1 shrink-0"
+              className="px-3 py-1.5 rounded-xl text-xs font-semibold text-[#212121] bg-white hover:bg-[#E0E0E0] shadow-none active:scale-95 transition-all flex items-center gap-1 shrink-0"
             >
               <Plus size={14} strokeWidth={3} />
               <span>Novo</span>
@@ -120,7 +120,7 @@ export function AppleFinanceView({
           </div>
 
           <div className="my-4 relative z-10">
-            <h2 className="text-3xl lg:text-4xl font-black tracking-tight text-white">
+            <h2 className="text-3xl lg:text-4xl font-semibold tracking-tight text-white">
               {formatBRL(balance)}
             </h2>
             <span className="text-[11px] font-semibold text-white/60 mt-1 block">
@@ -135,8 +135,8 @@ export function AppleFinanceView({
                 <ArrowUpRight size={15} strokeWidth={2.5} />
               </div>
               <div className="min-w-0">
-                <span className="text-[9px] font-extrabold uppercase text-white/60 block leading-none">Receitas</span>
-                <span className="text-xs font-black text-emerald-400 truncate block">{formatBRL(income)}</span>
+                <span className="text-[9px] font-semibold uppercase text-white/60 block leading-none">Receitas</span>
+                <span className="text-xs font-semibold text-emerald-400 truncate block">{formatBRL(income)}</span>
               </div>
             </div>
 
@@ -145,17 +145,17 @@ export function AppleFinanceView({
                 <ArrowDownRight size={15} strokeWidth={2.5} />
               </div>
               <div className="min-w-0">
-                <span className="text-[9px] font-extrabold uppercase text-white/60 block leading-none">Despesas</span>
-                <span className="text-xs font-black text-red-400 truncate block">{formatBRL(expense)}</span>
+                <span className="text-[9px] font-semibold uppercase text-white/60 block leading-none">Despesas</span>
+                <span className="text-xs font-semibold text-red-400 truncate block">{formatBRL(expense)}</span>
               </div>
             </div>
           </div>
         </div>
 
         {/* Mini Card de Métricas Rápida */}
-        <div className="glass-card p-4 rounded-3xl space-y-3 hidden md:block border border-border/60">
+        <div className="glass-card p-4 rounded-2xl space-y-3 hidden md:block border border-border/60">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-extrabold text-foreground flex items-center gap-1.5">
+            <span className="text-xs font-semibold text-foreground flex items-center gap-1.5">
               <PieChart size={14} className="text-foreground" />
               Saúde Financeira
             </span>
@@ -165,11 +165,11 @@ export function AppleFinanceView({
           <div className="grid grid-cols-2 gap-2">
             <div className="p-2.5 rounded-2xl bg-muted/40 border border-border/40">
               <span className="text-[10px] font-bold text-muted-foreground block">Lançamentos</span>
-              <span className="text-sm font-black text-foreground">{transactions.length}</span>
+              <span className="text-sm font-semibold text-foreground">{transactions.length}</span>
             </div>
             <div className="p-2.5 rounded-2xl bg-muted/40 border border-border/40">
               <span className="text-[10px] font-bold text-muted-foreground block">Economia</span>
-              <span className="text-sm font-black text-emerald-500">{savingRate}%</span>
+              <span className="text-sm font-semibold text-emerald-500">{savingRate}%</span>
             </div>
           </div>
 
@@ -201,7 +201,7 @@ export function AppleFinanceView({
               className={cn(
                 "px-2.5 py-1.5 rounded-xl text-[11px] font-bold transition-all shrink-0",
                 selectedFilter === "all"
-                  ? "bg-foreground text-background shadow-sm font-extrabold"
+                  ? "bg-foreground text-background shadow-none font-semibold"
                   : "bg-muted/60 text-muted-foreground hover:bg-muted"
               )}
             >
@@ -212,7 +212,7 @@ export function AppleFinanceView({
               className={cn(
                 "px-2.5 py-1.5 rounded-xl text-[11px] font-bold transition-all shrink-0 flex items-center gap-1",
                 selectedFilter === "entrada"
-                  ? "bg-emerald-500 text-white shadow-sm font-extrabold"
+                  ? "bg-emerald-500 text-white shadow-none font-semibold"
                   : "bg-muted/60 text-muted-foreground hover:bg-muted"
               )}
             >
@@ -223,7 +223,7 @@ export function AppleFinanceView({
               className={cn(
                 "px-2.5 py-1.5 rounded-xl text-[11px] font-bold transition-all shrink-0 flex items-center gap-1",
                 selectedFilter === "saida"
-                  ? "bg-red-500 text-white shadow-sm font-extrabold"
+                  ? "bg-red-500 text-white shadow-none font-semibold"
                   : "bg-muted/60 text-muted-foreground hover:bg-muted"
               )}
             >
@@ -249,7 +249,7 @@ export function AppleFinanceView({
         </div>
 
         {/* Lista Contida com Scroll Interno Próprio */}
-        <div className="glass-card p-3 rounded-3xl border border-border/60 min-h-[380px] max-h-[540px] overflow-y-auto custom-scrollbar">
+        <div className="glass-card p-3 rounded-2xl border border-border/60 min-h-[380px] max-h-[540px] overflow-y-auto custom-scrollbar">
           {groupedByDate.length === 0 ? (
             <div className="py-16 text-center space-y-3">
               <div className="w-12 h-12 rounded-2xl bg-muted text-foreground flex items-center justify-center mx-auto">
@@ -284,7 +284,7 @@ export function AppleFinanceView({
                 return (
                   <div key={dateStr} className="space-y-1.5">
                     {/* Data Header */}
-                    <p className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider capitalize px-1 flex items-center gap-2 sticky top-0 bg-card/90 backdrop-blur-md py-1 z-10">
+                    <p className="text-[10px] font-semibold text-muted-foreground tracking-normal capitalize px-1 flex items-center gap-2 sticky top-0 bg-card/90 backdrop-blur-md py-1 z-10">
                       <span>{dateFormatted}</span>
                       <span className="w-full h-px bg-border/40" />
                     </p>
@@ -308,9 +308,9 @@ export function AppleFinanceView({
                               </div>
                               <div className="min-w-0">
                                 <div className="flex items-center gap-1.5">
-                                  <h4 className="text-xs font-extrabold text-foreground truncate">{t.descricao}</h4>
+                                  <h4 className="text-xs font-semibold text-foreground truncate">{t.descricao}</h4>
                                   {t.is_recorrente && (
-                                    <span className="text-[8px] font-extrabold px-1.5 py-0.2 rounded bg-muted text-foreground border border-border shrink-0">
+                                    <span className="text-[8px] font-semibold px-1.5 py-0.2 rounded bg-muted text-foreground border border-border shrink-0">
                                       Recorrente
                                     </span>
                                   )}
@@ -325,7 +325,7 @@ export function AppleFinanceView({
                             <div className="flex items-center gap-2 shrink-0">
                               <span
                                 className={cn(
-                                  "text-xs font-black tracking-tight",
+                                  "text-xs font-semibold tracking-tight",
                                   isIncome ? "text-emerald-500" : "text-foreground"
                                 )}
                               >

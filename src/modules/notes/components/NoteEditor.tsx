@@ -43,7 +43,7 @@ export function NoteEditor({ note, folders, onSave, onDelete }: NoteEditorProps)
   if (!note) {
     return (
       <div className="glass-card p-12 text-center h-full flex flex-col items-center justify-center space-y-3">
-        <div className="w-16 h-16 rounded-3xl bg-foreground/15 text-foreground flex items-center justify-center">
+        <div className="w-16 h-16 rounded-2xl bg-foreground/15 text-foreground flex items-center justify-center">
           <Sparkles size={32} />
         </div>
         <h3 className="text-lg font-bold text-foreground">Nenhuma nota selecionada</h3>
@@ -81,7 +81,7 @@ export function NoteEditor({ note, folders, onSave, onDelete }: NoteEditorProps)
     const lines = rawText.split("\n");
     return lines.map((line, idx) => {
       if (line.startsWith("# ")) {
-        return <h1 key={idx} className="text-2xl font-black text-foreground my-3">{line.slice(2)}</h1>;
+        return <h1 key={idx} className="text-2xl font-semibold text-foreground my-3">{line.slice(2)}</h1>;
       }
       if (line.startsWith("## ")) {
         return <h2 key={idx} className="text-xl font-bold text-foreground my-2.5">{line.slice(3)}</h2>;
@@ -139,7 +139,7 @@ export function NoteEditor({ note, folders, onSave, onDelete }: NoteEditorProps)
               onClick={() => setPreviewMode(false)}
               className={cn(
                 "flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold transition-all",
-                !previewMode ? "bg-foreground text-background shadow-sm" : "text-muted-foreground hover:text-foreground"
+                !previewMode ? "bg-foreground text-background shadow-none" : "text-muted-foreground hover:text-foreground"
               )}
             >
               <Edit2 size={13} />
@@ -149,7 +149,7 @@ export function NoteEditor({ note, folders, onSave, onDelete }: NoteEditorProps)
               onClick={() => setPreviewMode(true)}
               className={cn(
                 "flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold transition-all",
-                previewMode ? "bg-foreground text-background shadow-sm" : "text-muted-foreground hover:text-foreground"
+                previewMode ? "bg-foreground text-background shadow-none" : "text-muted-foreground hover:text-foreground"
               )}
             >
               <Eye size={13} />
@@ -182,7 +182,7 @@ export function NoteEditor({ note, folders, onSave, onDelete }: NoteEditorProps)
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="Título da Nota..."
-          className="w-full bg-transparent text-2xl font-black text-foreground outline-none tracking-tight placeholder:text-muted-foreground/50"
+          className="w-full bg-transparent text-2xl font-semibold text-foreground outline-none tracking-tight placeholder:text-muted-foreground/50"
         />
       </div>
 

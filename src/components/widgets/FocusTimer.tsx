@@ -100,15 +100,15 @@ export function FocusTimer({ tasks = [], onFocusComplete }: FocusTimerProps) {
   const progressPct = Math.round(((totalDurationSeconds - timeLeft) / totalDurationSeconds) * 100);
 
   return (
-    <div className="glass-card p-5 space-y-4 rounded-3xl border border-border/70 shadow-lg select-none">
+    <div className="glass-card p-5 space-y-4 rounded-2xl border border-border/70 shadow-none select-none">
       {/* Header com modos */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-xl bg-foreground text-background flex items-center justify-center font-black">
+          <div className="w-8 h-8 rounded-xl bg-foreground text-background flex items-center justify-center font-semibold">
             <Timer size={18} />
           </div>
           <div>
-            <h3 className="text-sm font-extrabold text-foreground tracking-tight">Timer de Foco & Deep Work</h3>
+            <h3 className="text-sm font-semibold text-foreground tracking-tight">Timer de Foco & Deep Work</h3>
             <p className="text-[11px] text-muted-foreground font-medium">Técnica Pomodoro para produtividade máxima</p>
           </div>
         </div>
@@ -120,7 +120,7 @@ export function FocusTimer({ tasks = [], onFocusComplete }: FocusTimerProps) {
             onClick={() => setMode("focus")}
             className={cn(
               "px-3 py-1.5 rounded-xl text-xs font-bold transition-all",
-              mode === "focus" ? "bg-foreground text-background font-extrabold shadow-sm" : "text-muted-foreground hover:text-foreground"
+              mode === "focus" ? "bg-foreground text-background font-semibold shadow-none" : "text-muted-foreground hover:text-foreground"
             )}
           >
             Foco (25m)
@@ -130,7 +130,7 @@ export function FocusTimer({ tasks = [], onFocusComplete }: FocusTimerProps) {
             onClick={() => setMode("shortBreak")}
             className={cn(
               "px-3 py-1.5 rounded-xl text-xs font-bold transition-all",
-              mode === "shortBreak" ? "bg-emerald-500 text-white font-extrabold shadow-sm" : "text-muted-foreground hover:text-foreground"
+              mode === "shortBreak" ? "bg-emerald-500 text-white font-semibold shadow-none" : "text-muted-foreground hover:text-foreground"
             )}
           >
             Pausa (5m)
@@ -140,7 +140,7 @@ export function FocusTimer({ tasks = [], onFocusComplete }: FocusTimerProps) {
             onClick={() => setMode("longBreak")}
             className={cn(
               "px-3 py-1.5 rounded-xl text-xs font-bold transition-all",
-              mode === "longBreak" ? "bg-blue-500 text-white font-extrabold shadow-sm" : "text-muted-foreground hover:text-foreground"
+              mode === "longBreak" ? "bg-blue-500 text-white font-semibold shadow-none" : "text-muted-foreground hover:text-foreground"
             )}
           >
             Longa (15m)
@@ -151,10 +151,10 @@ export function FocusTimer({ tasks = [], onFocusComplete }: FocusTimerProps) {
       {/* Main Display do Timer */}
       <div className="flex flex-col items-center justify-center py-4 space-y-3">
         <div className="relative flex flex-col items-center justify-center">
-          <span className="text-6xl sm:text-7xl font-black text-foreground tracking-tighter font-mono leading-none">
+          <span className="text-6xl sm:text-7xl font-semibold text-foreground tracking-tighter font-mono leading-none">
             {timeFormatted}
           </span>
-          <span className={cn("text-xs font-black px-3 py-0.5 rounded-full border mt-3 uppercase tracking-wider", currentConfig.color)}>
+          <span className={cn("text-xs font-semibold px-3 py-0.5 rounded-full border mt-3 tracking-normal", currentConfig.color)}>
             {currentConfig.label}
           </span>
         </div>
@@ -189,7 +189,7 @@ export function FocusTimer({ tasks = [], onFocusComplete }: FocusTimerProps) {
           </div>
         ) : (
           <div className="text-xs text-muted-foreground font-semibold">
-            Sessões concluídas hoje: <span className="font-extrabold text-foreground">{completedSessions} 🏆</span>
+            Sessões concluídas hoje: <span className="font-semibold text-foreground">{completedSessions} 🏆</span>
           </div>
         )}
 

@@ -107,11 +107,11 @@ export function QuickActionFab({ open, onClose }: QuickActionFabProps) {
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-[250] flex flex-col items-center justify-end pb-24 p-4 fade-in md:hidden">
-      <div className="w-full max-w-xs space-y-3 slide-up bg-card border border-border/80 rounded-3xl p-4 shadow-2xl">
+      <div className="w-full max-w-xs space-y-3 slide-up bg-card border border-border/80 rounded-2xl p-4 shadow-none">
         {mode === "menu" && (
           <>
             <div className="flex items-center justify-between pb-2 border-b border-border/40">
-              <p className="text-xs font-black text-foreground uppercase tracking-wider">
+              <p className="text-xs font-semibold text-foreground tracking-normal">
                 Captura Rápida
               </p>
               <button

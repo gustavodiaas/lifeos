@@ -84,9 +84,9 @@ export function TransactionModal({ open, onClose, onSave, defaultDate, editingTr
 
   return (
     <ModalPortal open={open} onClose={onClose}>
-      <div className="bg-card w-full max-w-sm rounded-t-[28px] sm:rounded-[28px] shadow-2xl border border-border overflow-hidden flex flex-col max-h-[90vh] slide-up">
+      <div className="bg-card w-full max-w-sm rounded-t-[28px] sm:rounded-2xl shadow-none border border-border overflow-hidden flex flex-col max-h-[90vh] slide-up">
         <div className="flex items-center justify-between p-6 border-b border-border/60 shrink-0">
-          <h2 className="text-base font-extrabold text-foreground tracking-tight">
+          <h2 className="text-base font-semibold text-foreground tracking-tight">
             {editingTransaction ? 'Editar Lançamento' : 'Novo Lançamento'}
           </h2>
           <button
@@ -110,7 +110,7 @@ export function TransactionModal({ open, onClose, onSave, defaultDate, editingTr
             </button>
             <button
               onClick={() => { onSave(pendingData, 'all'); }}
-              className="w-full py-4 bg-foreground text-background rounded-2xl font-black text-sm active:scale-95 transition-all shadow-md shadow-black/20"
+              className="w-full py-4 bg-foreground text-background rounded-2xl font-semibold text-sm active:scale-95 transition-all shadow-none "
             >
               Todos os futuros
             </button>
@@ -122,7 +122,7 @@ export function TransactionModal({ open, onClose, onSave, defaultDate, editingTr
                 type="button"
                 onClick={() => setTipo('saida')}
                 className={`py-3 rounded-xl font-bold text-xs transition-all ${
-                  tipo === 'saida' ? 'bg-red-500 text-white shadow-sm font-black' : 'text-muted-foreground'
+                  tipo === 'saida' ? 'bg-red-500 text-white shadow-none font-semibold' : 'text-muted-foreground'
                 }`}
               >
                 Saída (Gasto)
@@ -131,7 +131,7 @@ export function TransactionModal({ open, onClose, onSave, defaultDate, editingTr
                 type="button"
                 onClick={() => setTipo('entrada')}
                 className={`py-3 rounded-xl font-bold text-xs transition-all ${
-                  tipo === 'entrada' ? 'bg-emerald-500 text-white shadow-sm font-black' : 'text-muted-foreground'
+                  tipo === 'entrada' ? 'bg-emerald-500 text-white shadow-none font-semibold' : 'text-muted-foreground'
                 }`}
               >
                 Entrada (Receita)
@@ -140,7 +140,7 @@ export function TransactionModal({ open, onClose, onSave, defaultDate, editingTr
 
             <div className="space-y-3">
               <div>
-                <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-widest ml-1 mb-1 block">
+                <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-normal ml-1 mb-1 block">
                   Valor (R$)
                 </label>
                 <input
@@ -149,14 +149,14 @@ export function TransactionModal({ open, onClose, onSave, defaultDate, editingTr
                   value={valor}
                   onChange={(e) => handleValorChange(e.target.value)}
                   placeholder="0,00"
-                  className="input-ios text-2xl font-black"
+                  className="input-ios text-2xl font-semibold"
                   required
                   autoFocus
                 />
               </div>
 
               <div>
-                <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-widest ml-1 mb-1 block">
+                <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-normal ml-1 mb-1 block">
                   Descrição
                 </label>
                 <input
@@ -186,7 +186,7 @@ export function TransactionModal({ open, onClose, onSave, defaultDate, editingTr
               >
                 <div className="flex items-center gap-2.5">
                   <Repeat size={18} strokeWidth={isRecorrente ? 2.5 : 1.75} />
-                  <span className="text-xs font-bold uppercase tracking-wider">Lançamento Fixo Mensal</span>
+                  <span className="text-xs font-bold tracking-normal">Lançamento Fixo Mensal</span>
                 </div>
                 <div
                   className={`w-4 h-4 rounded-full border-2 ${
@@ -197,7 +197,7 @@ export function TransactionModal({ open, onClose, onSave, defaultDate, editingTr
 
               {tipo === 'saida' && (
                 <div>
-                  <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-widest ml-1 mb-1 block">
+                  <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-normal ml-1 mb-1 block">
                     Categoria
                   </label>
                   <CustomSelect
@@ -218,7 +218,7 @@ export function TransactionModal({ open, onClose, onSave, defaultDate, editingTr
 
             <button
               type="submit"
-              className="btn-ios w-full py-4 text-xs uppercase tracking-widest font-black"
+              className="btn-ios w-full py-4 text-xs uppercase tracking-normal font-semibold"
             >
               <Save size={18} />
               <span>{editingTransaction ? 'Atualizar Lançamento' : 'Confirmar Lançamento'}</span>

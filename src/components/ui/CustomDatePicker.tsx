@@ -145,7 +145,7 @@ export function CustomDatePicker({ value, onChange, label, className }: CustomDa
   const popup = open ? createPortal(
     <div
       ref={popupRef}
-      className="glass-card p-4 shadow-2xl border border-border fade-in"
+      className="glass-card p-4 shadow-none border border-border fade-in"
       style={{
         position: "fixed",
         top: pos.top,
@@ -170,9 +170,9 @@ export function CustomDatePicker({ value, onChange, label, className }: CustomDa
           type="button"
           onClick={() => setViewMode(viewMode === "months" ? "calendar" : "months")}
           className={cn(
-            "px-3 py-1.5 rounded-xl text-xs font-extrabold capitalize transition-all border",
+            "px-3 py-1.5 rounded-xl text-xs font-semibold capitalize transition-all border",
             viewMode === "months"
-              ? "bg-foreground text-background border-foreground shadow-sm font-black"
+              ? "bg-foreground text-background border-foreground shadow-none font-semibold"
               : "bg-muted/60 text-foreground border-border/50 hover:bg-muted"
           )}
         >
@@ -183,9 +183,9 @@ export function CustomDatePicker({ value, onChange, label, className }: CustomDa
           type="button"
           onClick={() => setViewMode(viewMode === "years" ? "calendar" : "years")}
           className={cn(
-            "px-3 py-1.5 rounded-xl text-xs font-extrabold transition-all border",
+            "px-3 py-1.5 rounded-xl text-xs font-semibold transition-all border",
             viewMode === "years"
-              ? "bg-foreground text-background border-foreground shadow-sm font-black"
+              ? "bg-foreground text-background border-foreground shadow-none font-semibold"
               : "bg-muted/60 text-foreground border-border/50 hover:bg-muted"
           )}
         >
@@ -212,7 +212,7 @@ export function CustomDatePicker({ value, onChange, label, className }: CustomDa
               className={cn(
                 "py-3 rounded-2xl text-xs font-bold transition-all border",
                 viewMonth === idx
-                  ? "bg-foreground text-background border-foreground font-black shadow-md scale-105"
+                  ? "bg-foreground text-background border-foreground font-semibold shadow-none "
                   : "bg-muted/30 border-border/50 text-foreground hover:bg-muted"
               )}
             >
@@ -233,7 +233,7 @@ export function CustomDatePicker({ value, onChange, label, className }: CustomDa
               className={cn(
                 "py-2 rounded-xl text-xs font-bold transition-all border text-center",
                 viewYear === y
-                  ? "bg-foreground text-background border-foreground font-black shadow-md scale-105"
+                  ? "bg-foreground text-background border-foreground font-semibold shadow-none "
                   : "bg-muted/30 border-border/50 text-foreground hover:bg-muted"
               )}
             >
@@ -246,7 +246,7 @@ export function CustomDatePicker({ value, onChange, label, className }: CustomDa
       {/* Calendar grid */}
       {viewMode === "calendar" && (
         <>
-          <div className="grid grid-cols-7 gap-1 text-center my-2 text-[10px] font-extrabold text-muted-foreground">
+          <div className="grid grid-cols-7 gap-1 text-center my-2 text-[10px] font-semibold text-muted-foreground">
             <span>D</span><span>S</span><span>T</span><span>Q</span><span>Q</span><span>S</span><span>S</span>
           </div>
 
@@ -268,7 +268,7 @@ export function CustomDatePicker({ value, onChange, label, className }: CustomDa
                   className={cn(
                     "w-8 h-8 rounded-xl text-xs font-bold transition-all flex items-center justify-center mx-auto",
                     isSelected
-                      ? "bg-foreground text-background shadow-md font-black scale-105"
+                      ? "bg-foreground text-background shadow-none font-semibold "
                       : "hover:bg-muted text-foreground"
                   )}
                 >
@@ -297,7 +297,7 @@ export function CustomDatePicker({ value, onChange, label, className }: CustomDa
   return (
     <div className={cn("relative w-full select-none", className)}>
       {label && (
-        <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+        <label className="text-xs font-bold text-muted-foreground tracking-normal mb-1.5 flex items-center gap-1.5">
           <CalendarIcon size={13} className="text-muted-foreground" />
           {label}
         </label>

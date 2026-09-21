@@ -83,7 +83,7 @@ export function CustomSelect({
   const popup = open ? createPortal(
     <div
       ref={popupRef}
-      className="glass-card p-1.5 shadow-2xl border border-border space-y-1 max-h-60 overflow-y-auto fade-in"
+      className="glass-card p-1.5 shadow-none border border-border space-y-1 max-h-60 overflow-y-auto fade-in"
       style={{
         position: "fixed",
         top: pos.top,
@@ -107,7 +107,7 @@ export function CustomSelect({
             className={cn(
               "w-full px-3 py-2.5 rounded-xl text-xs font-bold flex items-center justify-between transition-colors text-left",
               isSelected
-                ? "bg-foreground text-background shadow-sm"
+                ? "bg-foreground text-background shadow-none"
                 : "text-foreground hover:bg-muted"
             )}
           >

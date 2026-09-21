@@ -114,7 +114,7 @@ export function FocusTimer({ onSessionComplete }: FocusTimerProps) {
               {completedSessions} sessões hoje
             </span>
           </div>
-          <h3 className="text-lg font-black text-foreground tracking-tight mt-0.5">
+          <h3 className="text-lg font-semibold text-foreground tracking-tight mt-0.5">
             {MODE_CONFIG[mode].label}
           </h3>
         </div>
@@ -129,7 +129,7 @@ export function FocusTimer({ onSessionComplete }: FocusTimerProps) {
             onClick={() => handleModeChange(mKey)}
             className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
               mode === mKey
-                ? `${MODE_CONFIG[mKey].bg} ${MODE_CONFIG[mKey].color} shadow-sm font-black`
+                ? `${MODE_CONFIG[mKey].bg} ${MODE_CONFIG[mKey].color} shadow-none font-semibold`
                 : "text-muted-foreground hover:text-foreground"
             }`}
           >
@@ -141,7 +141,7 @@ export function FocusTimer({ onSessionComplete }: FocusTimerProps) {
       {/* Cronômetro Digital + Play/Pause */}
       <div className="flex items-center gap-4">
         <div className="text-center">
-          <span className="text-3xl md:text-4xl font-black text-foreground font-mono tracking-wider">
+          <span className="text-3xl md:text-4xl font-semibold text-foreground font-mono tracking-wider">
             {formatTime(timeLeft)}
           </span>
         </div>
@@ -150,7 +150,7 @@ export function FocusTimer({ onSessionComplete }: FocusTimerProps) {
           <button
             type="button"
             onClick={() => setIsRunning(!isRunning)}
-            className="w-12 h-12 rounded-2xl bg-foreground hover:bg-[currentColor] text-black shadow-md shadow-black/20 flex items-center justify-center transition-all active:scale-95"
+            className="w-12 h-12 rounded-2xl bg-foreground hover:bg-[currentColor] text-black shadow-none  flex items-center justify-center transition-all active:scale-95"
             title={isRunning ? "Pausar" : "Iniciar Foco"}
           >
             {isRunning ? <Pause size={22} fill="black" /> : <Play size={22} fill="black" className="ml-0.5" />}

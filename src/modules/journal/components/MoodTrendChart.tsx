@@ -52,14 +52,14 @@ export function MoodTrendChart({ entries }: MoodTrendChartProps) {
     : "—";
 
   return (
-    <div className="glass-card p-5 rounded-3xl border border-border/70 space-y-4 select-none">
+    <div className="glass-card p-5 rounded-2xl border border-border/70 space-y-4 select-none">
       <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
         <div className="flex items-center gap-2.5">
           <div className="w-9 h-9 rounded-2xl bg-amber-500/15 text-amber-500 flex items-center justify-center">
             <Smile size={20} />
           </div>
           <div>
-            <h3 className="text-sm font-extrabold text-foreground tracking-tight">Evolução do Humor (Últimos 30 Dias)</h3>
+            <h3 className="text-sm font-semibold text-foreground tracking-tight">Evolução do Humor (Últimos 30 Dias)</h3>
             <p className="text-[11px] text-muted-foreground font-medium">Acompanhe seu estado emocional e bem-estar</p>
           </div>
         </div>
@@ -67,7 +67,7 @@ export function MoodTrendChart({ entries }: MoodTrendChartProps) {
         <div className="flex items-center gap-2 bg-muted/50 px-3 py-1.5 rounded-2xl border border-border/50">
           <Sparkles size={14} className="text-amber-500" />
           <span className="text-xs font-bold text-muted-foreground">Média do Período:</span>
-          <span className="text-xs font-black text-foreground">{avgScore} / 5.0 ⭐</span>
+          <span className="text-xs font-semibold text-foreground">{avgScore} / 5.0 ⭐</span>
         </div>
       </div>
 
@@ -96,7 +96,7 @@ export function MoodTrendChart({ entries }: MoodTrendChartProps) {
                   style={{ height: `${heightPct}%` }}
                 />
 
-                <span className="text-[9px] font-extrabold text-muted-foreground block">
+                <span className="text-[9px] font-semibold text-muted-foreground block">
                   {d.date.slice(8)}
                 </span>
               </div>

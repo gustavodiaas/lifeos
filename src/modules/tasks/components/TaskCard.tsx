@@ -71,7 +71,7 @@ export function TaskCard({
       className={cn(
         "glass-card p-4 transition-all duration-200 relative group flex flex-col justify-between space-y-3 cursor-grab active:cursor-grabbing select-none",
         task.status === "done" && "opacity-75 bg-muted/20",
-        isDragging && "opacity-40 scale-95 border-foreground shadow-2xl"
+        isDragging && "opacity-40 scale-95 border-foreground shadow-none"
       )}
     >
       {/* ── Top Header ────────────────────────────────────────────── */}
@@ -84,7 +84,7 @@ export function TaskCard({
             className={cn(
               "w-6 h-6 rounded-lg flex items-center justify-center shrink-0 transition-all ios-spring mt-0.5 border-2",
               task.status === "done"
-                ? "bg-foreground border-foreground text-black shadow-sm"
+                ? "bg-foreground border-foreground text-black shadow-none"
                 : "border-border/80 hover:border-foreground bg-muted/40 text-transparent"
             )}
           >
@@ -111,7 +111,7 @@ export function TaskCard({
                 </span>
               )}
 
-              <span className={cn("text-[10px] font-extrabold px-2 py-0.5 rounded-md border", priorityConfig.color)}>
+              <span className={cn("text-[10px] font-semibold px-2 py-0.5 rounded-md border", priorityConfig.color)}>
                 {priorityConfig.label}
               </span>
 
@@ -121,7 +121,7 @@ export function TaskCard({
                   className={cn(
                     "inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md border",
                     isOverdue
-                      ? "bg-red-500/15 text-red-500 border-red-500/30 font-black animate-pulse"
+                      ? "bg-red-500/15 text-red-500 border-red-500/30 font-semibold animate-pulse"
                       : isDueToday
                       ? "bg-muted text-foreground border-border"
                       : "bg-muted text-muted-foreground border-border/50"
@@ -146,7 +146,7 @@ export function TaskCard({
 
           {showMenu && (
             <div
-              className="absolute right-0 top-8 w-44 glass-card p-1.5 z-30 shadow-xl border border-border space-y-1 fade-in"
+              className="absolute right-0 top-8 w-44 glass-card p-1.5 z-30 shadow-none border border-border space-y-1 fade-in"
               onMouseLeave={() => setShowMenu(false)}
             >
               <button
@@ -187,7 +187,7 @@ export function TaskCard({
               <ListTodo size={13} className="text-foreground" />
               <span>Sub-tarefas ({doneChecklist}/{totalChecklist})</span>
             </button>
-            <span className="text-[10px] font-black text-muted-foreground">{checklistPercent}%</span>
+            <span className="text-[10px] font-semibold text-muted-foreground">{checklistPercent}%</span>
           </div>
 
           <div className="w-full bg-muted/60 h-1.5 rounded-full overflow-hidden">

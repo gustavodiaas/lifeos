@@ -25,8 +25,8 @@ export function MonthSummary({ summary, selectedMonth, selectedYear }: Props) {
   const custoVidaOK = summary.custoVida <= summary.rendaReal * 0.6;
 
   return (
-    <div className="glass-card p-6 rounded-3xl space-y-6 border border-border/60 shadow-sm fade-in">
-      <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">
+    <div className="glass-card p-6 rounded-2xl space-y-6 border border-border/60 shadow-none fade-in">
+      <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-normal">
         Cálculos do mês
       </p>
 
@@ -41,7 +41,7 @@ export function MonthSummary({ summary, selectedMonth, selectedYear }: Props) {
               return (
                 <div
                   key={i}
-                  className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black text-white ${
+                  className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-semibold text-white ${
                     i === 4 ? monthBg : 'bg-muted-foreground dark:bg-muted-foreground'
                   }`}
                 >
@@ -52,7 +52,7 @@ export function MonthSummary({ summary, selectedMonth, selectedYear }: Props) {
           </div>
         </div>
         <div className="text-right">
-          <p className="text-sm font-black text-foreground">{formatCurrency(summary.saldoFinal)}</p>
+          <p className="text-sm font-semibold text-foreground">{formatCurrency(summary.saldoFinal)}</p>
           <p className={`text-[10px] font-bold mt-1 ${statusColor}`}>{statusText}</p>
         </div>
       </div>
@@ -69,7 +69,7 @@ export function MonthSummary({ summary, selectedMonth, selectedYear }: Props) {
           </div>
         </div>
         <div className="text-right">
-          <p className="text-sm font-black text-foreground">{summary.porcentagemEconomy}%</p>
+          <p className="text-sm font-semibold text-foreground">{summary.porcentagemEconomy}%</p>
           <p className="text-[10px] text-muted-foreground font-bold mt-1">Eficiência real</p>
         </div>
       </div>
@@ -78,7 +78,7 @@ export function MonthSummary({ summary, selectedMonth, selectedYear }: Props) {
       <div className="flex justify-between items-center border-b border-border pb-5">
         <p className="text-sm font-bold text-foreground">Custo de vida</p>
         <div className="text-right">
-          <p className="text-sm font-black text-foreground">{formatCurrency(summary.custoVida)}</p>
+          <p className="text-sm font-semibold text-foreground">{formatCurrency(summary.custoVida)}</p>
           <p className={`text-[10px] font-bold mt-1 ${custoVidaOK ? 'text-muted-foreground' : 'text-muted-foreground'}`}>
             {custoVidaOK ? 'Dentro da renda' : 'Custo elevado'}
           </p>
@@ -89,7 +89,7 @@ export function MonthSummary({ summary, selectedMonth, selectedYear }: Props) {
       <div className="flex justify-between items-center border-b border-border pb-5">
         <p className="text-sm font-bold text-foreground">Diário médio</p>
         <div className="text-right">
-          <p className={`text-sm font-black ${isDiarioNegativo ? 'text-red-500' : 'text-primary'}`}>
+          <p className={`text-sm font-semibold ${isDiarioNegativo ? 'text-red-500' : 'text-primary'}`}>
             {formatCurrency(summary.diarioMedio)}
           </p>
           <p className={`text-[10px] font-bold mt-1 ${isDiarioNegativo ? 'text-red-400' : 'text-muted-foreground'}`}>
@@ -100,7 +100,7 @@ export function MonthSummary({ summary, selectedMonth, selectedYear }: Props) {
 
       {/* Movimentações */}
       <div className="space-y-4">
-        <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">
+        <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-normal">
           Movimentações reais
         </p>
         <div className="flex justify-between py-1">
@@ -108,21 +108,21 @@ export function MonthSummary({ summary, selectedMonth, selectedYear }: Props) {
             <div className="w-2 h-2 rounded-full bg-emerald-500" />
             Entradas
           </span>
-          <span className="text-sm font-black text-foreground">{formatCurrency(summary.rendaReal)}</span>
+          <span className="text-sm font-semibold text-foreground">{formatCurrency(summary.rendaReal)}</span>
         </div>
         <div className="flex justify-between py-1">
           <span className="text-sm text-muted-foreground font-medium flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-red-500" />
             Saídas
           </span>
-          <span className="text-sm font-black text-foreground">{formatCurrency(summary.totalSaidas)}</span>
+          <span className="text-sm font-semibold text-foreground">{formatCurrency(summary.totalSaidas)}</span>
         </div>
         <div className="flex justify-between py-1">
           <span className="text-sm text-muted-foreground font-medium flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-emerald-600" />
             Investimentos
           </span>
-          <span className="text-sm font-black text-emerald-600 dark:text-emerald-400">
+          <span className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">
             {formatCurrency(summary.investimentos)}
           </span>
         </div>

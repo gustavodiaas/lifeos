@@ -43,8 +43,8 @@ export function TagsView({ rows }: Props) {
   };
 
   return (
-    <div className="glass-card p-6 rounded-3xl space-y-4 border border-border/60 shadow-sm fade-in">
-      <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">
+    <div className="glass-card p-6 rounded-2xl space-y-4 border border-border/60 shadow-none fade-in">
+      <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-normal">
         Visão por Categoria
       </p>
 
@@ -71,7 +71,7 @@ export function TagsView({ rows }: Props) {
                   </span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className={`text-sm font-black ${isInvest ? 'text-emerald-600 dark:text-emerald-400' : 'text-foreground'}`}>
+                  <span className={`text-sm font-semibold ${isInvest ? 'text-emerald-600 dark:text-emerald-400' : 'text-foreground'}`}>
                     {formatCurrency(valor)}
                   </span>
                   <ChevronDown
@@ -90,14 +90,14 @@ export function TagsView({ rows }: Props) {
                         className="flex items-center justify-between p-3 border-b last:border-0 border-border/50"
                       >
                         <div className="flex items-center gap-2.5">
-                          <span className="text-[10px] font-black text-primary-foreground bg-primary px-2 py-0.5 rounded-md uppercase tracking-tighter">
+                          <span className="text-[10px] font-semibold text-primary-foreground bg-primary px-2 py-0.5 rounded-md tracking-normal">
                             Dia {t.dia}
                           </span>
                           <span className="text-xs font-bold text-muted-foreground truncate max-w-[140px]">
                             {t.descricao}
                           </span>
                         </div>
-                        <span className="text-xs font-black text-foreground whitespace-nowrap">
+                        <span className="text-xs font-semibold text-foreground whitespace-nowrap">
                           {formatCurrency(t.valor)}
                         </span>
                       </div>

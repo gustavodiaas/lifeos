@@ -42,7 +42,7 @@ export function JournalEntryCard({ entry, onEdit, onDelete }: JournalEntryCardPr
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-md border ${moodInfo.color}`}>
+              <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-md border ${moodInfo.color}`}>
                 Humor: {moodInfo.label}
               </span>
             </div>
@@ -87,7 +87,7 @@ export function JournalEntryCard({ entry, onEdit, onDelete }: JournalEntryCardPr
       {/* ── Destaques / Highlights ────────────────────────────────── */}
       {entry.highlights && entry.highlights.length > 0 && (
         <div className="pt-2 border-t border-border/40 space-y-1.5">
-          <span className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider flex items-center gap-1">
+          <span className="text-[10px] font-semibold text-muted-foreground tracking-normal flex items-center gap-1">
             <Sparkles size={11} className="text-foreground" />
             Destaques do Dia
           </span>

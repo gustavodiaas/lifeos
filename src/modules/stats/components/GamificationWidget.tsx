@@ -105,19 +105,19 @@ export function GamificationWidget({
   const unlockedCount = badges.filter((b) => b.unlocked).length;
 
   return (
-    <div className="glass-card p-5 space-y-4 rounded-3xl border border-border/70 select-none">
+    <div className="glass-card p-5 space-y-4 rounded-2xl border border-border/70 select-none">
       {/* Header Nível & XP */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-2xl bg-foreground text-background flex items-center justify-center font-black text-xl shadow-lg shadow-black/10">
+          <div className="w-12 h-12 rounded-2xl bg-foreground text-background flex items-center justify-center font-semibold text-xl shadow-none ">
             <Zap size={24} fill="currentColor" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-xs font-black text-foreground uppercase tracking-widest">
+              <span className="text-xs font-semibold text-foreground uppercase tracking-normal">
                 Nível {currentLevel.level} — {currentLevel.name}
               </span>
-              <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-foreground/10 text-foreground border border-foreground/20">
+              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-foreground/10 text-foreground border border-foreground/20">
                 {totalXp} XP Acumulado
               </span>
             </div>
@@ -138,7 +138,7 @@ export function GamificationWidget({
 
       {/* Barra de Progresso de XP */}
       <div className="space-y-1">
-        <div className="flex items-center justify-between text-[10px] font-extrabold">
+        <div className="flex items-center justify-between text-[10px] font-semibold">
           <span className="text-muted-foreground uppercase">Progresso do Nível {currentLevel.level}</span>
           <span className="text-foreground">{xpInCurrentLevel} / {levelRange} XP ({levelPct}%)</span>
         </div>
@@ -152,7 +152,7 @@ export function GamificationWidget({
 
       {/* Grid de Medalhas / Badges */}
       <div className="pt-2">
-        <h4 className="text-xs font-extrabold text-muted-foreground uppercase tracking-wider mb-2.5">
+        <h4 className="text-xs font-semibold text-muted-foreground tracking-normal mb-2.5">
           Insígnias & Conquistas Desbloqueáveis
         </h4>
 
@@ -165,7 +165,7 @@ export function GamificationWidget({
                 className={cn(
                   "p-3 rounded-2xl border flex flex-col items-center text-center space-y-1.5 transition-all duration-200",
                   badge.unlocked
-                    ? `${badge.color} shadow-sm scale-[1.02]`
+                    ? `${badge.color} shadow-none `
                     : "bg-muted/20 border-border/40 text-muted-foreground opacity-50 grayscale"
                 )}
               >
@@ -173,13 +173,13 @@ export function GamificationWidget({
                   <Icon size={18} />
                 </div>
                 <div>
-                  <span className="text-xs font-extrabold block leading-tight">{badge.title}</span>
+                  <span className="text-xs font-semibold block leading-tight">{badge.title}</span>
                   <span className="text-[9px] font-medium leading-tight block mt-0.5 opacity-90">
                     {badge.description}
                   </span>
                 </div>
                 {badge.unlocked && (
-                  <span className="text-[9px] font-black uppercase tracking-wider text-emerald-500 pt-0.5">
+                  <span className="text-[9px] font-semibold tracking-normal text-emerald-500 pt-0.5">
                     ✨ Desbloqueado!
                   </span>
                 )}

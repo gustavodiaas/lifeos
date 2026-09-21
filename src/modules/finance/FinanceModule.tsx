@@ -45,7 +45,7 @@ function ErrorToast({ message, onClose }: { message: string; onClose: () => void
 
   return (
     <div className="fixed top-4 left-4 right-4 z-[200] md:left-auto md:right-6 md:w-80">
-      <div className="bg-red-500 text-white rounded-xl px-4 py-3 flex items-center gap-3 shadow-xl">
+      <div className="bg-red-500 text-white rounded-xl px-4 py-3 flex items-center gap-3 shadow-none">
         <AlertCircle size={16} className="shrink-0" />
         <span className="text-xs font-bold flex-1">{message}</span>
         <button onClick={onClose} className="shrink-0 opacity-70 hover:opacity-100">
@@ -194,7 +194,7 @@ export function FinanceModule() {
       )}
 
       {/* Header Compacto do módulo de Finanças */}
-      <div className="glass-card p-3 flex flex-col sm:flex-row items-center justify-between gap-2.5 sticky top-0 z-20 backdrop-blur-xl border border-white/10 shadow-sm">
+      <div className="sticky top-0 z-20 flex flex-col items-center justify-between gap-3 border-b border-border bg-background/90 py-3 backdrop-blur-xl sm:flex-row">
         {/* Navegação de Mês Compacta */}
         <div className="flex items-center justify-between w-full sm:w-auto gap-2">
           <div className="flex items-center gap-2 bg-muted/40 p-1 rounded-xl border border-border/40">
@@ -204,7 +204,7 @@ export function FinanceModule() {
             >
               <ChevronLeft size={16} strokeWidth={2.5} />
             </button>
-            <span className="text-xs font-black tracking-tight text-foreground min-w-[70px] text-center capitalize">
+            <span className="text-xs font-semibold tracking-tight text-foreground min-w-[70px] text-center capitalize">
               {formatMonthLabel(year, month)}
             </span>
             <button
@@ -234,7 +234,7 @@ export function FinanceModule() {
             onClick={() => setActiveTab('extrato')}
             className={`px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all flex items-center gap-1.5 shrink-0 ${
               activeTab === 'extrato'
-                ? 'bg-foreground text-background shadow-md font-extrabold scale-[1.02]'
+                ? 'bg-foreground text-background shadow-none font-semibold '
                 : 'bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground'
             }`}
           >
@@ -246,7 +246,7 @@ export function FinanceModule() {
             onClick={() => setActiveTab('investimentos')}
             className={`px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all flex items-center gap-1.5 shrink-0 ${
               activeTab === 'investimentos'
-                ? 'bg-foreground text-background shadow-md font-extrabold scale-[1.02]'
+                ? 'bg-foreground text-background shadow-none font-semibold '
                 : 'bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground'
             }`}
           >
@@ -258,7 +258,7 @@ export function FinanceModule() {
             onClick={() => setActiveTab('caixinhas')}
             className={`px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all flex items-center gap-1.5 shrink-0 ${
               activeTab === 'caixinhas'
-                ? 'bg-foreground text-background shadow-md font-extrabold scale-[1.02]'
+                ? 'bg-foreground text-background shadow-none font-semibold '
                 : 'bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground'
             }`}
           >
@@ -270,7 +270,7 @@ export function FinanceModule() {
             onClick={() => setActiveTab('totais')}
             className={`px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all flex items-center gap-1.5 shrink-0 ${
               activeTab === 'totais'
-                ? 'bg-foreground text-background shadow-md font-extrabold scale-[1.02]'
+                ? 'bg-foreground text-background shadow-none font-semibold '
                 : 'bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground'
             }`}
           >
@@ -282,7 +282,7 @@ export function FinanceModule() {
             onClick={() => setActiveTab('tags')}
             className={`px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all flex items-center gap-1.5 shrink-0 ${
               activeTab === 'tags'
-                ? 'bg-foreground text-background shadow-md font-extrabold scale-[1.02]'
+                ? 'bg-foreground text-background shadow-none font-semibold '
                 : 'bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground'
             }`}
           >
@@ -294,7 +294,7 @@ export function FinanceModule() {
             onClick={() => setActiveTab('horizon')}
             className={`px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all flex items-center gap-1.5 shrink-0 ${
               activeTab === 'horizon'
-                ? 'bg-foreground text-background shadow-md font-extrabold scale-[1.02]'
+                ? 'bg-foreground text-background shadow-none font-semibold '
                 : 'bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground'
             }`}
           >
@@ -306,7 +306,7 @@ export function FinanceModule() {
             onClick={() => setActiveTab('planilha')}
             className={`px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all flex items-center gap-1.5 shrink-0 ${
               activeTab === 'planilha'
-                ? 'bg-foreground text-background shadow-md font-extrabold scale-[1.02]'
+                ? 'bg-foreground text-background shadow-none font-semibold '
                 : 'bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground'
             }`}
           >
@@ -320,7 +320,7 @@ export function FinanceModule() {
               setModalError(null);
               setModalOpen(true);
             }}
-            className="hidden sm:flex btn-ios text-xs py-1.5 px-3.5 ml-2 shrink-0 shadow-sm active:scale-95"
+            className="hidden sm:flex btn-ios text-xs py-1.5 px-3.5 ml-2 shrink-0 shadow-none active:scale-95"
           >
             <Plus size={14} strokeWidth={2.5} />
             <span>Novo</span>

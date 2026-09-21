@@ -110,7 +110,7 @@ export function MobileAppDrawer({ open, onClose }: MobileAppDrawerProps) {
               key={to}
               to={to}
               onClick={onClose}
-              className="ios-spring flex min-h-[94px] flex-col items-center justify-center gap-2 rounded-[18px] border border-border bg-card/55 px-2 py-3 text-center shadow-sm"
+              className="ios-spring flex min-h-[94px] flex-col items-center justify-center gap-2 rounded-[18px] border border-border bg-card/55 px-2 py-3 text-center shadow-none"
             >
               <div className={`ios-squircle size-11 ${tint}`}>
                 <Icon className="size-5" strokeWidth={2} />
@@ -123,7 +123,7 @@ export function MobileAppDrawer({ open, onClose }: MobileAppDrawerProps) {
         <Link
           to="/settings"
           onClick={onClose}
-          className="mt-4 flex items-center gap-3 rounded-[18px] border border-border bg-card/55 p-3 shadow-sm"
+          className="mt-4 flex items-center gap-3 rounded-[18px] border border-border bg-card/55 p-3 shadow-none"
         >
           <div className="grid size-10 shrink-0 place-items-center overflow-hidden rounded-[13px] bg-muted text-muted-foreground">
             {avatarUrl ? (

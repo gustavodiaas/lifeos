@@ -94,14 +94,14 @@ export function ModalPortal({
     >
       <div
         className={cn(
-          "bg-card border border-border/80 rounded-3xl p-5 md:p-6 shadow-2xl w-full relative slide-up my-auto max-h-[90vh] overflow-y-auto custom-scrollbar select-none",
+          "bg-card border border-border/80 rounded-2xl p-5 md:p-6 shadow-none w-full relative slide-up my-auto max-h-[90vh] overflow-y-auto custom-scrollbar select-none",
           maxWidth,
           className
         )}
       >
         {title && (
           <div className="flex items-center justify-between pb-3.5 mb-4 border-b border-border/60">
-            <h3 className="text-sm font-black text-foreground tracking-tight">{title}</h3>
+            <h3 className="text-sm font-semibold text-foreground tracking-tight">{title}</h3>
             <button
               type="button"
               onClick={onClose}

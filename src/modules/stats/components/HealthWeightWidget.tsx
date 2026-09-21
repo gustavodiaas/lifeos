@@ -44,7 +44,7 @@ export function HealthWeightWidget({ weightLogs, onOpenLogger }: HealthWeightWid
   const proteinTargetG = latestWeight > 0 ? Math.round(latestWeight * 1.8) : "130";
 
   return (
-    <div className="glass-card p-5 space-y-4 rounded-3xl border border-border/70">
+    <div className="glass-card p-5 space-y-4 rounded-2xl border border-border/70">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2.5">
@@ -52,7 +52,7 @@ export function HealthWeightWidget({ weightLogs, onOpenLogger }: HealthWeightWid
             <Scale size={18} />
           </div>
           <div>
-            <h3 className="text-sm font-black text-foreground tracking-tight">Saúde Corporal & IMC</h3>
+            <h3 className="text-sm font-semibold text-foreground tracking-tight">Saúde Corporal & IMC</h3>
             <p className="text-[11px] text-muted-foreground font-medium">Métricas antropométricas e cálculo do Índice de Massa Corporal</p>
           </div>
         </div>
@@ -69,9 +69,9 @@ export function HealthWeightWidget({ weightLogs, onOpenLogger }: HealthWeightWid
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         {/* Card Peso */}
         <div className="p-3.5 rounded-2xl bg-muted/40 border border-border/50 space-y-1">
-          <span className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block">Peso Atual</span>
+          <span className="text-[10px] font-semibold text-muted-foreground tracking-normal block">Peso Atual</span>
           <div className="flex items-baseline gap-1">
-            <span className="text-2xl font-black text-foreground">{latestWeight || "—"}</span>
+            <span className="text-2xl font-semibold text-foreground">{latestWeight || "—"}</span>
             <span className="text-xs font-bold text-muted-foreground">kg</span>
           </div>
           <span className="text-[10px] text-muted-foreground block font-medium">
@@ -81,14 +81,14 @@ export function HealthWeightWidget({ weightLogs, onOpenLogger }: HealthWeightWid
 
         {/* Card Altura & Ajuste */}
         <div className="p-3.5 rounded-2xl bg-muted/40 border border-border/50 space-y-1">
-          <span className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block">Sua Altura</span>
+          <span className="text-[10px] font-semibold text-muted-foreground tracking-normal block">Sua Altura</span>
           <div className="flex items-center gap-2">
             <input
               type="number"
               value={heightCm}
               onChange={(e) => setHeightCm(e.target.value)}
               placeholder="175"
-              className="w-20 input-ios py-1 px-2 text-lg font-black text-foreground"
+              className="w-20 input-ios py-1 px-2 text-lg font-semibold text-foreground"
             />
             <span className="text-xs font-bold text-muted-foreground">cm</span>
           </div>
@@ -97,11 +97,11 @@ export function HealthWeightWidget({ weightLogs, onOpenLogger }: HealthWeightWid
 
         {/* Card IMC */}
         <div className="p-3.5 rounded-2xl bg-muted/40 border border-border/50 space-y-1">
-          <span className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block">IMC Calculado</span>
+          <span className="text-[10px] font-semibold text-muted-foreground tracking-normal block">IMC Calculado</span>
           <div className="flex items-baseline gap-2">
-            <span className="text-2xl font-black text-foreground">{imc || "—"}</span>
+            <span className="text-2xl font-semibold text-foreground">{imc || "—"}</span>
             {imc && (
-              <span className={cn("text-[10px] font-black px-2 py-0.5 rounded-full border", imcInfo.color)}>
+              <span className={cn("text-[10px] font-semibold px-2 py-0.5 rounded-full border", imcInfo.color)}>
                 {imcInfo.label}
               </span>
             )}
@@ -118,7 +118,7 @@ export function HealthWeightWidget({ weightLogs, onOpenLogger }: HealthWeightWid
         <div className="p-4 rounded-2xl bg-muted/30 border border-border/50 space-y-2">
           <button
             onClick={() => setShowTips(!showTips)}
-            className="w-full flex items-center justify-between text-left font-extrabold text-xs text-foreground"
+            className="w-full flex items-center justify-between text-left font-semibold text-xs text-foreground"
           >
             <span className="flex items-center gap-1.5">
               <Flame size={15} className="text-orange-500" />
@@ -149,7 +149,7 @@ export function HealthWeightWidget({ weightLogs, onOpenLogger }: HealthWeightWid
         <div className="p-4 rounded-2xl bg-muted/30 border border-border/50 space-y-2">
           <button
             onClick={() => setShowRecipes(!showRecipes)}
-            className="w-full flex items-center justify-between text-left font-extrabold text-xs text-foreground"
+            className="w-full flex items-center justify-between text-left font-semibold text-xs text-foreground"
           >
             <span className="flex items-center gap-1.5">
               <Utensils size={15} className="text-emerald-500" />

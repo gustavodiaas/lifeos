@@ -62,7 +62,7 @@ export function MetricLoggerModal({
 
   return (
     <ModalPortal open={open} onClose={onClose}>
-      <div className="bg-card w-full max-w-md rounded-t-[28px] sm:rounded-[28px] shadow-2xl border border-border overflow-hidden flex flex-col slide-up max-h-[95vh] overflow-y-auto">
+      <div className="bg-card w-full max-w-md rounded-t-[28px] sm:rounded-2xl shadow-none border border-border overflow-hidden flex flex-col slide-up max-h-[95vh] overflow-y-auto">
 
         {/* Header */}
         <div className="px-6 py-4 border-b border-border/60 flex items-center justify-between shrink-0">
@@ -70,7 +70,7 @@ export function MetricLoggerModal({
             <div className="w-8 h-8 rounded-xl bg-muted text-foreground flex items-center justify-center">
               <Plus size={18} />
             </div>
-            <h2 className="text-base font-extrabold text-foreground tracking-tight">Registrar Métrica</h2>
+            <h2 className="text-base font-semibold text-foreground tracking-tight">Registrar Métrica</h2>
           </div>
           <button
             onClick={onClose}
@@ -84,7 +84,7 @@ export function MetricLoggerModal({
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {/* Tipo de Métrica */}
           <div>
-            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5 block">
+            <label className="text-xs font-bold text-muted-foreground tracking-normal mb-1.5 block">
               Métrica
             </label>
             <div className="grid grid-cols-3 gap-2">
@@ -98,7 +98,7 @@ export function MetricLoggerModal({
                     onClick={() => setSelectedKey(preset.key)}
                     className={`p-2.5 rounded-xl border-2 font-bold text-xs flex flex-col items-center justify-center gap-1 transition-all ${
                       isSelected
-                        ? preset.color + " font-extrabold shadow-sm"
+                        ? preset.color + " font-semibold shadow-none"
                         : "border-border/60 bg-muted/30 text-muted-foreground hover:bg-muted"
                     }`}
                   >
@@ -114,7 +114,7 @@ export function MetricLoggerModal({
           {selectedKey === "custom" && (
             <div className="grid grid-cols-2 gap-3 fade-in">
               <div>
-                <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-1 block">
+                <label className="text-[11px] font-bold text-muted-foreground tracking-normal mb-1 block">
                   Nome da Métrica
                 </label>
                 <input
@@ -127,7 +127,7 @@ export function MetricLoggerModal({
                 />
               </div>
               <div>
-                <label className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-1 block">
+                <label className="text-[11px] font-bold text-muted-foreground tracking-normal mb-1 block">
                   Unidade (Ex: pág, km)
                 </label>
                 <input
@@ -144,7 +144,7 @@ export function MetricLoggerModal({
 
           {/* Valor Numérico */}
           <div>
-            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5 block">
+            <label className="text-xs font-bold text-muted-foreground tracking-normal mb-1.5 block">
               Valor ({selectedKey === "custom" ? customUnit || "unidade" : activePreset.unit})
             </label>
             <input
@@ -153,7 +153,7 @@ export function MetricLoggerModal({
               value={value}
               onChange={(e) => setValue(e.target.value.replace(/[^0-9,.]/g, ""))}
               placeholder="Ex: 75.5"
-              className="input-ios font-extrabold text-lg"
+              className="input-ios font-semibold text-lg"
               required
               autoFocus
             />
@@ -166,7 +166,7 @@ export function MetricLoggerModal({
             onChange={setDate}
           />
 
-          <button type="submit" className="btn-ios w-full py-3.5 mt-2 text-xs font-black uppercase tracking-wider">
+          <button type="submit" className="btn-ios w-full py-3.5 mt-2 text-xs font-semibold tracking-normal">
             <Save size={16} />
             <span>Salvar Medição</span>
           </button>

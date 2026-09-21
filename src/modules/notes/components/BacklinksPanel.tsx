@@ -30,12 +30,12 @@ export function BacklinksPanel({ currentNote, allNotes, onSelectNote }: Backlink
     <div className="glass-card p-5 space-y-4 border-border select-none">
       <div className="flex items-center gap-2 border-b border-border/50 pb-2">
         <Link2 size={16} className="text-foreground" />
-        <h4 className="text-xs font-extrabold text-foreground tracking-tight uppercase">Conexões & Backlinks</h4>
+        <h4 className="text-xs font-semibold text-foreground tracking-tight uppercase">Conexões & Backlinks</h4>
       </div>
 
       {/* Outgoing Links */}
       <div className="space-y-2">
-        <span className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block">
+        <span className="text-[10px] font-semibold text-muted-foreground tracking-normal block">
           Notas Citadas nesta Página ({outgoingLinks.length})
         </span>
 
@@ -62,7 +62,7 @@ export function BacklinksPanel({ currentNote, allNotes, onSelectNote }: Backlink
 
       {/* Backlinks */}
       <div className="space-y-2 pt-2 border-t border-border/40">
-        <span className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block">
+        <span className="text-[10px] font-semibold text-muted-foreground tracking-normal block">
           Notas que Citam Esta Página ({backlinks.length})
         </span>
 

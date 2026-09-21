@@ -3,7 +3,6 @@ import { useAuthContext } from "@/context/AuthContext";
 import { useHabits } from "@/hooks/useHabits";
 import type { Habit } from "@/lib/supabase";
 import { todayIso, lastNDates } from "@/lib/date";
-import { HabitHeatmap } from "./components/HabitHeatmap";
 import { HabitCard } from "./components/HabitCard";
 import { HabitModal } from "./components/HabitModal";
 import { AlertModal } from "@/modules/finance/components/AlertModal";
@@ -153,17 +152,10 @@ export function HabitsModule() {
       {/* ── 1. Top Header com Métricas & Ações ──────────────────────────── */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2">
-            <span className="badge-ios">Consistência Diária</span>
-            {selectedDate === todayIso() && (
-              <span className="text-xs font-bold text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-full">
-                Hoje
-              </span>
-            )}
-          </div>
-          <h2 className="text-2xl md:text-3xl font-extrabold text-foreground tracking-tight mt-1">
-            Rastreador de Hábitos
-          </h2>
+          <h1 className="sf-display text-3xl font-semibold tracking-[-0.04em]">Hábitos</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {habitsDoneToday} de {activeHabits.length} concluídos
+          </p>
         </div>
 
         <button
@@ -194,14 +186,14 @@ export function HabitsModule() {
                 onClick={() => setSelectedDate(item.dStr)}
                 className={`flex flex-col items-center justify-center w-12 h-14 rounded-2xl transition-all ios-spring border ${
                   isSelected
-                    ? "bg-foreground text-background font-extrabold border-foreground shadow-md shadow-black/20 scale-105"
+                    ? "bg-foreground text-background font-semibold border-foreground shadow-none  "
                     : "bg-muted/40 border-border/50 text-muted-foreground hover:bg-muted hover:text-foreground"
                 }`}
               >
                 <span className="text-[10px] uppercase font-bold tracking-tight opacity-80">
                   {item.dayName}
                 </span>
-                <span className="text-base font-extrabold leading-tight mt-0.5">
+                <span className="text-base font-semibold leading-tight mt-0.5">
                   {item.dayNum}
                 </span>
                 {item.doneCount > 0 && !isSelected && (
@@ -212,9 +204,6 @@ export function HabitsModule() {
           })}
         </div>
       </div>
-
-      {/* ── 3. Heatmap Anual de Consistência (World-class Widget) ──────── */}
-      <HabitHeatmap logs={logs} />
 
       {/* ── 4. Barra de Filtro e Busca de Hábitos ──────────────────────── */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
@@ -235,7 +224,7 @@ export function HabitsModule() {
             onClick={() => setSelectedHabitId(null)}
             className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 ${
               selectedHabitId === null
-                ? "bg-foreground text-background shadow-sm"
+                ? "bg-foreground text-background shadow-none"
                 : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground"
             }`}
           >
@@ -248,7 +237,7 @@ export function HabitsModule() {
               onClick={() => setSelectedHabitId(selectedHabitId === h.id ? null : h.id)}
               className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 ${
                 selectedHabitId === h.id
-                  ? "bg-foreground text-background shadow-sm"
+                  ? "bg-foreground text-background shadow-none"
                   : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground"
               }`}
             >
@@ -266,7 +255,7 @@ export function HabitsModule() {
         </div>
       ) : filteredHabits.length === 0 ? (
         <div className="glass-card p-12 text-center space-y-4">
-          <div className="w-16 h-16 rounded-3xl bg-foreground/15 text-foreground flex items-center justify-center mx-auto">
+          <div className="w-16 h-16 rounded-2xl bg-foreground/15 text-foreground flex items-center justify-center mx-auto">
             <Repeat size={32} />
           </div>
           <div>

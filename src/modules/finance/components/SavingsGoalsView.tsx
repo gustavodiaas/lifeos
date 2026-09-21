@@ -176,14 +176,14 @@ export function SavingsGoalsView() {
   return (
     <div className="space-y-6 fade-in pb-8 select-none">
       {/* ── 1. Resumo Geral de Reservas ─────────────────────────────────── */}
-      <div className="glass-card p-5 rounded-3xl border border-border/70 space-y-4">
+      <div className="glass-card p-5 rounded-2xl border border-border/70 space-y-4">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-foreground text-background flex items-center justify-center font-black">
+            <div className="w-10 h-10 rounded-2xl bg-foreground text-background flex items-center justify-center font-semibold">
               <PiggyBank size={22} />
             </div>
             <div>
-              <h3 className="text-base font-black text-foreground tracking-tight">Caixinhas & Cofrinhos de Reserva</h3>
+              <h3 className="text-base font-semibold text-foreground tracking-tight">Caixinhas & Cofrinhos de Reserva</h3>
               <p className="text-xs text-muted-foreground font-medium">Guarde dinheiro para objetivos específicos de curto e longo prazo</p>
             </div>
           </div>
@@ -196,19 +196,19 @@ export function SavingsGoalsView() {
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
           <div className="p-3.5 rounded-2xl bg-muted/40 border border-border/50">
-            <span className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block">Total Guardado</span>
-            <span className="text-2xl font-black text-foreground">{formatBRL(totalSaved)}</span>
+            <span className="text-[10px] font-semibold text-muted-foreground tracking-normal block">Total Guardado</span>
+            <span className="text-2xl font-semibold text-foreground">{formatBRL(totalSaved)}</span>
           </div>
 
           <div className="p-3.5 rounded-2xl bg-muted/40 border border-border/50">
-            <span className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block">Meta Consolidada</span>
-            <span className="text-2xl font-black text-foreground">{formatBRL(totalTarget)}</span>
+            <span className="text-[10px] font-semibold text-muted-foreground tracking-normal block">Meta Consolidada</span>
+            <span className="text-2xl font-semibold text-foreground">{formatBRL(totalTarget)}</span>
           </div>
 
           <div className="p-3.5 rounded-2xl bg-muted/40 border border-border/50">
-            <span className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block">Progresso Geral</span>
+            <span className="text-[10px] font-semibold text-muted-foreground tracking-normal block">Progresso Geral</span>
             <div className="flex items-baseline gap-2">
-              <span className="text-2xl font-black text-foreground">{overallPct}%</span>
+              <span className="text-2xl font-semibold text-foreground">{overallPct}%</span>
               <span className="text-xs font-bold text-muted-foreground">das metas alcançadas</span>
             </div>
           </div>
@@ -224,7 +224,7 @@ export function SavingsGoalsView() {
           const remaining = Math.max(0, box.targetAmount - box.currentAmount);
 
           return (
-            <div key={box.id} className="glass-card p-5 rounded-3xl border border-border/70 space-y-4 flex flex-col justify-between hover:scale-[1.01] transition-all">
+            <div key={box.id} className="glass-card p-5 rounded-2xl border border-border/70 space-y-4 flex flex-col justify-between  transition-all">
               <div className="space-y-3">
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex items-center gap-2.5">
@@ -232,7 +232,7 @@ export function SavingsGoalsView() {
                       <Icon size={18} />
                     </div>
                     <div>
-                      <h4 className="text-sm font-extrabold text-foreground leading-tight">{box.name}</h4>
+                      <h4 className="text-sm font-semibold text-foreground leading-tight">{box.name}</h4>
                       <span className="text-[10px] text-muted-foreground font-semibold uppercase">{meta.label}</span>
                     </div>
                   </div>
@@ -244,7 +244,7 @@ export function SavingsGoalsView() {
 
                 <div className="space-y-1">
                   <div className="flex items-baseline justify-between">
-                    <span className="text-2xl font-black text-foreground">{formatBRL(box.currentAmount)}</span>
+                    <span className="text-2xl font-semibold text-foreground">{formatBRL(box.currentAmount)}</span>
                     <span className="text-xs font-bold text-muted-foreground">Meta: {formatBRL(box.targetAmount)}</span>
                   </div>
 
@@ -263,7 +263,7 @@ export function SavingsGoalsView() {
               <div className="grid grid-cols-2 gap-2 pt-2 border-t border-border/50">
                 <button
                   onClick={() => setActiveBoxForTx({ box, type: "deposit" })}
-                  className="py-2 px-3 rounded-xl bg-foreground text-background font-black text-xs flex items-center justify-center gap-1 shadow-sm hover:opacity-90 transition-all"
+                  className="py-2 px-3 rounded-xl bg-foreground text-background font-semibold text-xs flex items-center justify-center gap-1 shadow-none hover:opacity-90 transition-all"
                 >
                   <ArrowUpRight size={14} />
                   <span>Aportar</span>
@@ -285,9 +285,9 @@ export function SavingsGoalsView() {
       {/* Modal para Criar Caixinha */}
       {showCreateModal && (
         <div className="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-card w-full max-w-sm rounded-3xl border border-border shadow-2xl p-5 space-y-4 slide-up">
+          <div className="bg-card w-full max-w-sm rounded-2xl border border-border shadow-none p-5 space-y-4 slide-up">
             <div className="flex items-center justify-between border-b border-border/60 pb-3">
-              <h3 className="text-sm font-extrabold text-foreground">Nova Caixinha de Economia</h3>
+              <h3 className="text-sm font-semibold text-foreground">Nova Caixinha de Economia</h3>
               <button onClick={() => setShowCreateModal(false)} className="text-xs font-bold text-muted-foreground hover:text-foreground">
                 Cancelar
               </button>
@@ -295,7 +295,7 @@ export function SavingsGoalsView() {
 
             <form onSubmit={handleCreateBox} className="space-y-3">
               <div>
-                <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">
+                <label className="text-[10px] font-semibold text-muted-foreground tracking-normal block mb-1">
                   Nome do Objetivo
                 </label>
                 <input
@@ -309,7 +309,7 @@ export function SavingsGoalsView() {
               </div>
 
               <div>
-                <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">
+                <label className="text-[10px] font-semibold text-muted-foreground tracking-normal block mb-1">
                   Categoria
                 </label>
                 <CustomSelect
@@ -327,7 +327,7 @@ export function SavingsGoalsView() {
               </div>
 
               <div>
-                <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">
+                <label className="text-[10px] font-semibold text-muted-foreground tracking-normal block mb-1">
                   Valor Meta (R$)
                 </label>
                 <input
@@ -342,7 +342,7 @@ export function SavingsGoalsView() {
               </div>
 
               <div>
-                <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">
+                <label className="text-[10px] font-semibold text-muted-foreground tracking-normal block mb-1">
                   Saldo Inicial Guardado (opcional)
                 </label>
                 <input
@@ -355,7 +355,7 @@ export function SavingsGoalsView() {
                 />
               </div>
 
-              <button type="submit" className="btn-ios w-full py-3.5 text-xs font-black uppercase tracking-wider mt-2">
+              <button type="submit" className="btn-ios w-full py-3.5 text-xs font-semibold tracking-normal mt-2">
                 Criar Caixinha
               </button>
             </form>
@@ -366,9 +366,9 @@ export function SavingsGoalsView() {
       {/* Modal para Aporte / Resgate */}
       {activeBoxForTx && (
         <div className="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-card w-full max-w-xs rounded-3xl border border-border shadow-2xl p-5 space-y-4 slide-up">
+          <div className="bg-card w-full max-w-xs rounded-2xl border border-border shadow-none p-5 space-y-4 slide-up">
             <div className="flex items-center justify-between border-b border-border/60 pb-3">
-              <h3 className="text-sm font-extrabold text-foreground">
+              <h3 className="text-sm font-semibold text-foreground">
                 {activeBoxForTx.type === "deposit" ? "🎯 Fazer Aporte" : "💸 Fazer Resgate"}
               </h3>
               <button onClick={() => setActiveBoxForTx(null)} className="text-xs font-bold text-muted-foreground hover:text-foreground">
@@ -382,7 +382,7 @@ export function SavingsGoalsView() {
               </p>
 
               <div>
-                <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">
+                <label className="text-[10px] font-semibold text-muted-foreground tracking-normal block mb-1">
                   Valor (R$)
                 </label>
                 <input
@@ -398,7 +398,7 @@ export function SavingsGoalsView() {
               </div>
 
               <div>
-                <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">
+                <label className="text-[10px] font-semibold text-muted-foreground tracking-normal block mb-1">
                   Observação (opcional)
                 </label>
                 <input
@@ -410,7 +410,7 @@ export function SavingsGoalsView() {
                 />
               </div>
 
-              <button type="submit" className="btn-ios w-full py-3 text-xs font-black uppercase tracking-wider mt-1">
+              <button type="submit" className="btn-ios w-full py-3 text-xs font-semibold tracking-normal mt-1">
                 Confirmar {activeBoxForTx.type === "deposit" ? "Aporte" : "Resgate"}
               </button>
             </form>

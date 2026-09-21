@@ -66,7 +66,7 @@ export function GoalCard({
         <div className="flex items-start gap-3 min-w-0 flex-1">
           <div
             className={cn(
-              "w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 shadow-sm transition-transform group-hover:scale-105",
+              "w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 shadow-none transition-transform group-",
               isCompleted
                 ? "bg-emerald-500 text-white shadow-emerald-500/30"
                 : "bg-muted text-muted-foreground"
@@ -86,7 +86,7 @@ export function GoalCard({
 
             <h3
               className={cn(
-                "text-base font-extrabold text-foreground tracking-tight mt-1 transition-colors leading-tight",
+                "text-base font-semibold text-foreground tracking-tight mt-1 transition-colors leading-tight",
                 isCompleted && "text-emerald-600 dark:text-emerald-400"
               )}
             >
@@ -106,7 +106,7 @@ export function GoalCard({
 
           {showMenu && (
             <div
-              className="absolute right-0 top-9 w-40 glass-card p-1.5 z-30 shadow-xl border border-border space-y-1 fade-in"
+              className="absolute right-0 top-9 w-40 glass-card p-1.5 z-30 shadow-none border border-border space-y-1 fade-in"
               onMouseLeave={() => setShowMenu(false)}
             >
               <button
@@ -139,7 +139,7 @@ export function GoalCard({
 
       {/* ── Barra de Progresso & Métricas ────────────────────────── */}
       <div className="space-y-2 pt-1">
-        <div className="flex items-center justify-between text-xs font-extrabold">
+        <div className="flex items-center justify-between text-xs font-semibold">
           <span className="text-muted-foreground">
             {current} / {target} {goal.unit || ""}
           </span>
@@ -151,7 +151,7 @@ export function GoalCard({
         <div className="w-full bg-muted/60 h-3 rounded-full overflow-hidden p-0.5 border border-border/40">
           <div
             className={cn(
-              "h-full rounded-full transition-all duration-500 shadow-sm",
+              "h-full rounded-full transition-all duration-500 shadow-none",
               isCompleted
                 ? "bg-foreground"
                 : "bg-muted-foreground"
@@ -163,7 +163,7 @@ export function GoalCard({
 
       {/* ── Botões de Atualização Rápida (+ / -) ──────────────────── */}
       <div className="pt-2 border-t border-border/40 flex items-center justify-between">
-        <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+        <span className="text-[10px] font-bold text-muted-foreground tracking-normal">
           Ajuste Rápido
         </span>
 

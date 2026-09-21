@@ -63,13 +63,13 @@ export function PwaInstallBanner() {
 
   return (
     <>
-      <div className="fixed bottom-20 left-4 right-4 md:left-auto md:right-6 md:bottom-6 md:max-w-sm z-[200] bg-card/95 backdrop-blur-md border border-border/80 p-3.5 rounded-2xl shadow-2xl flex items-center justify-between gap-3 slide-up">
+      <div className="fixed bottom-20 left-4 right-4 md:left-auto md:right-6 md:bottom-6 md:max-w-sm z-[200] bg-card/95 backdrop-blur-md border border-border/80 p-3.5 rounded-2xl shadow-none flex items-center justify-between gap-3 slide-up">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
             <Smartphone size={20} />
           </div>
           <div>
-            <h4 className="text-xs font-black text-foreground">Instalar o LifeOS</h4>
+            <h4 className="text-xs font-semibold text-foreground">Instalar o LifeOS</h4>
             <p className="text-[11px] text-muted-foreground leading-tight">
               Adicione à tela inicial para usar offline e com notificações.
             </p>
@@ -94,11 +94,11 @@ export function PwaInstallBanner() {
 
       {showIosGuide && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-md z-[300] flex items-center justify-center p-4">
-          <div className="bg-card border border-border rounded-3xl p-5 max-w-sm w-full space-y-4 text-center">
+          <div className="bg-card border border-border rounded-2xl p-5 max-w-sm w-full space-y-4 text-center">
             <div className="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mx-auto">
               <Share size={22} />
             </div>
-            <h3 className="text-base font-extrabold text-foreground">Como instalar no iOS / Safari</h3>
+            <h3 className="text-base font-semibold text-foreground">Como instalar no iOS / Safari</h3>
             <ol className="text-left text-xs text-muted-foreground space-y-2.5 bg-muted/40 p-3.5 rounded-2xl">
               <li className="flex items-start gap-2">
                 <span className="font-bold text-foreground">1.</span> Toque no ícone de <strong className="text-foreground">Compartilhar</strong> na barra do Safari (ícone com quadrado e seta).

@@ -17,15 +17,11 @@ import {
   Folder,
   Search,
   AlertCircle,
-  Clock,
-  Sparkles,
   CheckCircle2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type ViewMode = "kanban" | "list";
-
-import { FocusTimer } from "@/components/widgets/FocusTimer";
 
 export function TasksModule() {
   const { user } = useAuthContext();
@@ -196,11 +192,7 @@ export function TasksModule() {
   const doneTasks = useMemo(() => filteredTasks.filter((t) => t.status === "done"), [filteredTasks]);
 
   // Estatísticas do cabeçalho
-  const todayStr = new Date().toISOString().slice(0, 10);
   const openCount = tasks.filter((t) => t.status !== "done").length;
-  const dueTodayCount = tasks.filter((t) => t.status !== "done" && t.dueDate === todayStr).length;
-  const overdueCount = tasks.filter((t) => t.status !== "done" && t.dueDate && t.dueDate < todayStr).length;
-  const highPriorityCount = tasks.filter((t) => t.status !== "done" && t.priority === "high").length;
 
   return (
     <div className="space-y-6 fade-in pb-12">
@@ -208,13 +200,8 @@ export function TasksModule() {
       {/* ── 1. Top Header & Ações ────────────────────────────────────────── */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2">
-            <span className="badge-ios">Gerenciador de Tarefas</span>
-            <span className="text-xs font-bold text-muted-foreground">{openCount} pendentes</span>
-          </div>
-          <h2 className="text-2xl md:text-3xl font-extrabold text-foreground tracking-tight mt-1">
-            Tarefas & Projetos
-          </h2>
+          <h1 className="sf-display text-3xl font-semibold tracking-[-0.04em]">Tarefas</h1>
+          <p className="mt-1 text-sm text-muted-foreground">{openCount} pendentes</p>
         </div>
 
         <div className="flex items-center gap-2.5 flex-wrap">
@@ -224,7 +211,7 @@ export function TasksModule() {
               onClick={() => setViewMode("kanban")}
               className={cn(
                 "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all",
-                viewMode === "kanban" ? "bg-foreground text-background shadow-sm" : "text-muted-foreground hover:text-foreground"
+                viewMode === "kanban" ? "bg-foreground text-background shadow-none" : "text-muted-foreground hover:text-foreground"
               )}
             >
               <LayoutGrid size={15} />
@@ -234,7 +221,7 @@ export function TasksModule() {
               onClick={() => setViewMode("list")}
               className={cn(
                 "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all",
-                viewMode === "list" ? "bg-foreground text-background shadow-sm" : "text-muted-foreground hover:text-foreground"
+                viewMode === "list" ? "bg-foreground text-background shadow-none" : "text-muted-foreground hover:text-foreground"
               )}
             >
               <List size={15} />
@@ -244,7 +231,7 @@ export function TasksModule() {
 
           <button
             onClick={() => setProjectModalOpen(true)}
-            className="px-3.5 py-2.5 rounded-xl bg-card border border-border text-xs font-bold text-foreground hover:bg-muted transition-colors flex items-center gap-1.5 shadow-sm"
+            className="px-3.5 py-2.5 rounded-xl bg-card border border-border text-xs font-bold text-foreground hover:bg-muted transition-colors flex items-center gap-1.5 shadow-none"
           >
             <FolderPlus size={15} className="text-foreground" />
             <span>Novo Projeto</span>
@@ -261,52 +248,6 @@ export function TasksModule() {
             <Plus size={16} strokeWidth={2.5} />
             <span>Nova Tarefa</span>
           </button>
-        </div>
-      </div>
-
-      {/* ── Widget Pomodoro & Focus Timer ───────────────────────────── */}
-      <FocusTimer tasks={tasks} />
-
-      {/* ── 2. Cards de Métricas de Produtividade ─────────────────────────── */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <div className="glass-card p-4 flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-muted text-muted-foreground flex items-center justify-center shrink-0 font-bold text-sm">
-            {openCount}
-          </div>
-          <div>
-            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Abertas</p>
-            <p className="text-xs font-extrabold text-foreground">Total Pendente</p>
-          </div>
-        </div>
-
-        <div className="glass-card p-4 flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-muted text-foreground flex items-center justify-center shrink-0 font-bold text-sm">
-            {dueTodayCount}
-          </div>
-          <div>
-            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Hoje</p>
-            <p className="text-xs font-extrabold text-foreground">Vencimento Hoje</p>
-          </div>
-        </div>
-
-        <div className="glass-card p-4 flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-red-500/15 text-red-500 flex items-center justify-center shrink-0 font-bold text-sm">
-            {overdueCount}
-          </div>
-          <div>
-            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Atrasadas</p>
-            <p className="text-xs font-extrabold text-foreground">Requerem Atenção</p>
-          </div>
-        </div>
-
-        <div className="glass-card p-4 flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-muted text-muted-foreground flex items-center justify-center shrink-0 font-bold text-sm">
-            {highPriorityCount}
-          </div>
-          <div>
-            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Prioritárias</p>
-            <p className="text-xs font-extrabold text-foreground">Alta Prioridade</p>
-          </div>
         </div>
       </div>
 
@@ -330,7 +271,7 @@ export function TasksModule() {
             className={cn(
               "px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0",
               selectedProjectId === null
-                ? "bg-foreground text-background shadow-sm"
+                ? "bg-foreground text-background shadow-none"
                 : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground"
             )}
           >
@@ -344,7 +285,7 @@ export function TasksModule() {
               className={cn(
                 "px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 flex items-center gap-1.5",
                 selectedProjectId === p.id
-                  ? "bg-foreground text-background shadow-sm"
+                  ? "bg-foreground text-background shadow-none"
                   : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground"
               )}
             >
@@ -377,8 +318,8 @@ export function TasksModule() {
             <div className="flex items-center justify-between px-1 py-1">
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 rounded-full bg-foreground" />
-                <h3 className="text-sm font-extrabold text-foreground uppercase tracking-wider">A Fazer</h3>
-                <span className="text-xs font-extrabold text-muted-foreground px-2 py-0.5 rounded-full bg-muted">
+                <h3 className="text-sm font-semibold text-foreground tracking-normal">A Fazer</h3>
+                <span className="text-xs font-semibold text-muted-foreground px-2 py-0.5 rounded-full bg-muted">
                   {todoTasks.length}
                 </span>
               </div>
@@ -435,8 +376,8 @@ export function TasksModule() {
             <div className="flex items-center justify-between px-1 py-1">
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 rounded-full bg-foreground" />
-                <h3 className="text-sm font-extrabold text-foreground uppercase tracking-wider">Em Andamento</h3>
-                <span className="text-xs font-extrabold text-muted-foreground px-2 py-0.5 rounded-full bg-muted">
+                <h3 className="text-sm font-semibold text-foreground tracking-normal">Em Andamento</h3>
+                <span className="text-xs font-semibold text-muted-foreground px-2 py-0.5 rounded-full bg-muted">
                   {doingTasks.length}
                 </span>
               </div>
@@ -493,8 +434,8 @@ export function TasksModule() {
             <div className="flex items-center justify-between px-1 py-1">
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 rounded-full bg-emerald-500" />
-                <h3 className="text-sm font-extrabold text-foreground uppercase tracking-wider">Concluídas</h3>
-                <span className="text-xs font-extrabold text-muted-foreground px-2 py-0.5 rounded-full bg-muted">
+                <h3 className="text-sm font-semibold text-foreground tracking-normal">Concluídas</h3>
+                <span className="text-xs font-semibold text-muted-foreground px-2 py-0.5 rounded-full bg-muted">
                   {doneTasks.length}
                 </span>
               </div>
@@ -532,7 +473,7 @@ export function TasksModule() {
         <div className="space-y-4">
           {filteredTasks.length === 0 ? (
             <div className="glass-card p-12 text-center space-y-4">
-              <div className="w-16 h-16 rounded-3xl bg-muted text-muted-foreground flex items-center justify-center mx-auto">
+              <div className="w-16 h-16 rounded-2xl bg-muted text-muted-foreground flex items-center justify-center mx-auto">
                 <CheckSquare size={32} />
               </div>
               <div>

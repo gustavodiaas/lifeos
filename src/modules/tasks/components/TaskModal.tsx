@@ -106,7 +106,7 @@ export function TaskModal({
 
   return (
     <ModalPortal open={open} onClose={onClose} raw>
-      <div className="bg-card w-full max-w-lg rounded-t-[28px] sm:rounded-[28px] shadow-2xl border border-border overflow-hidden flex flex-col max-h-[92vh] slide-up">
+      <div className="bg-card w-full max-w-lg rounded-t-[28px] sm:rounded-2xl shadow-none border border-border overflow-hidden flex flex-col max-h-[92vh] slide-up">
 
         {/* Header */}
         <div className="px-6 py-4 border-b border-border/60 flex items-center justify-between shrink-0">
@@ -114,7 +114,7 @@ export function TaskModal({
             <div className="w-8 h-8 rounded-xl bg-muted text-muted-foreground flex items-center justify-center">
               <CheckSquare size={18} />
             </div>
-            <h2 className="text-lg font-extrabold text-foreground tracking-tight">
+            <h2 className="text-lg font-semibold text-foreground tracking-tight">
               {editingTask ? "Editar Tarefa" : "Nova Tarefa"}
             </h2>
           </div>
@@ -130,7 +130,7 @@ export function TaskModal({
         <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto">
           {/* Título */}
           <div>
-            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5 block ml-1">
+            <label className="text-xs font-bold text-muted-foreground tracking-normal mb-1.5 block ml-1">
               Título da Tarefa
             </label>
             <input
@@ -146,7 +146,7 @@ export function TaskModal({
 
           {/* Prioridade */}
           <div>
-            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5 block ml-1">
+            <label className="text-xs font-bold text-muted-foreground tracking-normal mb-1.5 block ml-1">
               Prioridade
             </label>
             <div className="grid grid-cols-3 gap-2">
@@ -155,7 +155,7 @@ export function TaskModal({
                 onClick={() => setPriority("low")}
                 className={`py-2.5 px-3 rounded-xl border-2 font-bold text-xs transition-all ${
                   priority === "low"
-                    ? "border-emerald-500 bg-emerald-500/15 text-emerald-500 font-extrabold"
+                    ? "border-emerald-500 bg-emerald-500/15 text-emerald-500 font-semibold"
                     : "border-border/60 bg-muted/30 text-muted-foreground hover:bg-muted"
                 }`}
               >
@@ -167,7 +167,7 @@ export function TaskModal({
                 onClick={() => setPriority("medium")}
                 className={`py-2.5 px-3 rounded-xl border-2 font-bold text-xs transition-all ${
                   priority === "medium" || (priority as any) === "med"
-                    ? "border-foreground bg-muted text-foreground font-extrabold"
+                    ? "border-foreground bg-muted text-foreground font-semibold"
                     : "border-border/60 bg-muted/30 text-muted-foreground hover:bg-muted"
                 }`}
               >
@@ -179,7 +179,7 @@ export function TaskModal({
                 onClick={() => setPriority("high")}
                 className={`py-2.5 px-3 rounded-xl border-2 font-bold text-xs transition-all ${
                   priority === "high"
-                    ? "border-red-500 bg-red-500/15 text-red-500 font-extrabold"
+                    ? "border-red-500 bg-red-500/15 text-red-500 font-semibold"
                     : "border-border/60 bg-muted/30 text-muted-foreground hover:bg-muted"
                 }`}
               >
@@ -191,7 +191,7 @@ export function TaskModal({
           {/* Grid de Projeto & Data Limite (Com componentes Apple Glass) */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5 flex items-center gap-1 ml-1">
+              <label className="text-xs font-bold text-muted-foreground tracking-normal mb-1.5 flex items-center gap-1 ml-1">
                 <Folder size={13} className="text-foreground" />
                 Projeto
               </label>
@@ -214,7 +214,7 @@ export function TaskModal({
 
           {/* Notas / Descrição */}
           <div>
-            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5 block ml-1">
+            <label className="text-xs font-bold text-muted-foreground tracking-normal mb-1.5 block ml-1">
               Notas & Detalhes
             </label>
             <textarea
@@ -228,7 +228,7 @@ export function TaskModal({
 
           {/* Sub-checklist Dinâmico */}
           <div className="space-y-2 pt-1">
-            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider block ml-1">
+            <label className="text-xs font-bold text-muted-foreground tracking-normal block ml-1">
               Sub-tarefas (Checklist)
             </label>
 
@@ -278,7 +278,7 @@ export function TaskModal({
 
           <button
             type="submit"
-            className="btn-ios w-full py-4 mt-3 text-sm font-black uppercase tracking-wider"
+            className="btn-ios w-full py-4 mt-3 text-sm font-semibold tracking-normal"
           >
             <Save size={18} />
             <span>{editingTask ? "Salvar Alterações" : "Criar Tarefa"}</span>

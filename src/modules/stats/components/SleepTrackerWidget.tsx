@@ -79,11 +79,11 @@ export function SleepTrackerWidget({ sleepLogs, onOpenLogger }: SleepTrackerWidg
     if (hours === 0) return "bg-muted/40 border-border/40";
     if (pct < 50) return "bg-indigo-500/25 border-indigo-500/30 text-indigo-300";
     if (pct < 100) return "bg-indigo-500/60 border-indigo-500/70 text-white";
-    return "bg-indigo-500 border-indigo-400 font-bold shadow-sm shadow-indigo-500/20 text-white";
+    return "bg-indigo-500 border-indigo-400 font-bold shadow-none shadow-indigo-500/20 text-white";
   };
 
   return (
-    <div className="glass-card p-5 space-y-4 rounded-3xl border border-border/70">
+    <div className="glass-card p-5 space-y-4 rounded-2xl border border-border/70">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center gap-2.5">
@@ -91,7 +91,7 @@ export function SleepTrackerWidget({ sleepLogs, onOpenLogger }: SleepTrackerWidg
             <Moon size={18} />
           </div>
           <div>
-            <h3 className="text-sm font-black text-foreground tracking-tight">Análise do Sono & Restauro</h3>
+            <h3 className="text-sm font-semibold text-foreground tracking-tight">Análise do Sono & Restauro</h3>
             <p className="text-[11px] text-muted-foreground font-medium">Heatmap de qualidade do sono e metas noturnas</p>
           </div>
         </div>
@@ -108,7 +108,7 @@ export function SleepTrackerWidget({ sleepLogs, onOpenLogger }: SleepTrackerWidg
                 { value: "8", label: "8h meta" },
                 { value: "9", label: "9h meta" },
               ]}
-              className="text-xs font-black"
+              className="text-xs font-semibold"
             />
           </div>
 
@@ -121,24 +121,24 @@ export function SleepTrackerWidget({ sleepLogs, onOpenLogger }: SleepTrackerWidg
       {/* Estatísticas de Sono Recente */}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
         <div className="p-3 rounded-2xl bg-muted/40 border border-border/50">
-          <span className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block">Última Noite</span>
+          <span className="text-[10px] font-semibold text-muted-foreground tracking-normal block">Última Noite</span>
           <div className="flex items-baseline gap-1 mt-0.5">
-            <span className="text-xl font-black text-foreground">{latestSleep || "—"}</span>
+            <span className="text-xl font-semibold text-foreground">{latestSleep || "—"}</span>
             <span className="text-xs font-bold text-muted-foreground">horas</span>
           </div>
         </div>
 
         <div className="p-3 rounded-2xl bg-muted/40 border border-border/50">
-          <span className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block">Sua Meta Definida</span>
+          <span className="text-[10px] font-semibold text-muted-foreground tracking-normal block">Sua Meta Definida</span>
           <div className="flex items-baseline gap-1 mt-0.5">
-            <span className="text-xl font-black text-foreground">{targetHours}h</span>
+            <span className="text-xl font-semibold text-foreground">{targetHours}h</span>
             <span className="text-xs font-bold text-muted-foreground">/noite</span>
           </div>
         </div>
 
         <div className="col-span-2 sm:col-span-1 p-3 rounded-2xl bg-muted/40 border border-border/50">
-          <span className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block">Desempenho</span>
-          <span className="text-xs font-extrabold text-foreground block mt-1">
+          <span className="text-[10px] font-semibold text-muted-foreground tracking-normal block">Desempenho</span>
+          <span className="text-xs font-semibold text-foreground block mt-1">
             {latestSleep >= targetHours
               ? "🎯 Meta Atingida!"
               : latestSleep > 0
@@ -151,7 +151,7 @@ export function SleepTrackerWidget({ sleepLogs, onOpenLogger }: SleepTrackerWidg
       {/* Heatmap de Sono Anual */}
       <div className="space-y-2 pt-1">
         <div className="flex items-center justify-between">
-          <span className="text-[11px] font-extrabold text-muted-foreground uppercase tracking-wider">
+          <span className="text-[11px] font-semibold text-muted-foreground tracking-normal">
             Matriz de Sono (365 Dias)
           </span>
           <div className="flex items-center gap-1.5 text-[10px] font-bold text-muted-foreground">
@@ -188,7 +188,7 @@ export function SleepTrackerWidget({ sleepLogs, onOpenLogger }: SleepTrackerWidg
       <div className="p-4 rounded-2xl bg-muted/30 border border-border/50 space-y-2">
         <button
           onClick={() => setShowHygiene(!showHygiene)}
-          className="w-full flex items-center justify-between text-left font-extrabold text-xs text-foreground"
+          className="w-full flex items-center justify-between text-left font-semibold text-xs text-foreground"
         >
           <span className="flex items-center gap-1.5">
             <ShieldCheck size={15} className="text-indigo-400" />

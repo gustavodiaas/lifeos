@@ -239,7 +239,7 @@ export function InvestmentsView() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Sparkles size={15} className="text-amber-500" />
-            <span className="text-xs font-black text-foreground tracking-tight uppercase">
+            <span className="text-xs font-semibold text-foreground tracking-tight uppercase">
               Cotações em Tempo Real
             </span>
           </div>
@@ -255,20 +255,20 @@ export function InvestmentsView() {
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           <div className="p-2.5 rounded-xl bg-muted/40 border border-border/40">
-            <span className="text-[10px] font-extrabold text-muted-foreground block">USD/BRL (Dólar)</span>
-            <span className="text-sm font-black text-foreground">{rates.USDBRL ? `R$ ${rates.USDBRL.toFixed(2)}` : 'R$ 5.45'}</span>
+            <span className="text-[10px] font-semibold text-muted-foreground block">USD/BRL (Dólar)</span>
+            <span className="text-sm font-semibold text-foreground">{rates.USDBRL ? `R$ ${rates.USDBRL.toFixed(2)}` : 'R$ 5.45'}</span>
           </div>
           <div className="p-2.5 rounded-xl bg-muted/40 border border-border/40">
-            <span className="text-[10px] font-extrabold text-muted-foreground block">EUR/BRL (Euro)</span>
-            <span className="text-sm font-black text-foreground">{rates.EURBRL ? `R$ ${rates.EURBRL.toFixed(2)}` : 'R$ 5.95'}</span>
+            <span className="text-[10px] font-semibold text-muted-foreground block">EUR/BRL (Euro)</span>
+            <span className="text-sm font-semibold text-foreground">{rates.EURBRL ? `R$ ${rates.EURBRL.toFixed(2)}` : 'R$ 5.95'}</span>
           </div>
           <div className="p-2.5 rounded-xl bg-muted/40 border border-border/40">
-            <span className="text-[10px] font-extrabold text-muted-foreground block">BTC/BRL (Bitcoin)</span>
-            <span className="text-sm font-black text-foreground">{rates.BTCBRL ? formatBRL(rates.BTCBRL) : 'R$ 355.000'}</span>
+            <span className="text-[10px] font-semibold text-muted-foreground block">BTC/BRL (Bitcoin)</span>
+            <span className="text-sm font-semibold text-foreground">{rates.BTCBRL ? formatBRL(rates.BTCBRL) : 'R$ 355.000'}</span>
           </div>
           <div className="p-2.5 rounded-xl bg-muted/40 border border-border/40">
-            <span className="text-[10px] font-extrabold text-muted-foreground block">ETH/BRL (Ethereum)</span>
-            <span className="text-sm font-black text-foreground">{rates.ETHBRL ? formatBRL(rates.ETHBRL) : 'R$ 16.500'}</span>
+            <span className="text-[10px] font-semibold text-muted-foreground block">ETH/BRL (Ethereum)</span>
+            <span className="text-sm font-semibold text-foreground">{rates.ETHBRL ? formatBRL(rates.ETHBRL) : 'R$ 16.500'}</span>
           </div>
         </div>
       </div>
@@ -276,23 +276,23 @@ export function InvestmentsView() {
       {/* ── 2. Cards Consolidados de Rendimento da Carteira ───────────── */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div className="glass-card p-4 rounded-2xl border border-border/60 space-y-1">
-          <span className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block">
+          <span className="text-[10px] font-semibold text-muted-foreground tracking-normal block">
             Patrimônio Atual
           </span>
-          <p className="text-2xl font-black text-foreground">{formatBRL(totals.currentValue)}</p>
+          <p className="text-2xl font-semibold text-foreground">{formatBRL(totals.currentValue)}</p>
           <span className="text-[10px] text-muted-foreground font-medium block">
             Total investido: {formatBRL(totals.totalInvested)}
           </span>
         </div>
 
         <div className="glass-card p-4 rounded-2xl border border-border/60 space-y-1">
-          <span className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block">
+          <span className="text-[10px] font-semibold text-muted-foreground tracking-normal block">
             Rendimento Total (P&L)
           </span>
           <div className="flex items-center gap-2">
             <span
               className={cn(
-                'text-2xl font-black',
+                'text-2xl font-semibold',
                 totals.profitBrl >= 0 ? 'text-emerald-500' : 'text-red-500'
               )}
             >
@@ -300,7 +300,7 @@ export function InvestmentsView() {
             </span>
             <span
               className={cn(
-                'text-xs font-black px-2 py-0.5 rounded-full flex items-center gap-0.5 border',
+                'text-xs font-semibold px-2 py-0.5 rounded-full flex items-center gap-0.5 border',
                 totals.profitBrl >= 0
                   ? 'bg-emerald-500/15 text-emerald-500 border-emerald-500/30'
                   : 'bg-red-500/15 text-red-500 border-red-500/30'
@@ -317,10 +317,10 @@ export function InvestmentsView() {
 
         <div className="glass-card p-4 rounded-2xl border border-border/60 space-y-1 flex flex-col justify-between">
           <div>
-            <span className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block">
+            <span className="text-[10px] font-semibold text-muted-foreground tracking-normal block">
               Ativos Cadastrados
             </span>
-            <p className="text-xl font-black text-foreground">{assets.length} ativos na carteira</p>
+            <p className="text-xl font-semibold text-foreground">{assets.length} ativos na carteira</p>
           </div>
           <button
             onClick={() => setShowAddForm(!showAddForm)}
@@ -336,10 +336,10 @@ export function InvestmentsView() {
       {showAddForm && (
         <form
           onSubmit={handleAddAsset}
-          className="glass-card p-5 rounded-3xl border border-border space-y-4 fade-in"
+          className="glass-card p-5 rounded-2xl border border-border space-y-4 fade-in"
         >
           <div className="flex items-center justify-between border-b border-border/50 pb-3">
-            <h3 className="text-sm font-extrabold text-foreground">Novo Ativo no Portfolio</h3>
+            <h3 className="text-sm font-semibold text-foreground">Novo Ativo no Portfolio</h3>
             <button
               type="button"
               onClick={() => setShowAddForm(false)}
@@ -351,7 +351,7 @@ export function InvestmentsView() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
             <div>
-              <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">
+              <label className="text-[10px] font-semibold text-muted-foreground tracking-normal block mb-1">
                 Tipo
               </label>
               <CustomSelect
@@ -363,7 +363,7 @@ export function InvestmentsView() {
             </div>
 
             <div>
-              <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">
+              <label className="text-[10px] font-semibold text-muted-foreground tracking-normal block mb-1">
                 Ticker / Código
               </label>
               <input
@@ -377,7 +377,7 @@ export function InvestmentsView() {
             </div>
 
             <div>
-              <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">
+              <label className="text-[10px] font-semibold text-muted-foreground tracking-normal block mb-1">
                 Nome do Ativo
               </label>
               <input
@@ -390,7 +390,7 @@ export function InvestmentsView() {
             </div>
 
             <div>
-              <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">
+              <label className="text-[10px] font-semibold text-muted-foreground tracking-normal block mb-1">
                 Quantidade
               </label>
               <input
@@ -405,7 +405,7 @@ export function InvestmentsView() {
             </div>
 
             <div>
-              <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">
+              <label className="text-[10px] font-semibold text-muted-foreground tracking-normal block mb-1">
                 Preço Médio (R$)
               </label>
               <input
@@ -420,7 +420,7 @@ export function InvestmentsView() {
             </div>
 
             <div>
-              <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">
+              <label className="text-[10px] font-semibold text-muted-foreground tracking-normal block mb-1">
                 Preço Atual (R$)
               </label>
               <input
@@ -434,7 +434,7 @@ export function InvestmentsView() {
             </div>
           </div>
 
-          <button type="submit" className="btn-ios w-full py-3 text-xs font-black uppercase tracking-wider">
+          <button type="submit" className="btn-ios w-full py-3 text-xs font-semibold tracking-normal">
             <Plus size={15} />
             <span>Confirmar Ativo</span>
           </button>
@@ -442,11 +442,11 @@ export function InvestmentsView() {
       )}
 
       {/* ── 4. Tabela de Ativos da Carteira ────────────────────────────── */}
-      <div className="glass-card p-4 rounded-3xl border border-border/60 space-y-3">
+      <div className="glass-card p-4 rounded-2xl border border-border/60 space-y-3">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3 border-b border-border/50 pb-3">
           <div className="flex items-center gap-2">
             <PieChart size={18} className="text-foreground" />
-            <h3 className="text-sm font-extrabold text-foreground">Composição da Carteira</h3>
+            <h3 className="text-sm font-semibold text-foreground">Composição da Carteira</h3>
           </div>
 
           <div className="relative w-full sm:w-64">
@@ -469,7 +469,7 @@ export function InvestmentsView() {
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead>
-                <tr className="border-b border-border/60 text-[10px] font-extrabold uppercase text-muted-foreground">
+                <tr className="border-b border-border/60 text-[10px] font-semibold uppercase text-muted-foreground">
                   <th className="py-2 px-3">Ativo</th>
                   <th className="py-2 px-3">Tipo</th>
                   <th className="py-2 px-3 text-right">Qtd</th>
@@ -492,22 +492,22 @@ export function InvestmentsView() {
                     <tr key={asset.id} className="hover:bg-muted/40 transition-colors">
                       <td className="py-3 px-3">
                         <div>
-                          <span className="font-extrabold text-foreground block text-sm">{asset.ticker}</span>
+                          <span className="font-semibold text-foreground block text-sm">{asset.ticker}</span>
                           <span className="text-[10px] text-muted-foreground font-medium">{asset.name}</span>
                         </div>
                       </td>
                       <td className="py-3 px-3">
-                        <span className={cn('text-[10px] font-extrabold px-2 py-0.5 rounded-full border', typeMeta.color)}>
+                        <span className={cn('text-[10px] font-semibold px-2 py-0.5 rounded-full border', typeMeta.color)}>
                           {typeMeta.label}
                         </span>
                       </td>
                       <td className="py-3 px-3 text-right font-bold">{asset.quantity}</td>
                       <td className="py-3 px-3 text-right text-muted-foreground">{formatBRL(asset.averagePrice)}</td>
-                      <td className="py-3 px-3 text-right text-foreground font-extrabold">{formatBRL(asset.currentPrice)}</td>
-                      <td className="py-3 px-3 text-right font-black text-foreground">{formatBRL(currentVal)}</td>
+                      <td className="py-3 px-3 text-right text-foreground font-semibold">{formatBRL(asset.currentPrice)}</td>
+                      <td className="py-3 px-3 text-right font-semibold text-foreground">{formatBRL(currentVal)}</td>
                       <td className="py-3 px-3 text-right">
                         <div className="flex flex-col items-end">
-                          <span className={cn('font-extrabold', profitBrl >= 0 ? 'text-emerald-500' : 'text-red-500')}>
+                          <span className={cn('font-semibold', profitBrl >= 0 ? 'text-emerald-500' : 'text-red-500')}>
                             {profitBrl >= 0 ? `+${formatBRL(profitBrl)}` : formatBRL(profitBrl)}
                           </span>
                           <span className={cn('text-[10px] font-bold', profitBrl >= 0 ? 'text-emerald-500' : 'text-red-500')}>

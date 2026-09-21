@@ -93,11 +93,11 @@ export function SharedAccessModal({ open, onClose }: SharedAccessModalProps) {
         {/* Header do Espaço de Trabalho */}
         <div className="p-3.5 rounded-2xl bg-muted/40 border border-border/60 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-black text-sm shrink-0">
+            <div className="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-semibold text-sm shrink-0">
               {activeWorkspace.ownerName.charAt(0).toUpperCase()}
             </div>
             <div>
-              <h4 className="text-xs font-black text-foreground flex items-center gap-1.5">
+              <h4 className="text-xs font-semibold text-foreground flex items-center gap-1.5">
                 <span>{activeWorkspace.ownerName}</span>
                 <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
                   {activeWorkspace.role === "owner" ? "Seu Espaço" : "Equipe"}
@@ -119,10 +119,10 @@ export function SharedAccessModal({ open, onClose }: SharedAccessModalProps) {
 
         {/* MODO 1: ENTRAR EM OUTRO ESPAÇO VIA LINK */}
         {showJoinSection ? (
-          <form onSubmit={handleJoinViaLink} className="space-y-3.5 p-4 rounded-2xl bg-card border border-border/70 shadow-sm fade-in">
+          <form onSubmit={handleJoinViaLink} className="space-y-3.5 p-4 rounded-2xl bg-card border border-border/70 shadow-none fade-in">
             <div className="flex items-center gap-2 pb-2 border-b border-border/50">
               <Sparkles size={16} className="text-primary" />
-              <h4 className="text-xs font-black text-foreground">Entrar em um Espaço de Trabalho</h4>
+              <h4 className="text-xs font-semibold text-foreground">Entrar em um Espaço de Trabalho</h4>
             </div>
             <p className="text-xs text-muted-foreground font-medium">
               Cole o link de convite ou o código que você recebeu de outra pessoa para se conectar instantaneamente.
@@ -137,7 +137,7 @@ export function SharedAccessModal({ open, onClose }: SharedAccessModalProps) {
             />
             <button
               type="submit"
-              className="w-full py-2.5 rounded-xl bg-primary text-primary-foreground font-extrabold text-xs shadow-sm hover:bg-primary/90 transition-colors"
+              className="w-full py-2.5 rounded-xl bg-primary text-primary-foreground font-semibold text-xs shadow-none hover:bg-primary/90 transition-colors"
             >
               Conectar e Alternar Espaço
             </button>
@@ -146,7 +146,7 @@ export function SharedAccessModal({ open, onClose }: SharedAccessModalProps) {
           <>
             {/* ── 1. Convite Rápido por E-mail (Estilo Notion) ────────────────────── */}
             <form onSubmit={handleInviteSubmit} className="space-y-3.5 fade-in">
-              <label className="text-[10px] font-black text-muted-foreground uppercase tracking-wider block">
+              <label className="text-[10px] font-semibold text-muted-foreground tracking-normal block">
                 Convidar novo membro para a equipe
               </label>
 
@@ -173,7 +173,7 @@ export function SharedAccessModal({ open, onClose }: SharedAccessModalProps) {
                 <button
                   type="submit"
                   disabled={!emailInput.trim()}
-                  className="px-4 py-2.5 rounded-xl bg-primary text-primary-foreground font-black text-xs hover:bg-primary/90 transition-all flex items-center justify-center gap-1.5 shrink-0 disabled:opacity-50"
+                  className="px-4 py-2.5 rounded-xl bg-primary text-primary-foreground font-semibold text-xs hover:bg-primary/90 transition-all flex items-center justify-center gap-1.5 shrink-0 disabled:opacity-50"
                 >
                   <UserPlus size={14} /> Convidar
                 </button>
@@ -220,7 +220,7 @@ export function SharedAccessModal({ open, onClose }: SharedAccessModalProps) {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <LinkIcon size={16} className="text-primary" />
-                  <span className="text-xs font-black text-foreground">Link de Convite Direto</span>
+                  <span className="text-xs font-semibold text-foreground">Link de Convite Direto</span>
                 </div>
 
                 <div className="flex items-center gap-2">
@@ -270,7 +270,7 @@ export function SharedAccessModal({ open, onClose }: SharedAccessModalProps) {
             {/* ── 3. Lista de Membros da Equipe (Notion Team List) ───────────────────── */}
             <div className="space-y-3 pt-2">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] font-black text-muted-foreground uppercase tracking-wider">
+                <span className="text-[10px] font-semibold text-muted-foreground tracking-normal">
                   Membros com Acesso ({mySharedMembers.length + 1})
                 </span>
               </div>
@@ -279,11 +279,11 @@ export function SharedAccessModal({ open, onClose }: SharedAccessModalProps) {
                 {/* Linha do Proprietário (Você) */}
                 <div className="p-3 rounded-2xl bg-muted/40 border border-border/50 flex items-center justify-between gap-3">
                   <div className="flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-full bg-amber-500/15 text-amber-600 dark:text-amber-400 font-black text-xs flex items-center justify-center shrink-0">
+                    <div className="w-8 h-8 rounded-full bg-amber-500/15 text-amber-600 dark:text-amber-400 font-semibold text-xs flex items-center justify-center shrink-0">
                       <Crown size={14} />
                     </div>
                     <div>
-                      <span className="text-xs font-black text-foreground block">
+                      <span className="text-xs font-semibold text-foreground block">
                         {activeWorkspace.ownerName} (Você)
                       </span>
                       <span className="text-[10px] text-muted-foreground font-medium block">
@@ -291,7 +291,7 @@ export function SharedAccessModal({ open, onClose }: SharedAccessModalProps) {
                       </span>
                     </div>
                   </div>
-                  <span className="text-[10px] font-extrabold px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                  <span className="text-[10px] font-semibold px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
                     Proprietário
                   </span>
                 </div>
@@ -303,11 +303,11 @@ export function SharedAccessModal({ open, onClose }: SharedAccessModalProps) {
                     className="p-3 rounded-2xl bg-card border border-border/60 flex items-center justify-between gap-3"
                   >
                     <div className="flex items-center gap-2.5 min-w-0">
-                      <div className="w-8 h-8 rounded-full bg-primary/10 text-primary font-black text-xs flex items-center justify-center shrink-0">
+                      <div className="w-8 h-8 rounded-full bg-primary/10 text-primary font-semibold text-xs flex items-center justify-center shrink-0">
                         {member.name.charAt(0).toUpperCase()}
                       </div>
                       <div className="min-w-0">
-                        <span className="text-xs font-black text-foreground block truncate">
+                        <span className="text-xs font-semibold text-foreground block truncate">
                           {member.name}
                         </span>
                         <span className="text-[10px] font-medium text-muted-foreground block truncate">

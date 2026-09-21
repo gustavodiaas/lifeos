@@ -439,16 +439,11 @@ export function ShoppingModule() {
     <div className="space-y-6 fade-in select-none pb-12 w-full">
 
       {/* ── 1. Top Header Banner ────────────────────────────────────────── */}
-      <div className="glass-card p-6 md:p-7 rounded-3xl border border-border/80 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xl">
+      <div className="flex flex-col justify-between gap-4 border-b border-border pb-5 md:flex-row md:items-end">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-2xl bg-foreground text-background flex items-center justify-center shadow-lg shadow-black/10 shrink-0">
-            <ShoppingCart size={24} />
-          </div>
           <div>
-            <span className="badge-ios text-[10px]">Gestão de Compras & Desejos</span>
-            <h2 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight">
-              Lista de Compras & Wishlist
-            </h2>
+            <h1 className="sf-display text-3xl font-semibold tracking-[-0.04em]">Compras</h1>
+            <p className="mt-1 text-sm text-muted-foreground">Lista e desejos em um só lugar</p>
           </div>
         </div>
 
@@ -464,7 +459,7 @@ export function ShoppingModule() {
 
           <button
             onClick={() => handleOpenItemModal(undefined, activeTab === "wishlist" ? "wishlist" : "shopping")}
-            className="btn-ios text-xs py-2.5 px-4 shadow-sm"
+            className="btn-ios text-xs py-2.5 px-4 shadow-none"
           >
             <Plus size={16} strokeWidth={2.5} />
             <span>Novo Item / Desejo</span>
@@ -477,7 +472,7 @@ export function ShoppingModule() {
         <button
           onClick={() => setSelectedSegmentId("all")}
           className={cn(
-            "px-4 py-2 rounded-2xl text-xs font-black transition-all shrink-0 border",
+            "px-4 py-2 rounded-2xl text-xs font-semibold transition-all shrink-0 border",
             selectedSegmentId === "all"
               ? "bg-foreground text-background border-foreground shadow-xs"
               : "bg-card/70 border-border text-muted-foreground hover:text-foreground"
@@ -493,7 +488,7 @@ export function ShoppingModule() {
               key={seg.id}
               onClick={() => setSelectedSegmentId(seg.id)}
               className={cn(
-                "px-3.5 py-2 rounded-2xl text-xs font-extrabold transition-all shrink-0 border flex items-center gap-1.5",
+                "px-3.5 py-2 rounded-2xl text-xs font-semibold transition-all shrink-0 border flex items-center gap-1.5",
                 isSelected
                   ? "shadow-xs"
                   : "bg-card/70 border-border text-muted-foreground hover:text-foreground"
@@ -518,7 +513,7 @@ export function ShoppingModule() {
           <button
             onClick={() => setActiveTab("shopping")}
             className={cn(
-              "flex-1 md:flex-initial px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-2",
+              "flex-1 md:flex-initial px-4 py-2 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-2",
               activeTab === "shopping"
                 ? "bg-foreground text-background shadow-xs"
                 : "text-muted-foreground hover:text-foreground"
@@ -526,7 +521,7 @@ export function ShoppingModule() {
           >
             <ShoppingCart size={15} />
             <span>Lista de Compras</span>
-            <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-background/20 font-black">
+            <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-background/20 font-semibold">
               {activeShoppingItems.length}
             </span>
           </button>
@@ -534,7 +529,7 @@ export function ShoppingModule() {
           <button
             onClick={() => setActiveTab("wishlist")}
             className={cn(
-              "flex-1 md:flex-initial px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-2",
+              "flex-1 md:flex-initial px-4 py-2 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-2",
               activeTab === "wishlist"
                 ? "bg-foreground text-background shadow-xs"
                 : "text-muted-foreground hover:text-foreground"
@@ -542,7 +537,7 @@ export function ShoppingModule() {
           >
             <Sparkles size={15} className="text-amber-400" />
             <span>Lista de Desejos</span>
-            <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-background/20 font-black">
+            <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-background/20 font-semibold">
               {wishlistItems.length}
             </span>
           </button>
@@ -550,7 +545,7 @@ export function ShoppingModule() {
           <button
             onClick={() => setActiveTab("history")}
             className={cn(
-              "flex-1 md:flex-initial px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-2",
+              "flex-1 md:flex-initial px-4 py-2 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-2",
               activeTab === "history"
                 ? "bg-foreground text-background shadow-xs"
                 : "text-muted-foreground hover:text-foreground"
@@ -558,7 +553,7 @@ export function ShoppingModule() {
           >
             <History size={15} />
             <span>Histórico</span>
-            <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-background/20 font-black">
+            <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-background/20 font-semibold">
               {historyItems.length}
             </span>
           </button>
@@ -571,7 +566,7 @@ export function ShoppingModule() {
             <button
               onClick={() => setViewMode("list")}
               className={cn(
-                "px-3 py-1.5 rounded-xl text-xs font-black transition-all flex items-center gap-1.5",
+                "px-3 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5",
                 viewMode === "list" ? "bg-foreground text-background shadow-xs" : "text-muted-foreground hover:text-foreground"
               )}
               title="Modo Lista To-Do Rápida"
@@ -582,7 +577,7 @@ export function ShoppingModule() {
             <button
               onClick={() => setViewMode("cards")}
               className={cn(
-                "px-3 py-1.5 rounded-xl text-xs font-black transition-all flex items-center gap-1.5",
+                "px-3 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5",
                 viewMode === "cards" ? "bg-foreground text-background shadow-xs" : "text-muted-foreground hover:text-foreground"
               )}
               title="Modo Cards Grid"
@@ -619,7 +614,7 @@ export function ShoppingModule() {
               className="input-ios pl-10 pr-4 py-3 text-xs font-bold w-full border-foreground/30 focus:border-foreground"
             />
           </div>
-          <button type="submit" className="btn-ios text-xs py-3 px-5 font-black shrink-0 shadow-sm">
+          <button type="submit" className="btn-ios text-xs py-3 px-5 font-semibold shrink-0 shadow-none">
             Adicionar Rápido
           </button>
         </form>
@@ -632,23 +627,23 @@ export function ShoppingModule() {
         <div className="space-y-4">
           {/* Summary Box */}
           <div className="glass-card p-4 rounded-2xl border border-border/70 flex items-center justify-between text-xs">
-            <span className="font-extrabold text-muted-foreground uppercase tracking-wider">
+            <span className="font-semibold text-muted-foreground tracking-normal">
               Total Estimado da Lista de Compras ({activeShoppingItems.length} itens):
             </span>
-            <span className="text-sm font-black text-emerald-500">
+            <span className="text-sm font-semibold text-emerald-500">
               {formatBRL(totalShoppingEst)}
             </span>
           </div>
 
           {activeShoppingItems.length === 0 ? (
-            <div className="glass-card p-12 text-center text-xs text-muted-foreground font-medium rounded-3xl border border-dashed border-border flex flex-col items-center gap-3">
+            <div className="glass-card p-12 text-center text-xs text-muted-foreground font-medium rounded-2xl border border-dashed border-border flex flex-col items-center gap-3">
               <ShoppingCart size={36} className="opacity-30" />
               Sua Lista de Compras está vazia no momento.
               <p className="text-xs font-medium">Use a barra de adição rápida acima para incluir seus itens do mercado!</p>
             </div>
           ) : viewMode === "list" ? (
             /* ── MODO LISTA COMPACTA TO-DO ───────────────────────────── */
-            <div className="glass-card rounded-3xl border border-border/70 overflow-hidden shadow-lg">
+            <div className="glass-card rounded-2xl border border-border/70 overflow-hidden shadow-none">
               <div className="divide-y divide-border/40">
                 {activeShoppingItems.map((item) => {
                   const seg = segmentMap[item.segmentId];
@@ -667,19 +662,19 @@ export function ShoppingModule() {
                           <Check size={13} className="opacity-0 hover:opacity-100 text-emerald-500 transition-opacity" />
                         </button>
 
-                        <span className="text-xs font-black text-foreground truncate">
+                        <span className="text-xs font-semibold text-foreground truncate">
                           {item.name}
                         </span>
 
                         {item.quantity && (
-                          <span className="text-[10px] font-extrabold text-muted-foreground bg-muted px-2 py-0.5 rounded-full shrink-0">
+                          <span className="text-[10px] font-semibold text-muted-foreground bg-muted px-2 py-0.5 rounded-full shrink-0">
                             {item.quantity}
                           </span>
                         )}
 
                         {seg && (
                           <span
-                            className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-extrabold shrink-0 border"
+                            className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-semibold shrink-0 border"
                             style={{
                               backgroundColor: hexToRgba(seg.color, 0.15),
                               color: seg.color,
@@ -695,7 +690,7 @@ export function ShoppingModule() {
                       {/* Right Price & Actions */}
                       <div className="flex items-center gap-3 shrink-0">
                         {item.estimatedPrice !== undefined && (
-                          <span className="text-xs font-black text-foreground">
+                          <span className="text-xs font-semibold text-foreground">
                             {formatBRL(item.estimatedPrice)}
                           </span>
                         )}
@@ -722,7 +717,7 @@ export function ShoppingModule() {
                 return (
                   <div
                     key={item.id}
-                    className="glass-card p-5 rounded-3xl border border-border/70 flex flex-col justify-between space-y-3 relative group transition-all hover:border-foreground/30 shadow-xs"
+                    className="glass-card p-5 rounded-2xl border border-border/70 flex flex-col justify-between space-y-3 relative group transition-all hover:border-foreground/30 shadow-xs"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex items-start gap-3 min-w-0">
@@ -735,12 +730,12 @@ export function ShoppingModule() {
                         </button>
 
                         <div className="min-w-0">
-                          <h4 className="text-xs font-black text-foreground leading-snug truncate">
+                          <h4 className="text-xs font-semibold text-foreground leading-snug truncate">
                             {item.name}
                           </h4>
                           {seg && (
                             <span
-                              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-extrabold mt-1 border"
+                              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-semibold mt-1 border"
                               style={{
                                 backgroundColor: hexToRgba(seg.color, 0.15),
                                 color: seg.color,
@@ -765,11 +760,11 @@ export function ShoppingModule() {
                     </div>
 
                     <div className="flex items-center justify-between text-xs border-t border-border/40 pt-2.5">
-                      <span className="text-[10px] font-extrabold text-muted-foreground">
+                      <span className="text-[10px] font-semibold text-muted-foreground">
                         {item.quantity || "1 unidade"}
                       </span>
                       {item.estimatedPrice !== undefined && (
-                        <span className="font-black text-foreground">
+                        <span className="font-semibold text-foreground">
                           {formatBRL(item.estimatedPrice)}
                         </span>
                       )}
@@ -786,16 +781,16 @@ export function ShoppingModule() {
       {activeTab === "wishlist" && (
         <div className="space-y-4">
           <div className="glass-card p-4 rounded-2xl border border-border/70 flex items-center justify-between text-xs">
-            <span className="font-extrabold text-muted-foreground uppercase tracking-wider">
+            <span className="font-semibold text-muted-foreground tracking-normal">
               Total Estimado dos Desejos:
             </span>
-            <span className="text-sm font-black text-amber-500">
+            <span className="text-sm font-semibold text-amber-500">
               {formatBRL(totalWishlistEst)}
             </span>
           </div>
 
           {wishlistItems.length === 0 ? (
-            <div className="glass-card p-12 text-center text-xs text-muted-foreground font-medium rounded-3xl border border-dashed border-border flex flex-col items-center gap-3">
+            <div className="glass-card p-12 text-center text-xs text-muted-foreground font-medium rounded-2xl border border-dashed border-border flex flex-col items-center gap-3">
               <Sparkles size={36} className="text-amber-400 opacity-40" />
               Sua Lista de Desejos está vazia.
               <button
@@ -812,14 +807,14 @@ export function ShoppingModule() {
                 return (
                   <div
                     key={item.id}
-                    className="glass-card p-5 rounded-3xl border border-border/70 flex flex-col justify-between space-y-4 relative group transition-all hover:border-foreground/30 shadow-md"
+                    className="glass-card p-5 rounded-2xl border border-border/70 flex flex-col justify-between space-y-4 relative group transition-all hover:border-foreground/30 shadow-none"
                   >
                     <div className="flex items-start gap-3">
                       {item.imageUrl ? (
                         <img
                           src={item.imageUrl}
                           alt={item.name}
-                          className="w-14 h-14 object-cover rounded-2xl shadow-sm border border-black/10 shrink-0"
+                          className="w-14 h-14 object-cover rounded-2xl shadow-none border border-black/10 shrink-0"
                         />
                       ) : (
                         <div className="w-12 h-12 rounded-2xl bg-amber-500/15 text-amber-500 flex items-center justify-center shrink-0">
@@ -828,12 +823,12 @@ export function ShoppingModule() {
                       )}
 
                       <div className="min-w-0 flex-1">
-                        <h4 className="text-sm font-black text-foreground leading-tight truncate">
+                        <h4 className="text-sm font-semibold text-foreground leading-tight truncate">
                           {item.name}
                         </h4>
                         {seg && (
                           <span
-                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-extrabold mt-1 border"
+                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-semibold mt-1 border"
                             style={{
                               backgroundColor: hexToRgba(seg.color, 0.15),
                               color: seg.color,
@@ -864,10 +859,10 @@ export function ShoppingModule() {
 
                     <div className="flex items-center justify-between border-t border-border/50 pt-3">
                       <div>
-                        <span className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block">
+                        <span className="text-[10px] font-semibold text-muted-foreground tracking-normal block">
                           Preço Estimado
                         </span>
-                        <span className="text-sm font-black text-foreground">
+                        <span className="text-sm font-semibold text-foreground">
                           {item.estimatedPrice !== undefined ? formatBRL(item.estimatedPrice) : "A definir"}
                         </span>
                       </div>
@@ -907,16 +902,16 @@ export function ShoppingModule() {
       {activeTab === "history" && (
         <div className="space-y-4">
           <div className="glass-card p-4 rounded-2xl border border-border/70 flex items-center justify-between text-xs">
-            <span className="font-extrabold text-muted-foreground uppercase tracking-wider">
+            <span className="font-semibold text-muted-foreground tracking-normal">
               Total Investido no Histórico:
             </span>
-            <span className="text-sm font-black text-foreground">
+            <span className="text-sm font-semibold text-foreground">
               {formatBRL(totalHistorySpent)}
             </span>
           </div>
 
           {historyItems.length === 0 ? (
-            <div className="glass-card p-12 text-center text-xs text-muted-foreground font-medium rounded-3xl border border-dashed border-border flex flex-col items-center gap-3">
+            <div className="glass-card p-12 text-center text-xs text-muted-foreground font-medium rounded-2xl border border-dashed border-border flex flex-col items-center gap-3">
               <History size={36} className="opacity-30" />
               Nenhuma compra concluída no histórico ainda.
             </div>
@@ -935,10 +930,10 @@ export function ShoppingModule() {
                       </div>
 
                       <div className="min-w-0">
-                        <h4 className="text-xs font-black text-foreground truncate">{item.name}</h4>
+                        <h4 className="text-xs font-semibold text-foreground truncate">{item.name}</h4>
                         <div className="flex items-center gap-2 mt-0.5">
                           {seg && (
-                            <span className="text-[10px] font-extrabold text-muted-foreground">
+                            <span className="text-[10px] font-semibold text-muted-foreground">
                               {seg.name}
                             </span>
                           )}
@@ -952,7 +947,7 @@ export function ShoppingModule() {
                     </div>
 
                     <div className="flex items-center gap-3 shrink-0">
-                      <span className="text-xs font-black text-emerald-500">
+                      <span className="text-xs font-semibold text-emerald-500">
                         {formatBRL(item.paidPrice || item.estimatedPrice || 0)}
                       </span>
 
@@ -981,7 +976,7 @@ export function ShoppingModule() {
       >
         <form onSubmit={handleSaveItem} className="space-y-4">
           <div>
-            <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">
+            <label className="text-[10px] font-semibold text-muted-foreground tracking-normal block mb-1">
               Nome do Produto / Item
             </label>
             <input
@@ -997,7 +992,7 @@ export function ShoppingModule() {
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">
+              <label className="text-[10px] font-semibold text-muted-foreground tracking-normal block mb-1">
                 Segmento / Categoria
               </label>
               <CustomSelect
@@ -1009,7 +1004,7 @@ export function ShoppingModule() {
             </div>
 
             <div>
-              <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">
+              <label className="text-[10px] font-semibold text-muted-foreground tracking-normal block mb-1">
                 Tipo de Item
               </label>
               <CustomSelect
@@ -1026,7 +1021,7 @@ export function ShoppingModule() {
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">
+              <label className="text-[10px] font-semibold text-muted-foreground tracking-normal block mb-1">
                 Preço Estimado (R$)
               </label>
               <input
@@ -1039,7 +1034,7 @@ export function ShoppingModule() {
             </div>
 
             <div>
-              <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">
+              <label className="text-[10px] font-semibold text-muted-foreground tracking-normal block mb-1">
                 Quantidade / Unidade
               </label>
               <input
@@ -1053,7 +1048,7 @@ export function ShoppingModule() {
           </div>
 
           <div>
-            <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">
+            <label className="text-[10px] font-semibold text-muted-foreground tracking-normal block mb-1">
               Link da Loja / Produto (Opcional)
             </label>
             <input
@@ -1066,7 +1061,7 @@ export function ShoppingModule() {
           </div>
 
           <div>
-            <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">
+            <label className="text-[10px] font-semibold text-muted-foreground tracking-normal block mb-1">
               URL da Imagem / Capa (Opcional)
             </label>
             <input
@@ -1079,7 +1074,7 @@ export function ShoppingModule() {
           </div>
 
           <div>
-            <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">
+            <label className="text-[10px] font-semibold text-muted-foreground tracking-normal block mb-1">
               Notas / Observações
             </label>
             <textarea
@@ -1090,7 +1085,7 @@ export function ShoppingModule() {
             />
           </div>
 
-          <button type="submit" className="btn-ios w-full py-4 text-xs font-black uppercase tracking-wider shadow-md shadow-black/10 mt-2">
+          <button type="submit" className="btn-ios w-full py-4 text-xs font-semibold tracking-normal shadow-none  mt-2">
             Salvar Item
           </button>
         </form>
@@ -1110,7 +1105,7 @@ export function ShoppingModule() {
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">
+                <label className="text-[10px] font-semibold text-muted-foreground tracking-normal block mb-1">
                   Valor Pago (R$)
                 </label>
                 <input
@@ -1125,7 +1120,7 @@ export function ShoppingModule() {
               </div>
 
               <div>
-                <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">
+                <label className="text-[10px] font-semibold text-muted-foreground tracking-normal block mb-1">
                   Data da Compra
                 </label>
                 <input
@@ -1138,7 +1133,7 @@ export function ShoppingModule() {
               </div>
             </div>
 
-            <button type="submit" className="btn-ios w-full py-4 text-xs font-black uppercase tracking-wider shadow-md shadow-black/10">
+            <button type="submit" className="btn-ios w-full py-4 text-xs font-semibold tracking-normal shadow-none ">
               Confirmar Compra & Salvar no Histórico
             </button>
           </form>
@@ -1153,7 +1148,7 @@ export function ShoppingModule() {
       >
         <form onSubmit={handleSaveSegment} className="space-y-4">
           <div>
-            <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">
+            <label className="text-[10px] font-semibold text-muted-foreground tracking-normal block mb-1">
               Nome do Segmento
             </label>
             <input
@@ -1168,7 +1163,7 @@ export function ShoppingModule() {
           </div>
 
           <div>
-            <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1">
+            <label className="text-[10px] font-semibold text-muted-foreground tracking-normal block mb-1">
               Cor do Segmento
             </label>
             <input
@@ -1179,7 +1174,7 @@ export function ShoppingModule() {
             />
           </div>
 
-          <button type="submit" className="btn-ios w-full py-3.5 text-xs font-black uppercase tracking-wider">
+          <button type="submit" className="btn-ios w-full py-3.5 text-xs font-semibold tracking-normal">
             Criar Segmento
           </button>
         </form>

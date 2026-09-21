@@ -26,11 +26,11 @@ const getIcon = (desc: string, categoria?: string) => {
 };
 
 const getSaldoColor = (v: number) => {
-  if (v > 2000) return 'bg-emerald-500/20 text-emerald-500 font-extrabold';
+  if (v > 2000) return 'bg-emerald-500/20 text-emerald-500 font-semibold';
   if (v >= 1000) return 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-bold';
   if (v >= 0) return 'bg-muted/80 text-foreground font-semibold';
   if (v >= -499.99) return 'bg-muted text-foreground font-bold';
-  return 'bg-red-500/20 text-red-500 font-extrabold';
+  return 'bg-red-500/20 text-red-500 font-semibold';
 };
 
 export function SpreadsheetTable({ rows, today, onDelete, onEdit }: Props) {
@@ -47,15 +47,15 @@ export function SpreadsheetTable({ rows, today, onDelete, onEdit }: Props) {
   };
 
   return (
-    <div className="w-full text-sm flex flex-col select-none glass-card rounded-3xl border border-border/60 overflow-hidden shadow-sm fade-in max-h-[580px] overflow-y-auto custom-scrollbar">
+    <div className="w-full text-sm flex flex-col select-none glass-card rounded-2xl border border-border/60 overflow-hidden shadow-none fade-in max-h-[580px] overflow-y-auto custom-scrollbar">
       {/* Header */}
-      <div className="grid grid-cols-[44px_1fr_90px] border-b border-border bg-background sticky top-0 z-10 shadow-sm">
-        <div className="py-3 flex items-center justify-center text-[10px] font-black text-muted-foreground border-r border-border uppercase tracking-tighter">
+      <div className="grid grid-cols-[44px_1fr_90px] border-b border-border bg-background sticky top-0 z-10 shadow-none">
+        <div className="py-3 flex items-center justify-center text-[10px] font-semibold text-muted-foreground border-r border-border tracking-normal">
           Dia
         </div>
         <button
           onClick={cycleFilter}
-          className="px-3 py-3 flex items-center gap-2 text-[10px] font-black text-primary border-r border-border hover:bg-accent transition-colors uppercase tracking-tighter"
+          className="px-3 py-3 flex items-center gap-2 text-[10px] font-semibold text-primary border-r border-border hover:bg-accent transition-colors tracking-normal"
         >
           {filtro === 'total' && <LayoutGrid size={13} />}
           {filtro === 'entradas' && <ArrowUpCircle size={13} />}
@@ -63,7 +63,7 @@ export function SpreadsheetTable({ rows, today, onDelete, onEdit }: Props) {
           <span>{filtro === 'total' ? 'Tudo' : filtro}</span>
           <ChevronDown size={12} className="text-muted-foreground" />
         </button>
-        <div className="px-3 py-3 flex items-center justify-end gap-1 text-[10px] font-black text-muted-foreground uppercase tracking-tighter">
+        <div className="px-3 py-3 flex items-center justify-end gap-1 text-[10px] font-semibold text-muted-foreground tracking-normal">
           <Triangle size={7} className="fill-current text-muted-foreground rotate-180" />
           Saldo
         </div>
@@ -89,7 +89,7 @@ export function SpreadsheetTable({ rows, today, onDelete, onEdit }: Props) {
             >
               <div
                 className={`flex items-center justify-center text-[13px] border-r border-border ${
-                  isToday ? 'bg-primary text-primary-foreground font-black' : 'text-foreground font-bold'
+                  isToday ? 'bg-primary text-primary-foreground font-semibold' : 'text-foreground font-bold'
                 }`}
               >
                 {row.day}
@@ -116,7 +116,7 @@ export function SpreadsheetTable({ rows, today, onDelete, onEdit }: Props) {
                 </span>
               </div>
 
-              <div className={`px-3 flex items-center justify-end text-[11px] font-black tracking-tight h-full ${getSaldoColor(row.saldoAcumulado)}`}>
+              <div className={`px-3 flex items-center justify-end text-[11px] font-semibold tracking-tight h-full ${getSaldoColor(row.saldoAcumulado)}`}>
                 {formatCurrency(row.saldoAcumulado).replace('R$', '').trim()}
               </div>
             </div>

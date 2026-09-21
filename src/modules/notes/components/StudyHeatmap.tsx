@@ -106,7 +106,7 @@ export function StudyHeatmap({ metrics }: StudyHeatmapProps) {
             <Clock size={20} />
           </div>
           <div>
-            <h3 className="text-base font-extrabold text-foreground tracking-tight">
+            <h3 className="text-base font-semibold text-foreground tracking-tight">
               Heatmap Anual de Horas de Estudo
             </h3>
             <p className="text-xs text-muted-foreground font-medium">
@@ -124,7 +124,7 @@ export function StudyHeatmap({ metrics }: StudyHeatmapProps) {
           >
             <ChevronLeft size={16} />
           </button>
-          <span className="text-xs font-black px-3 py-1.5 rounded-xl bg-muted border border-border text-foreground min-w-[60px] text-center">
+          <span className="text-xs font-semibold px-3 py-1.5 rounded-xl bg-muted border border-border text-foreground min-w-[60px] text-center">
             {currentYear}
           </span>
           <button

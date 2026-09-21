@@ -42,14 +42,14 @@ export function HabitModal({ open, onClose, onSave, editingHabit }: HabitModalPr
 
   return (
     <ModalPortal open={open} onClose={onClose} raw>
-      <div className="bg-card w-full max-w-lg rounded-t-[28px] sm:rounded-[28px] shadow-2xl border border-border overflow-hidden flex flex-col max-h-[95vh] slide-up">
+      <div className="bg-card w-full max-w-lg rounded-t-[28px] sm:rounded-2xl shadow-none border border-border overflow-hidden flex flex-col max-h-[95vh] slide-up">
         {/* Header */}
         <div className="px-6 py-4 border-b border-border/60 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-xl bg-foreground/15 text-foreground flex items-center justify-center">
               <Repeat size={18} />
             </div>
-            <h2 className="text-lg font-extrabold text-foreground tracking-tight">
+            <h2 className="text-lg font-semibold text-foreground tracking-tight">
               {editingHabit ? "Editar Hábito" : "Novo Hábito"}
             </h2>
           </div>
@@ -64,7 +64,7 @@ export function HabitModal({ open, onClose, onSave, editingHabit }: HabitModalPr
         {/* Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-5 overflow-y-auto">
           <div>
-            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5 block ml-1">
+            <label className="text-xs font-bold text-muted-foreground tracking-normal mb-1.5 block ml-1">
               Nome do Hábito
             </label>
             <input
@@ -79,7 +79,7 @@ export function HabitModal({ open, onClose, onSave, editingHabit }: HabitModalPr
           </div>
 
           <div>
-            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5 block ml-1">
+            <label className="text-xs font-bold text-muted-foreground tracking-normal mb-1.5 block ml-1">
               Frequência
             </label>
             <div className="grid grid-cols-2 gap-2">
@@ -113,7 +113,7 @@ export function HabitModal({ open, onClose, onSave, editingHabit }: HabitModalPr
 
           {frequency === "weekly" && (
             <div>
-              <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1.5 block ml-1">
+              <label className="text-xs font-bold text-muted-foreground tracking-normal mb-1.5 block ml-1">
                 Dias por semana
               </label>
               <div className="flex items-center gap-2">
@@ -122,9 +122,9 @@ export function HabitModal({ open, onClose, onSave, editingHabit }: HabitModalPr
                     key={num}
                     type="button"
                     onClick={() => setTargetPerWeek(num)}
-                    className={`flex-1 py-3 rounded-xl border-2 font-black text-sm transition-all ${
+                    className={`flex-1 py-3 rounded-xl border-2 font-semibold text-sm transition-all ${
                       targetPerWeek === num
-                        ? "border-foreground bg-foreground text-background shadow-md shadow-black/20"
+                        ? "border-foreground bg-foreground text-background shadow-none "
                         : "border-border/60 bg-muted/30 text-muted-foreground hover:bg-muted"
                     }`}
                   >
@@ -137,7 +137,7 @@ export function HabitModal({ open, onClose, onSave, editingHabit }: HabitModalPr
 
           <button
             type="submit"
-            className="btn-ios w-full py-4 mt-2 text-sm font-black uppercase tracking-wider"
+            className="btn-ios w-full py-4 mt-2 text-sm font-semibold tracking-normal"
           >
             <Save size={18} />
             <span>{editingHabit ? "Salvar Alterações" : "Criar Hábito"}</span>

@@ -10,12 +10,9 @@ import { toast } from "@/lib/toast";
 import {
   Plus,
   Target,
-  Trophy,
-  Sparkles,
   Search,
   Calendar,
   CheckCircle2,
-  TrendingUp,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -124,29 +121,14 @@ export function GoalsModule() {
   const completedGoalsCount = goals.filter((g) => (g.progress || 0) >= (g.target || 100)).length;
   const activeGoalsCount = goals.length - completedGoalsCount;
 
-  const averageProgress = useMemo(() => {
-    if (goals.length === 0) return 0;
-    const totalPercents = goals.reduce((sum, g) => {
-      const target = g.target || 100;
-      const current = g.progress || 0;
-      return sum + Math.min(100, Math.round((current / target) * 100));
-    }, 0);
-    return Math.round(totalPercents / goals.length);
-  }, [goals]);
-
   return (
     <div className="space-y-6 fade-in pb-12">
 
       {/* ── 1. Top Header & Ações ────────────────────────────────────────── */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2">
-            <span className="badge-ios">Objetivos & Conquistas</span>
-            <span className="text-xs font-bold text-muted-foreground">{activeGoalsCount} ativas</span>
-          </div>
-          <h2 className="text-2xl md:text-3xl font-extrabold text-foreground tracking-tight mt-1">
-            Metas Pessoais
-          </h2>
+          <h1 className="sf-display text-3xl font-semibold tracking-[-0.04em]">Metas</h1>
+          <p className="mt-1 text-sm text-muted-foreground">{activeGoalsCount} ativas</p>
         </div>
 
         <button
@@ -159,39 +141,6 @@ export function GoalsModule() {
           <Plus size={16} strokeWidth={2.5} />
           <span>Nova Meta</span>
         </button>
-      </div>
-
-      {/* ── 2. Cards de Métricas de Progresso ───────────────────────────── */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="glass-card p-5 flex items-center gap-4">
-          <div className="w-11 h-11 rounded-2xl bg-muted text-muted-foreground flex items-center justify-center shrink-0">
-            <Target size={22} />
-          </div>
-          <div>
-            <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Metas Ativas</p>
-            <p className="text-xl font-extrabold text-foreground">{activeGoalsCount} em andamento</p>
-          </div>
-        </div>
-
-        <div className="glass-card p-5 flex items-center gap-4">
-          <div className="w-11 h-11 rounded-2xl bg-emerald-500/15 text-emerald-500 flex items-center justify-center shrink-0">
-            <Trophy size={22} />
-          </div>
-          <div>
-            <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Concluídas</p>
-            <p className="text-xl font-extrabold text-emerald-600 dark:text-emerald-400">{completedGoalsCount} objetivadas</p>
-          </div>
-        </div>
-
-        <div className="glass-card p-5 flex items-center gap-4">
-          <div className="w-11 h-11 rounded-2xl bg-muted text-foreground flex items-center justify-center shrink-0">
-            <TrendingUp size={22} />
-          </div>
-          <div>
-            <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Progresso Médio</p>
-            <p className="text-xl font-extrabold text-foreground">{averageProgress}% geral</p>
-          </div>
-        </div>
       </div>
 
       {/* ── 3. Barra de Busca & Filtro de Escopo ────────────────────────── */}
@@ -214,7 +163,7 @@ export function GoalsModule() {
             className={cn(
               "px-3.5 py-2 rounded-xl text-xs font-bold transition-all shrink-0",
               selectedScope === "all"
-                ? "bg-foreground text-background shadow-sm"
+                ? "bg-foreground text-background shadow-none"
                 : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground"
             )}
           >
@@ -226,7 +175,7 @@ export function GoalsModule() {
             className={cn(
               "px-3.5 py-2 rounded-xl text-xs font-bold transition-all shrink-0",
               selectedScope === "year"
-                ? "bg-foreground text-background shadow-sm"
+                ? "bg-foreground text-background shadow-none"
                 : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground"
             )}
           >
@@ -238,7 +187,7 @@ export function GoalsModule() {
             className={cn(
               "px-3.5 py-2 rounded-xl text-xs font-bold transition-all shrink-0",
               selectedScope === "quarter"
-                ? "bg-foreground text-background shadow-sm"
+                ? "bg-foreground text-background shadow-none"
                 : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground"
             )}
           >
@@ -250,7 +199,7 @@ export function GoalsModule() {
             className={cn(
               "px-3.5 py-2 rounded-xl text-xs font-bold transition-all shrink-0",
               selectedScope === "month"
-                ? "bg-foreground text-background shadow-sm"
+                ? "bg-foreground text-background shadow-none"
                 : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground"
             )}
           >
@@ -267,7 +216,7 @@ export function GoalsModule() {
         </div>
       ) : filteredGoals.length === 0 ? (
         <div className="glass-card p-12 text-center space-y-4">
-          <div className="w-16 h-16 rounded-3xl bg-muted text-muted-foreground flex items-center justify-center mx-auto">
+          <div className="w-16 h-16 rounded-2xl bg-muted text-muted-foreground flex items-center justify-center mx-auto">
             <Target size={32} />
           </div>
           <div>
