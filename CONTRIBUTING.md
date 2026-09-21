@@ -62,7 +62,7 @@ Fix task ownership filter
 Improve mobile navigation spacing
 ```
 
-The repository is connected to Lovable. Do not rewrite published history with force pushes, rebases, amended published commits, or squashed published commits. Pull requests should describe:
+Do not rewrite published history with force pushes, rebases, amended published commits, or squashed published commits. Pull requests should describe:
 
 - the problem being solved;
 - the chosen approach;
